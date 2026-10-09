@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import {PublicKey} from '@solana/web3.js';
+import {getOrCreateAssociatedTokenAccount,mintTo,getMint} from '@solana/spl-token';
+import {chainClient} from './chain-client.mjs';
+import {parseTokenAmount} from '../src/chain/amount.ts';
+const [recipient,amount='10000']=process.argv.slice(2);
+if(!recipient) throw Error('Usage: node scripts/mint-test-usd.mjs WALLET_PUBLIC_KEY [AMOUNT]');
+const units=parseTokenAmount(amount);
+if(units===null) throw Error('Use a positive amount with at most six decimals');
+const {connection,authority,program,project}=await chainClient();
+const manifest=JSON.parse(fs.readFileSync('src/chain/deployment.json','utf8'));
+const state=await program.account.project.fetch(project);
+if(state.acceptedMint.toBase58()!==manifest.mint) throw Error('Unexpected project mint');
+const mint=await getMint(connection,state.acceptedMint);
+if(!mint.mintAuthority?.equals(authority.publicKey) || mint.decimals!==6) throw Error('Unexpected test mint authority');
+const account=await getOrCreateAssociatedTokenAccount(connection,authority,state.acceptedMint,new PublicKey(recipient));
+const signature=await mintTo(connection,authority,state.acceptedMint,account.address,authority,units,[],{commitment:'confirmed'});
+console.log(JSON.stringify({network:'devnet',token:'JV Test USD (demo token, not USDC)',recipient,amount,signature}));

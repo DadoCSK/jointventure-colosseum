@@ -1,0 +1,45 @@
+{
+  "verified": true,
+  "network": "devnet",
+  "signature": "3nCzrMyakkamQGByfYQSLjLeq2foeR4u5xYNkGqoehuEC2JbiHJcucVh7fmtPgPrhUwBAYQcSKYFzAUv9UUi1C6m",
+  "confirmation": "finalized",
+  "slot": 509290221,
+  "blockTime": "2026-10-09T19:51:43.000Z",
+  "investor": "C2h5dUAptnASXXqHFvT7a1Skhhqx9irULsFxB78yz7Ds",
+  "program": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "project": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+  "vault": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+  "mint": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+  "position": "Cf29kcyAnPzoR8xRevJFMk8AMzwjMmaC2RNLNSxeYFiq",
+  "transactionAmountJVTestUSD": "1",
+  "positionTotalJVTestUSD": "2",
+  "positionNextNonce": "2",
+  "projectTotalJVTestUSD": "3.25",
+  "vaultBalanceJVTestUSD": "3.25",
+  "walletBalanceJVTestUSD": "9998",
+  "projectEURCaseMetricsUnchanged": true,
+  "financingHistory": [
+    {
+      "signature": "3nCzrMyakkamQGByfYQSLjLeq2foeR4u5xYNkGqoehuEC2JbiHJcucVh7fmtPgPrhUwBAYQcSKYFzAUv9UUi1C6m",
+      "confirmation": "finalized",
+      "time": "2026-10-09T19:51:43.000Z",
+      "amountUnits": "1000000",
+      "expectedNonce": "1"
+    },
+    {
+      "signature": "3kbP5pjYY4jLnsxCwaCNksov1SsXsjChAkvN3JitzpqLTeW6Mm5A1AmGG9zSejWhocnDCzbgttfg7edbzTvnFfoZ",
+      "confirmation": "finalized",
+      "time": "2026-10-09T19:50:10.000Z",
+      "amountUnits": "1000000",
+      "expectedNonce": "0"
+    }
+  ],
+  "userConfirmedApprovals": 2,
+  "verifiedAt": "2026-10-09T19:54:32.899719+00:00",
+  "remainingManualChecks": [
+    "wallet rejection",
+    "account switching",
+    "disconnect/reconnect",
+    "mobile handoff"
+  ]
+}

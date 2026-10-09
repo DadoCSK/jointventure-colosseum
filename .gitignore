@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env*
+/test-results/
+/playwright-report/
+/.localkeys/
+/chain/target/
+/chain/.anchor/
+/chain/test-ledger*/

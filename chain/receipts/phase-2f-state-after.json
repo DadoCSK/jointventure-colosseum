@@ -1,0 +1,25 @@
+{
+  "network": "devnet",
+  "verifiedAt": "2026-10-09T20:21:14.230Z",
+  "allExistingAccountsUnchanged": true,
+  "accountsVerified": 6,
+  "projectPda": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+  "vaultPda": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+  "mint": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+  "totalFinancedUnits": "3250000",
+  "positions": [
+    {
+      "address": "Cf29kcyAnPzoR8xRevJFMk8AMzwjMmaC2RNLNSxeYFiq",
+      "investor": "C2h5dUAptnASXXqHFvT7a1Skhhqx9irULsFxB78yz7Ds",
+      "units": "2000000",
+      "nextNonce": "2"
+    },
+    {
+      "address": "ECQZS9bdMgVCPR4hQSEJcmiNCJtaBfXnnBiZD1chmcmk",
+      "investor": "8UdMpNygGG9te1dir2u2njXWGrwAaHNNuwcdNxSYdzoL",
+      "units": "1250000",
+      "nextNonce": "1"
+    }
+  ],
+  "userWalletTokenBalanceUnits": "9998000000"
+}

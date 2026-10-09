@@ -1,0 +1,16 @@
+{
+  "network": "devnet",
+  "testOnly": true,
+  "fixture": "tests/fixtures/integrity-test.txt",
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "projectPda": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+  "documentRecordPda": "3ToaWp5zopbmmVgHLhmBNXK3315G9eLNSAhphV5Jzf5x",
+  "authority": "BTRmT5Vbh95xfyxc8swN45G2fgP8PCoKP4TfvwEbM6WE",
+  "documentId": "integrity-test-v1",
+  "documentName": "Harmless integrity test fixture",
+  "sha256": "d493d66455e037afb996d79e8f2cf5b8c69c7092f77d1dfe5ecbd223b1319746",
+  "createdAt": "2026-10-09T20:19:18.000Z",
+  "signature": "4vVFxDRKRBB4MLe6ju4DffBNJ1x7umo6Pform2Cnzue3U6Rw7CFXhZ19PekDwejW4CjjHCjVNBHUTCKH5BiKHfqD",
+  "explorer": "https://explorer.solana.com/address/3ToaWp5zopbmmVgHLhmBNXK3315G9eLNSAhphV5Jzf5x?cluster=devnet",
+  "productionDocumentsPending": true
+}

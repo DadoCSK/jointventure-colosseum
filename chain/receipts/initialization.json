@@ -1,0 +1,16 @@
+{
+  "network": "devnet",
+  "rpc": "https://api.devnet.solana.com",
+  "genesisHash": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "projectPda": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+  "vaultPda": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+  "authority": "BTRmT5Vbh95xfyxc8swN45G2fgP8PCoKP4TfvwEbM6WE",
+  "mint": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+  "tokenName": "JV Test USD",
+  "tokenSymbol": "JVTEST",
+  "decimals": 6,
+  "stage": "project-initialized",
+  "initializationSignature": "3WVDiSZe35foMsaV4LKo1oAixAEgVCiwVzTafwutAKAQAD4psLz6ZBFdxZZDRYJFRoG54T6cfN6Kyf2QxV3xbBr6",
+  "verifiedAt": "2026-10-09T18:53:33.450Z"
+}

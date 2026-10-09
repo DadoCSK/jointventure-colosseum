@@ -1,0 +1,8 @@
+{
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "checkedAt": "2026-10-09T20:21:09.408Z",
+  "existingInstructionsAccountsTypesEventsErrorsUnchanged": true,
+  "projectAndPositionLayoutMigrationRequired": false,
+  "newAccount": "DocumentRecord",
+  "newInstruction": "record_document"
+}

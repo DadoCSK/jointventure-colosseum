@@ -1,0 +1,64 @@
+{
+  "network": "devnet",
+  "capturedAt": "2026-10-09T20:06:41.765Z",
+  "deployment": {
+    "network": "devnet",
+    "rpc": "https://api.devnet.solana.com",
+    "genesisHash": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+    "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+    "projectPda": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+    "vaultPda": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+    "authority": "BTRmT5Vbh95xfyxc8swN45G2fgP8PCoKP4TfvwEbM6WE",
+    "mint": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+    "tokenName": "JV Test USD",
+    "tokenSymbol": "JVTEST",
+    "decimals": 6,
+    "stage": "financing-enabled",
+    "initializationSignature": "3WVDiSZe35foMsaV4LKo1oAixAEgVCiwVzTafwutAKAQAD4psLz6ZBFdxZZDRYJFRoG54T6cfN6Kyf2QxV3xbBr6",
+    "financingControlSignature": "4Hwsprzjs8eML35SoiFfh8PkxzdW4tDtdQdmhXAnyEUpnnM1dnRJ1YUpsZYPPk5uDLGaLdpSMkTJa5i3yc5zqvx"
+  },
+  "accounts": [
+    {
+      "address": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "data": "AgAAAPXiarNOSPY8xFFz/SwKnR6wAsdH7muCm+A8sLGE/C2b",
+      "lamports": 833120,
+      "executable": true
+    },
+    {
+      "address": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "data": "zai9yrX3jhMB/PmbWflGH9lh5FLiRUNuKnXRlEBD/DY7q5PFn2okcHEss5umBMAMUB36mTgJh5azvTMpy6X9zQxPgLQ3ZQfQ8UutBwAAAGJhdmFyaWEcAAAAQmF2YXJpYSBDdWx0aXZhdGlvbiBGYWNpbGl0eUB4fQEAAAAAgLFPAQAAAACgWjIAAAAAAFCXMQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "lamports": 1681480,
+      "executable": false
+    },
+    {
+      "address": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "data": "m6YEwAxQHfqZOAmHlrO9MynLpf3NDE+AtDdlB9DxS62FkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy21CXMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "lamports": 1488440,
+      "executable": false
+    },
+    {
+      "address": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "data": "AQAAAJtZ+UYf2WHkUuJFQ24qddGUQEP8Njurk8WfaiRwcSyz0PYeVAIAAAAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "lamports": 1066800,
+      "executable": false
+    },
+    {
+      "address": "Cf29kcyAnPzoR8xRevJFMk8AMzwjMmaC2RNLNSxeYFiq",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "data": "qryP5HpA99CFkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy26PfdJPPyV9qGfcRtvrvtkvMW5E/VZBxXlBU1uHQzLkKgIQeAAAAAAACAAAAAAAAAP8=",
+      "lamports": 1102360,
+      "executable": false
+    },
+    {
+      "address": "ECQZS9bdMgVCPR4hQSEJcmiNCJtaBfXnnBiZD1chmcmk",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "data": "qryP5HpA99CFkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy228Vmfq5eWlen0HzLy9x4weGcSP6jjnqww+mMAXcCYTz0BITAAAAAAABAAAAAAAAAP4=",
+      "lamports": 1102360,
+      "executable": false
+    }
+  ]
+}

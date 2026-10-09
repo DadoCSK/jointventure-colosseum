@@ -1,0 +1,12 @@
+[toolchain]
+anchor_version = "0.32.1"
+[features]
+resolution = true
+skip-lint = false
+[programs.localnet]
+joint_venture = "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ"
+[programs.devnet]
+joint_venture = "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ"
+[provider]
+cluster = "Devnet"
+wallet = "~/.config/solana/id.json"

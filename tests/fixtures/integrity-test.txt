@@ -1,0 +1,4 @@
+Joint Venture Phase 2F harmless document-integrity test fixture.
+This file is public test data. It is not a cultivation licence, customer rental
+agreement, infrastructure budget, or evidence about any real business.
+Its SHA-256 fingerprint is used only to test document matching on Solana Devnet.

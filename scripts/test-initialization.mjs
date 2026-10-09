@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { Keypair, SystemProgram } from '@solana/web3.js';
+import { AnchorProvider, Program, Wallet } from '@coral-xyz/anchor';
+import { createMint, TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
+import { chainClient } from './chain-client.mjs';
+
+const { connection, authority, program, project, vault, programData } = await chainClient({local:true});
+const mint = await createMint(connection, authority, authority.publicKey, null, 6);
+const wrongDecimals = await createMint(connection, authority, authority.publicKey, null, 9);
+const attacker = Keypair.generate();
+await connection.confirmTransaction(await connection.requestAirdrop(attacker.publicKey, 1e9), 'confirmed');
+const accounts = {authority:authority.publicKey, programAccount:program.programId, programData, project, mint, vault, tokenProgram:TOKEN_PROGRAM_ID, systemProgram:SystemProgram.programId};
+const attackerProgram = new Program(program.idl, new AnchorProvider(connection, new Wallet(attacker), {commitment:'confirmed'}));
+await assert.rejects(attackerProgram.methods.initializeBavaria().accountsStrict({...accounts,authority:attacker.publicKey}).rpc(), /Unauthorized/);
+await assert.rejects(program.methods.initializeBavaria().accountsStrict({...accounts,mint:wrongDecimals}).rpc(), /WrongDecimals/);
+assert.equal(await connection.getAccountInfo(project), null, 'rejected initialization must be atomic');
+await program.methods.initializeBavaria().accountsStrict(accounts).rpc();
+const state = await program.account.project.fetch(project);
+assert.equal(state.targetEurCents.toString(), '25000000');
+assert.equal(state.infrastructureEurCents.toString(), '22000000');
+assert.equal(state.contractedMonthlyRevenueEurCents.toString(), '3300000');
+assert.equal(state.totalFinancedUnits.toString(), '0');
+assert.equal(state.financingEnabled, false);
+assert.ok(state.acceptedMint.equals(mint));
+assert.ok((await getAccount(connection, vault)).owner.equals(project));
+await assert.rejects(program.methods.initializeBavaria().accountsStrict(accounts).rpc());
+console.log('PASS: authority restriction, six decimals, atomic failure, case metrics, PDA vault ownership, and duplicate initialization');
