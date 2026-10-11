@@ -3,10 +3,7 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: false,
   workers: 1,
-  projects: [
-    { name: "classic" },
-    { name: "industrial", use: { storageState: { cookies: [], origins: [{ origin: "http://localhost:3000", localStorage: [{ name: "jv-ui-variant", value: "industrial" }] }] } } },
-  ],
+  projects: [{ name: "industrial" }],
   use: { baseURL: "http://localhost:3000", headless: true },
   webServer: {
     command: "npm run dev",

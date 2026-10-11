@@ -1,71 +1,37 @@
 import { test, expect } from '@playwright/test';
 
 for (const saved of ['classic', 'industrial', 'invalid', null]) {
-  test(`restores ${saved} before content paint without hydration errors`, async ({ page }) => {
+  test(`Industrial renders before paint regardless of obsolete preference ${saved}`, async ({ page }) => {
     const errors: string[] = [];
-    page.on('pageerror', e => errors.push(e.message));
-    page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     await page.addInitScript(value => {
       if (value === null) localStorage.removeItem('jv-ui-variant');
       else localStorage.setItem('jv-ui-variant', value);
       new MutationObserver((_, observer) => {
         if (document.querySelector('h1')) {
-          (window as Window & { firstAppearance?: string }).firstAppearance = document.documentElement.dataset.uiVariant;
+          (window as Window & { firstTheme?: string }).firstTheme = document.documentElement.dataset.theme;
           observer.disconnect();
         }
       }).observe(document, { childList: true, subtree: true });
     }, saved);
     await page.goto('/');
-    const variant = saved === 'industrial' ? 'industrial' : 'classic';
-    await expect(page.locator('html')).toHaveAttribute('data-ui-variant', variant);
-    await expect(page.getByRole('button', { name: variant === 'industrial' ? 'Industrial' : 'Classic', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(await page.evaluate(() => (window as Window & { firstAppearance?: string }).firstAppearance)).toBe(variant);
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'jointventure-industrial');
+    expect(await page.evaluate(() => (window as Window & { firstTheme?: string }).firstTheme)).toBe('jointventure-industrial');
+    await expect(page.getByRole('group', { name: 'Appearance', exact: true })).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 }
 
-test('unavailable storage defaults safely and allows keyboard switching', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window, 'localStorage', { get() { throw new Error('Storage unavailable'); } });
-  });
-  await page.goto('/projects');
-  await expect(page.locator('html')).toHaveAttribute('data-ui-variant', 'classic');
-  const industrial = page.getByRole('button', { name: 'Industrial', exact: true });
-  await industrial.focus();
-  await page.keyboard.press('Enter');
-  await expect(industrial).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Classic', exact: true }).focus();
-  await page.keyboard.press('Space');
-  await expect(page.locator('html')).toHaveAttribute('data-ui-variant', 'classic');
-});
-
-test('switch preserves the project route; stores only appearance', async ({ page }) => {
-  await page.goto('/projects');
-  await expect(page).toHaveURL(/\/projects\/bavaria$/);
-  const current = await page.locator('html').getAttribute('data-ui-variant');
-  const next = current === 'classic' ? 'Industrial' : 'Classic';
-  await page.getByRole('button', { name: next, exact: true }).click();
-  await expect(page).toHaveURL(/\/projects\/bavaria$/);
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual(['jv-ui-variant']);
-  await page.reload();
-  await expect(page.getByRole('button', { name: next, exact: true })).toHaveAttribute('aria-pressed', 'true');
-});
-
-test('mobile control synchronizes and financing input survives switching', async ({ page }) => {
+test('Industrial works without storage and mobile navigation has no appearance controls', async ({ page }) => {
+  await page.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw Error('Unavailable'); } }); });
   await page.setViewportSize({ width: 320, height: 850 });
-  await page.route('https://api.devnet.solana.com', route => route.fulfill({ json: { jsonrpc: '2.0', id: route.request().postDataJSON().id, error: { code: -32005, message: 'Unavailable' } } }));
-  await page.goto('/projects/bavaria');
-  await page.getByRole('button', { name: 'Finance this project' }).click();
-  await page.getByLabel('Amount', { exact: true }).fill('12.345');
-  await page.keyboard.press('Escape');
+  await page.goto('/facility');
   await page.getByRole('button', { name: 'Open navigation' }).click();
-  const current = await page.locator('html').getAttribute('data-ui-variant');
-  const next = current === 'classic' ? 'Industrial' : 'Classic';
-  await page.locator('#mobile-navigation').getByRole('button', { name: next, exact: true }).click();
-  await expect(page.locator('#mobile-navigation').getByRole('button', { name: next, exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Close navigation' }).click();
-  await page.getByRole('button', { name: 'Finance this project' }).click();
-  await expect(page.getByLabel('Amount', { exact: true })).toHaveValue('12.345');
+  await expect(page.locator('#mobile-navigation').getByRole('link')).toHaveCount(5);
+  await expect(page.getByRole('button', { name: /^(Classic|Industrial)$/ })).toHaveCount(0);
+  await page.locator('#mobile-navigation').getByRole('link', { name: 'Project', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'jointventure-industrial');
 });
 
 for (const width of [320, 390, 768, 1440]) {

@@ -9,7 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
+import type { Wallet } from "@wallet-standard/base";
+import type { WalletSession } from "./wallet-standard";
 import type {FinanceReview,FinanceReceipt,Confirmation,ProjectReadout} from '@/chain/client';
 import type {DocumentReview, DocumentReceipt} from '@/chain/documents';
 
@@ -22,7 +23,8 @@ type WalletContextValue = {
   balance: number | null;
   balanceLoading: boolean;
   balanceError: string | null;
-  connect: () => Promise<void>;
+  connect: (choice?:Wallet|'solflare') => Promise<void>;
+  walletName:string|null;
   disconnect: () => Promise<void>;
   refreshBalance: () => Promise<void>;
   financeReceipt: FinanceReceipt | null;
@@ -45,7 +47,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
-  const adapterRef = useRef<SolflareWalletAdapter | null>(null);
+  const adapterRef = useRef<WalletSession | null>(null);
   const addressRef = useRef<string | null>(null);
   const busyRef = useRef(false);
   const mountedRef = useRef(true);
@@ -154,45 +156,45 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const connect = useCallback(async () => {
+  const [wallets,setWallets]=useState<Wallet[]>([]);
+  const walletsRef=useRef<Wallet[]>([]);
+  const [walletName,setWalletName]=useState<string|null>(null);
+  const [pickerOpen,setPickerOpen]=useState(false);
+  const picker=useRef<HTMLDialogElement>(null);
+  useEffect(()=>{
+    let cleanup:(()=>void)|undefined,cancelled=false;
+    void import('./wallet-standard').then(({discoverWallets})=>{if(!cancelled)cleanup=discoverWallets(found=>{walletsRef.current=found;setWallets(found);});});
+    return()=>{cancelled=true;cleanup?.();};
+  },[]);
+  useEffect(()=>{if(pickerOpen)picker.current?.showModal();else picker.current?.close();},[pickerOpen]);
+  const connect = useCallback(async (choice?:Wallet|'solflare') => {
     if (busyRef.current || addressRef.current) return;
-    busyRef.current = true;
-    setBusy(true);
-    setError(null);
+    if(choice===undefined){setError(null);setPickerOpen(true);return;}
+    setPickerOpen(false);
+    busyRef.current = true;setBusy(true);setError(null);
     try {
-      if (!adapterRef.current) {
-        const [{ SolflareWalletAdapter }, { WalletAdapterNetwork }] =
-          await Promise.all([
-            import("@solana/wallet-adapter-solflare"),
-            import("@solana/wallet-adapter-base"),
-          ]);
-        if (!mountedRef.current) return;
-        const adapter = new SolflareWalletAdapter({
-          network: WalletAdapterNetwork.Devnet,
-        });
-        adapter.on("connect", syncAccount);
-        adapter.on("disconnect", clearAccount);
-        adapter.on("error", () => {
-          if (mountedRef.current)
-            setError(
-              "Solflare could not complete the request. Please try again.",
-            );
-        });
-        adapterRef.current = adapter;
+      adapterRef.current?.removeAllListeners();
+      let adapter:WalletSession;
+      if(choice==='solflare'){
+        const [{SolflareWalletAdapter},{WalletAdapterNetwork}]=await Promise.all([import('@solana/wallet-adapter-solflare'),import('@solana/wallet-adapter-base')]);
+        adapter=new SolflareWalletAdapter({network:WalletAdapterNetwork.Devnet});
+        setWalletName('Solflare');
+      }else{
+        const wallet=choice;
+        if(!walletsRef.current.includes(wallet))throw Error('Wallet is no longer available.');
+        const {standardSession}=await import('./wallet-standard');
+        adapter=await standardSession(wallet);setWalletName(wallet.name);
       }
-      await adapterRef.current.connect();
-      syncAccount();
+      if(!mountedRef.current)return;
+      adapter.on('connect',syncAccount);adapter.on('disconnect',clearAccount);
+      adapter.on('error',()=>{if(mountedRef.current)setError('The wallet could not complete the request. Please try again.');});
+      adapterRef.current=adapter;
+      await adapter.connect();syncAccount();
     } catch {
-      if (mountedRef.current)
-        setError(
-          "Solflare connection was declined, cancelled, or could not complete. Please try again.",
-        );
+      if(mountedRef.current)setError('Wallet connection was declined, cancelled, or could not complete. Please try again.');
       clearAccount();
-    } finally {
-      busyRef.current = false;
-      if (mountedRef.current) setBusy(false);
-    }
-  }, [clearAccount, syncAccount]);
+    } finally {busyRef.current=false;if(mountedRef.current)setBusy(false);}
+  },[clearAccount,syncAccount]);
 
   const disconnect = useCallback(async () => {
     if (busyRef.current) return;
@@ -204,7 +206,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     } catch {
       if (mountedRef.current)
         setError(
-          "The Solflare request could not complete. Your app session has been cleared.",
+          "The wallet request could not complete. Your app session has been cleared.",
         );
     } finally {
       clearAccount();
@@ -252,7 +254,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         pendingReceipt.current=receipt;setFinanceReceipt(receipt);setFinanceState('pending');
       });
     } catch(error) {
-      setFinanceError(pendingReceipt.current?'Submission or confirmation is uncertain. Check the saved signature before another commitment.':error instanceof Error?error.message:'Solflare did not approve the transaction. Nothing was submitted.');
+      setFinanceError(pendingReceipt.current?'Submission or confirmation is uncertain. Check the saved signature before another commitment.':error instanceof Error?error.message:'The wallet did not approve the transaction. Nothing was submitted.');
       if(!pendingReceipt.current) setFinanceState('idle');
     } finally {busyRef.current=false;setBusy(false);}
     if(pendingReceipt.current) await checkFinancing();
@@ -276,7 +278,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletContext.Provider
       value={{
-        address,
+        address, walletName,
         busy,
         error,
         balance,
@@ -290,6 +292,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      <dialog ref={picker} className="modal" aria-labelledby="wallet-picker-title" onCancel={()=>setPickerOpen(false)} onClose={()=>setPickerOpen(false)}>
+        <div className="modal-box wallet-picker"><button type="button" className="modal-close btn btn-ghost" aria-label="Close wallet selection" onClick={()=>setPickerOpen(false)}>×</button><h2 id="wallet-picker-title">Connect Wallet</h2><span className="modal-phase">SOLANA DEVNET</span><p>Choose a wallet. Connection does not request a signature.</p>
+          <div className="wallet-options">{wallets.map((wallet,index)=><button className="btn btn-outline" type="button" key={index} onClick={()=>void connect(wallet)}>{wallet.name}<small>Detected · Wallet Standard</small></button>)}
+          <button className="btn btn-outline" type="button" onClick={()=>void connect('solflare')}>Solflare<small>Web wallet</small></button></div>
+          {!wallets.length&&<p className="fine-print">No compatible installed wallets detected. Use the supported web wallet.</p>}
+        </div>
+      </dialog>
     </WalletContext.Provider>
   );
 }

@@ -2,36 +2,12 @@
 @plugin "daisyui" {
   themes: false;
 }
-@plugin "daisyui/theme" {
-  name: "jointventure";
-  default: true;
-  color-scheme: light;
-  --color-base-100: #ffffff;
-  --color-base-200: #f5f6f1;
-  --color-base-300: #e3e7dc;
-  --color-base-content: #243b32;
-  --color-primary: #254e3d;
-  --color-primary-content: #ffffff;
-  --color-secondary: #dfe8d7;
-  --color-secondary-content: #254e3d;
-  --color-accent: #a5bc8a;
-  --color-accent-content: #203b2d;
-  --color-neutral: #243b32;
-  --color-neutral-content: #ffffff;
-  --color-info: #406d78;
-  --color-success: #356c4b;
-  --color-warning: #92652b;
-  --color-error: #a43d37;
-  --radius-selector: 0.4rem;
-  --radius-field: 0.4rem;
-  --radius-box: 0.8rem;
-}
 :root {
-  --ink: #263b32;
-  --muted: #5f6f62;
-  --green: #254e3d;
-  --line: #e3e7df;
-  --paper: #f8f9f5;
+  --ink: #f0f2ed;
+  --muted: #b4bbb6;
+  --green: #b8cbb8;
+  --line: #373c3a;
+  --paper: #101112;
 }
 * {
   box-sizing: border-box;

@@ -8,7 +8,7 @@ import type {PublicKey as PublicKeyType} from '@solana/web3.js';
 import idl from '../src/chain/idl/joint_venture.json' with {type:'json'};
 import deployment from '../src/chain/deployment.json' with {type:'json'};
 
-async function fixture(page:Page) {
+async function fixture(page:Page, standard=false) {
   const investor=Keypair.generate(); // Fixture key stays in Node; no real wallet is used.
   const address=investor.publicKey.toBase58();
   const project=new PublicKey(deployment.projectPda),mint=new PublicKey(deployment.mint);
@@ -16,7 +16,7 @@ async function fixture(page:Page) {
   const [position]=PublicKey.findProgramAddressSync([Buffer.from('position'),project.toBuffer(),investor.publicKey.toBuffer()],program.programId);
   const source=getAssociatedTokenAddressSync(mint,investor.publicKey);
   const controls={reject:false,outcome:'confirmed' as 'confirmed'|'pending'|'failed',statusUnavailable:false,height:90,wrongNetwork:false,balance:BigInt(20_000_000_000),sol:1e9,signs:0,sends:0,nonce:0,contribution:BigInt(0),projectTotal:BigInt(3_250_000),amount:BigInt(1_250_000),readFailure:false};
-  await page.exposeFunction('fixtureSign',(encoded:string)=>{
+  const sign=(encoded:string)=>{
     controls.signs++;
     if(controls.reject) throw Error('User rejected request');
     const transaction=Transaction.from(utils.bytes.bs58.decode(encoded));
@@ -26,7 +26,22 @@ async function fixture(page:Page) {
     expect(transaction.instructions[0].keys.map(k=>k.pubkey.toBase58())).toContain(deployment.vaultPda);
     transaction.partialSign(investor);
     return utils.bytes.bs58.encode(transaction.serialize());
-  });
+  };
+  await page.exposeFunction('fixtureSign',sign);
+  if(standard){
+    await page.exposeFunction('fixtureStandardSign',(bytes:number[])=>Array.from(utils.bytes.bs58.decode(sign(utils.bytes.bs58.encode(new Uint8Array(bytes))))));
+    await page.addInitScript(({address,bytes})=>{
+      const account={address,publicKey:new Uint8Array(bytes),chains:['solana:devnet'],features:['solana:signTransaction']};
+      let accounts:typeof account[]=[];const listeners=new Set<(change:{accounts:typeof accounts})=>void>();
+      const wallet={version:'1.0.0',name:'Phantom',icon:'data:image/png;base64,',chains:['solana:devnet'],get accounts(){return accounts;},features:{
+        'standard:connect':{version:'1.0.0',connect:async()=>{accounts=[account];listeners.forEach(fn=>fn({accounts}));return {accounts};}},
+        'standard:disconnect':{version:'1.0.0',disconnect:async()=>{accounts=[];listeners.forEach(fn=>fn({accounts}));}},
+        'standard:events':{version:'1.0.0',on:(_event:string,fn:(change:{accounts:typeof accounts})=>void)=>{listeners.add(fn);return()=>listeners.delete(fn);}},
+        'solana:signTransaction':{version:'1.0.0',supportedTransactionVersions:['legacy'],signTransaction:async(input:{transaction:Uint8Array;chain:string})=>{if(input.chain!=='solana:devnet')throw Error('Wrong chain');const result=await (window as unknown as {fixtureStandardSign:(bytes:number[])=>Promise<number[]>}).fixtureStandardSign(Array.from(input.transaction));return [{signedTransaction:new Uint8Array(result)}];}},
+      }};
+      window.addEventListener('wallet-standard:app-ready',event=>(event as CustomEvent<{register:(wallet:unknown)=>void}>).detail.register(wallet));
+    },{address,bytes:Array.from(investor.publicKey.toBytes())});
+  }
   await page.route('https://connect.solflare.com/**',route=>route.fulfill({contentType:'text/html',body:`<!doctype html><script>
     const send=data=>parent.postMessage({channel:'solflareIframeToWalletAdapter',data},'http://localhost:3000');
     addEventListener('message',async e=>{
@@ -82,8 +97,8 @@ async function fixture(page:Page) {
     await route.fulfill({json:{jsonrpc:'2.0',id:request.id,result}});
   });
   await page.goto('/projects/bavaria');
-  await page.locator('.site-header').getByRole('button',{name:'Connect Solflare'}).click();
-  await page.locator('dialog[open]').getByRole('button',{name:'Continue to Solflare'}).click();
+  await page.locator('.site-header').getByRole('button',{name:'Connect Wallet'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:standard?'Phantom':'Solflare'}).click();
   await expect(page.locator('.site-header .wallet-button')).toContainText(address.slice(0,4));
   await page.getByRole('button',{name:'Finance this project'}).click();
   return {controls,dialog:page.locator('dialog[open]'),address};
@@ -101,7 +116,7 @@ test('validates exact amounts, reviews project accounts, confirms one program tr
   await review(page);
   await expect(dialog).toContainText(address);
   expect(controls.signs).toBe(0);expect(controls.sends).toBe(0);
-  await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.signs).toBe(1);expect(controls.sends).toBe(1);
   await expect(page.locator('progress')).toHaveAttribute('value','4.5');
@@ -116,28 +131,28 @@ test('validates exact amounts, reviews project accounts, confirms one program tr
 });
 test('wallet rejection submits nothing and permits review retry',async({page})=>{
   const {controls,dialog}=await fixture(page);controls.reject=true;
-  await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('User rejected');
   expect(controls.sends).toBe(0);
   controls.reject=false;
-  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.sends).toBe(1);
 });
 test('pending confirmation blocks another submission and can be checked',async({page})=>{
   const {controls,dialog,address}=await fixture(page);controls.outcome='pending';
-  await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Confirmation pending');
   const signature = await dialog.locator('code.wallet-address').innerText();
-  const before = await page.locator('html').getAttribute('data-ui-variant');
   await page.keyboard.press('Escape');
-  await page.getByRole('button', {name: before === 'classic' ? 'Industrial' : 'Classic', exact: true}).click();
+  await page.locator('nav').getByRole('link', {name:'Facility',exact:true}).click();
+  await page.locator('nav').getByRole('link', {name:'Project',exact:true}).click();
   await expect(page.locator('.site-header .wallet-button')).toContainText(address.slice(0,4));
   await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
   await page.getByRole('button',{name:'Finance this project'}).click();
   await expect(dialog).toContainText('Confirmation pending');
   await expect(dialog.locator('code.wallet-address')).toHaveText(signature);
-  await expect(page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'})).toHaveCount(0);
+  await expect(page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'})).toHaveCount(0);
   controls.outcome='confirmed';
   await page.locator('dialog[open]').getByRole('button',{name:'Check confirmation'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
@@ -155,16 +170,16 @@ test('insufficient test tokens and a wrong network stop before signing',async({p
 });
 test('insufficient Devnet SOL and a changed position stop before wallet approval',async({page})=>{
   const {controls,dialog}=await fixture(page);controls.sol=0;
-  await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Insufficient Devnet SOL');
   controls.sol=1e9;controls.nonce=1;
-  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Your position changed');
   expect(controls.signs).toBe(0);expect(controls.sends).toBe(0);
 });
 test('confirmation RPC failure retains the signature and permits status checking without a new deposit',async({page})=>{
   const {controls,dialog}=await fixture(page);controls.statusUnavailable=true;
-  await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Confirmation is unavailable');
   await expect(page.locator('dialog[open]').getByRole('link',{name:'View transaction on Solana Explorer'})).toHaveAttribute('href',/cluster=devnet/);
   controls.statusUnavailable=false;
@@ -174,11 +189,11 @@ test('confirmation RPC failure retains the signature and permits status checking
 });
 test('failed and expired transactions provide a fresh review rather than resubmitting',async({page})=>{
   const {controls,dialog}=await fixture(page);controls.outcome='failed';
-  await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Transaction failed');
   await page.locator('dialog[open]').getByRole('button',{name:'Review another commitment'}).click();
   controls.outcome='pending';controls.height=101;
-  await review(page);await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await review(page);await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Transaction expired');
   expect(controls.sends).toBe(2);expect(controls.nonce).toBe(0);
 });
@@ -188,7 +203,7 @@ test('10-token confirmed contribution refreshes live demo total and wallet posit
   await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
   await expect(page.locator('progress')).toHaveAttribute('value','3.25');
   await review(page,'10');
-  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   await expect(page.locator('dialog[open]')).toContainText('13.25 / 100 JV Test USD');
   await expect(page.locator('progress')).toHaveAttribute('value','13.25');
@@ -206,11 +221,11 @@ test('pending and rejected contributions never fabricate progress; RPC failure l
   const {controls}=await fixture(page);
   await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
   controls.reject=true; await review(page);
-  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('User rejected');
   await expect(page.locator('progress')).toHaveAttribute('value','3.25');
   controls.reject=false;controls.outcome='pending';
-  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Wallet'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Confirmation pending');
   await expect(page.locator('progress')).toHaveAttribute('value','3.25');
   await page.keyboard.press('Escape'); controls.readFailure=true;
@@ -219,4 +234,11 @@ test('pending and rejected contributions never fabricate progress; RPC failure l
   await expect(page.getByRole('heading',{name:'Project Readiness'})).toBeVisible();
   await expect(page.locator('main')).toContainText('€250,000');
   await expect(page.locator('main')).not.toContainText('€75,000');
+});
+
+test('detected Phantom Wallet Standard signs the unchanged finance instruction and refreshes portfolio',async({page})=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  const {controls,dialog}=await fixture(page,true);await review(page);await dialog.getByRole('button',{name:'Approve in Wallet'}).click();
+  await expect(dialog).toContainText('Financing recorded on Solana');expect(controls.signs).toBe(1);expect(controls.sends).toBe(1);
+  await page.keyboard.press('Escape');await page.getByRole('link',{name:'Portfolio',exact:true}).click();await expect(page.locator('[data-live-position]')).toHaveText('1.25 JV Test USD');expect(errors).toEqual([]);
 });

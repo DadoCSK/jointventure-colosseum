@@ -12,7 +12,9 @@ function Plant({ x, y, small }: { x:number; y:number; small:boolean }) {
 }
 export const FacilityScene = memo(function FacilityScene({ selected, onSelect, paused }: { selected:FacilityZone;onSelect:(zone:FacilityZone)=>void;paused:boolean }) {
   const id=useId();
-  const zone=(name:FacilityZone,children:ReactNode)=><g role="button" tabIndex={0} aria-label={`Inspect ${name}`} aria-pressed={selected===name} onClick={()=>onSelect(name)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onSelect(name);}}} className={`scene-zone ${selected===name?"selected":""}`}>{children}</g>;
+  const anchors:Record<FacilityZone,number[]>={"Cultivation Zone A":p(110,180,65),"Cultivation Zone B":p(305,180,55),HVAC:p(350,25,125),Irrigation:p(425,280,55),Lighting:p(170,160,130),Security:p(20,320,140),Power:p(20,250,90),"Environmental Sensors":p(319,175,100)};
+  const [markerX,markerY]=anchors[selected];
+  const zone=(name:FacilityZone,children:ReactNode)=><g role="button" tabIndex={0} aria-label={`Inspect ${name}`} aria-pressed={selected===name} onClick={()=>onSelect(name)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onSelect(name);}}} data-zone={name} className={`scene-zone ${selected===name?"selected":""}`}>{children}</g>;
   return <svg viewBox="100 0 840 580" className={`facility-scene ${paused?"scene-paused":""}`} role="group" aria-labelledby={id}>
     <title id={id}>Simulated digital twin: planned cultivation rows, lights, HVAC, irrigation, power, security and environmental sensors. Select a zone to inspect.</title>
     <defs><pattern id={`${id}-grid`} width="32" height="32" patternUnits="userSpaceOnUse" patternTransform="matrix(.85 .4 -.85 .4 490 170)"><path d="M32 0H0V32" fill="none" stroke="#72877f" strokeOpacity=".08"/></pattern></defs>
@@ -30,6 +32,7 @@ export const FacilityScene = memo(function FacilityScene({ selected, onSelect, p
     {zone("Security",<g><Box x={4} y={312} z={124} w={22} d={14} h={12} fill="#bfc9c3"/><circle cx={p(20,328,131)[0]} cy={p(20,328,131)[1]} r="4" fill="#172c23"/></g>)}
     {zone("Environmental Sensors",<g>{[[125,130],[319,175]].map(([x,y])=><g key={x}><path d={`M${point(x,y,0)} L${point(x,y,94)}`} stroke="#98a9a1" strokeWidth="2"/><circle cx={p(x,y,94)[0]} cy={p(x,y,94)[1]} r="6" fill="#b7d2b4" stroke="#edf4e4" strokeWidth="1.5" className="sensor-point"/></g>)}</g>)}
     <g fill="#aabdb2" fontSize="10" letterSpacing="2"><text x={p(105,343)[0]} y={p(105,343)[1]+25}>ZONE A</text><text x={p(300,343)[0]} y={p(300,343)[1]+25}>ZONE B</text></g>
+    <g className="scene-selection" aria-hidden="true"><circle cx={markerX} cy={markerY} r="11" fill="#d8e2d4" fillOpacity=".08" stroke="#c5d8c1" strokeWidth="1.5"/><circle cx={markerX} cy={markerY} r="2.5" fill="#e4ede0"/><circle cx="510" cy="510" r="3" fill="#c5d8c1"/><path d="M519 510H542" stroke="#a4b99e" strokeWidth="1"/><text x="550" y="514" fill="#d7e2d4" fontSize="11">{selected}</text></g>
     <text x="510" y="555" textAnchor="middle" fill="#9eafa6" fontSize="10" letterSpacing="1.5">ILLUSTRATIVE LAYOUT · NOT A SITE SURVEY</text>
   </svg>;
 });

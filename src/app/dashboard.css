@@ -1,7 +1,5 @@
-/* Focused Bavaria dashboard; both existing appearances share this composition. */
-:root { --surface: #fff; --surface-soft: #eef2e9; --accent-soft: #e4eddf; --chart-ink: #48704c; }
-html[data-ui-variant="industrial"] { --surface: #151e2c; --surface-soft: #101b2a; --accent-soft: #233c40; --chart-ink: #a2dbbe; }
-html[data-ui-variant="industrial"] body { background: var(--paper); }
+/* Focused Bavaria dashboard; Industrial appearance. */
+:root { --surface: #1b1d1e; --surface-soft: #161a17; --accent-soft: #28332a; --chart-ink: #b8cbb8; }
 .nav { gap: 20px; }
 .desktop-links { margin-left: auto; gap: 20px; font-size: 12px; }
 .desktop-links a { white-space: nowrap; }
@@ -13,7 +11,7 @@ html[data-ui-variant="industrial"] body { background: var(--paper); }
 .overview-copy > p { color: var(--muted); max-width: 420px; }
 .overview-copy .hero-actions { flex-wrap: wrap; margin-top: 26px; }
 .overview-copy .finance-button { width: auto; margin: 0; }
-.overview-facility { position: relative; min-height: 350px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(0deg, #10251ff5, #10251f05 80%), url('/images/illustrative-facility.jpeg') center / cover; color: white; padding: 26px; }
+.overview-facility { position: relative; min-height: 350px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(0deg, #111614f5, #11161405 80%), url('/images/illustrative-facility.jpeg') center / cover; color: white; padding: 26px; }
 .overview-project-label .eyebrow { color: #d5e5cf; font-size: 9px; }
 .overview-project-label h2 { font-size: 25px; margin: 12px 0; }
 .overview-project-label > span:last-child { color: #e0e8df; font-size: 12px; }
@@ -149,7 +147,7 @@ html[data-ui-variant="industrial"] body { background: var(--paper); }
 .system-planned { color: var(--muted); white-space: nowrap; }
 .system-simulated { padding: 4px 7px; color: var(--ink); background: var(--accent-soft); border-radius: 3px; white-space: nowrap; font-size: 10px; }
 @media (max-width: 1100px) {
-  .desktop-links, .desktop-appearance { display: none; }
+  .desktop-links { display: none; }
   .menu-toggle { display: inline-flex; }
 }
 @media (max-width: 800px) {
@@ -208,3 +206,18 @@ html[data-ui-variant="industrial"] body { background: var(--paper); }
   .growth-canvas { height: 300px; }
   .systems-grid { grid-template-columns: 1fr; }
 }
+.business-metrics .metric:last-child { grid-column:auto; }
+.business-metrics .metric:nth-child(6) strong { font-size:clamp(16px, 4.8vw, 24px); white-space:nowrap; }
+.business-capital { padding:18px 0; }
+.capital-heading,.capital-legend { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; }
+.capital-heading > span,.capital-legend > span { font-size:11px; color:var(--muted); }
+.capital-heading > strong { font-size:22px; }
+.capital-heading b { color:var(--ink); }
+.capital-split-bar { height:8px; background:var(--line); border-radius:5px; overflow:hidden; margin:14px 0; }
+.capital-split-bar > span { height:100%; display:block; background:var(--chart-ink); }
+.capital-legend strong { color:var(--ink); margin-right:5px; }
+.capital-preparation { font-size:12px; color:var(--muted); line-height:1.6; margin:8px 0 14px; }
+.wallet-options { display:grid; gap:10px; margin:20px 0; }
+.wallet-options .btn { justify-content:space-between; white-space:normal; text-align:left; height:auto; min-height:48px; }
+.wallet-options small { font-size:10px; color:var(--muted); font-weight:400; }
+@media(max-width:540px) { .capital-heading { align-items:start; } .capital-legend { flex-direction:column; align-items:start; } }

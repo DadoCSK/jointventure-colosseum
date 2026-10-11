@@ -1,6 +1,6 @@
 # Joint Venture Devnet MVP
 
-Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and Solflare. The Bavaria-only dashboard offers Classic and Industrial appearances. Bavaria now has a real project account and token vault on Solana Devnet; financing calls the Joint Venture program and records per-wallet test contributions.
+Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and compatible Solana wallets. The Bavaria-only dashboard uses a single Industrial appearance with charcoal surfaces, white branding and restrained sage accents. Bavaria now has a real project account and token vault on Solana Devnet; financing calls the Joint Venture program and records per-wallet test contributions.
 
 ## Run
 
@@ -33,9 +33,9 @@ The minimal project was deployed and initialized **before** adding the financing
 
 JV Test USD has six decimals and is a dedicated demo token—not official USDC, a stablecoin, or redeemable currency. Its name is an application label; token metadata has not been published. No production investment terms, yield, repayment schedule or EUR exchange rate is implied. Test tokens are held in the project vault; the MVP has **no withdrawal or repayment instruction**. Upgrade and mint authorities are retained for development. This program has not undergone an independent security audit.
 
-## Try financing with Solflare
+## Try financing with a wallet
 
-1. Set Solflare to Devnet and connect. Connection alone shares the public address and reads native test SOL; it requests no transaction signature.
+1. Select **Connect Wallet**, then choose a detected compatible Wallet Standard wallet or the supported Solflare web wallet. Use Solana Devnet. Connection alone shares the public address and reads native test SOL; it requests no transaction signature.
 2. Have Devnet SOL for fees and first-position rent, and the dedicated JV Test USD token. The development authority can issue demo tokens to an explicitly supplied wallet:
 
    ```sh
@@ -44,21 +44,21 @@ JV Test USD has six decimals and is a dedicated demo token—not official USDC, 
 
    This script uses the existing local CLI authority (or `JV_ADMIN_KEYPAIR`) and checks Devnet. Private keys are never sent to the frontend. The app provides no public minting endpoint.
 3. On Bavaria, select **Finance this project**, enter an amount with up to six decimals, then **Review commitment**. Review the wallet, mint, project and vault links and the test-token limitations.
-4. Select **Approve in Solflare** and approve the Devnet transaction. The app checks token balance, SOL fees/rent, project state and position nonce before signing. It validates the signed message and signature before submission.
+4. Select **Approve in Wallet** and approve the Devnet transaction. The app checks token balance, SOL fees/rent, project state and position nonce before signing. It validates the signed message and signature before submission.
 5. Inspect the transaction link. If confirmation is pending or unavailable, use **Check confirmation**. The app retains the signature and blocks another submission while that attempt remains unresolved; it never automatically creates another deposit.
 6. In **Portfolio**, use **Read Devnet records** to read the connected wallet's persistent onchain test position. The latest app-session transaction and wallet activity link to Explorer.
 
-App connection and pending-receipt state are in memory across client navigation and reset on a full refresh. Keep a pending transaction's Explorer link before refreshing; reconnect and read the onchain position before another review. Position nonces protect against replaying the same attempt. No automatic reconnection is performed. A user subsequently confirmed two actual wallet approvals, and both financing transactions were verified on Devnet. Installed-wallet rejection, account switching, reconnect behavior and mobile handoff still need manual validation; automated browser tests use a signing fixture.
+App connection and pending-receipt state are in memory across client navigation and reset on a full refresh. Keep a pending transaction's Explorer link before refreshing; reconnect and read the onchain position before another review. Position nonces protect against replaying the same attempt. No automatic reconnection is performed. A user subsequently confirmed two actual wallet approvals, and both financing transactions were verified on Devnet. Detected Wallet Standard wallets must support Devnet accounts and legacy transaction signing. Solflare retains its existing adapter/web fallback; Phantom Standard signing and portfolio refresh are covered by a cryptographic signing fixture. Installed-extension acceptance, rejection, account switching and mobile handoff still need manual validation; no unregistered wallet is advertised.
 
 ## Single-project dashboard
 
-Bavaria is the only MVP project: a real, pre-operational founding business with a €250,000 financing requirement (€220,000 infrastructure and €30,000 working capital). Contracted rent is approximately €33,000/month, not current revenue or an investor return. Developer-supplied business facts and project documents are not independently authenticated. Fictional marketplace listings, filters, totals and EUR portfolio examples have been removed.
+Bavaria is the only MVP project: a real, pre-operational founding business with €350,000 total project capital: €100,000 already spent on licensing, legal, regulatory and facility/project preparation, plus a €250,000 current raise (€220,000 infrastructure & equipment and €30,000 working capital). The 29% business-capital bar represents historical spend, not installed productive equipment or Devnet contributions. The deployed business financing target remains €250,000. Contracted rent is approximately €33,000/month, not current revenue or an investor return. Developer-supplied business facts and project documents are not independently authenticated. Fictional marketplace listings, filters, totals and EUR portfolio examples have been removed.
 
 The Project page shows the supplied seven-part allocation and a separate **Live Devnet Financing** card. It reads actual Project/Position accounts against an illustrative 100 JV Test USD target, with no EUR conversion. Confirmed financing re-reads the project total and connected wallet position/balance. Failed reads do not invent totals; pending receipts remain in memory and can be checked before another submission.
 
 **Facility** demonstrates planned visibility using explicitly simulated telemetry, smooth 24-hour SVG trends, a selectable growth-cycle illustration and planned/simulated system statuses. Bounded readings change locally every four seconds and can be paused. No external sensor data, hardware, backend or IoT integration exists. The actual facility remains pre-operational.
 
-**Documents** retains local hashing, read/compare and authority-only anchoring. The three project records remain pending; the public harmless fixture is separate. The Classic/Industrial switch still persists appearance only. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for verification and remaining limits.
+**Documents** retains local hashing, read/compare and authority-only anchoring. The three project records remain pending; the public harmless fixture is separate. Industrial is the sole appearance; there is no appearance switch or saved appearance preference. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for verification and remaining limits.
 
 ## Document integrity (Phase 2F)
 
@@ -66,7 +66,7 @@ Open Documents → **View record** → **Read integrity record**. The harmless t
 
 Browser Web Crypto hashes files in memory (20 MiB limit, HTTPS/localhost required). There is no upload endpoint, document storage or onchain file content. Only the 32-byte digest, public category ID/name, authority and chain timestamp are recorded. Matching a fingerprint proves matching bytes; it does not authenticate the issuer, truth, legality or content.
 
-Only the existing project authority can select a file and choose **Anchor fingerprint in Solflare**. Recording is permanent; duplicate IDs are rejected and replacement/versioning is not implemented. The UI retains uncertain signatures for status checking; save the Explorer link before refreshing. No frontend private keys are used. Document IDs are 1–32 lowercase ASCII letters/digits/hyphens and names are at most 64 UTF-8 bytes.
+Only the existing project authority can select a file and choose **Anchor fingerprint in Wallet**. Recording is permanent; duplicate IDs are rejected and replacement/versioning is not implemented. The UI retains uncertain signatures for status checking; save the Explorer link before refreshing. No frontend private keys are used. Document IDs are 1–32 lowercase ASCII letters/digits/hyphens and names are at most 64 UTF-8 bytes.
 
 ```sh
 # On the initialized local validator, alongside the original tests:
@@ -95,7 +95,7 @@ New client dependencies are `@coral-xyz/anchor` 0.32.1 and `@solana/spl-token` 0
 
 Local program tests cover unauthorized and duplicate initialization, decimal restrictions, exact case metrics, PDA vault ownership, pause authority, zero amounts, wrong mint/source owner/vault/position, insufficient tokens, successful repeated deposits, replay protection and atomic failure. Exact amount checks cover six decimals and u64 boundaries. Devnet initialization, upgrade, enable and a real program financing transaction were read back and verified.
 
-Frontend verification covers TypeScript, ESLint, production build, wallet/signing fixtures, amount and network validation, rejection, pending and unavailable confirmation, failed/expired transactions, stale positions, insufficient SOL, portfolio reads, and unchanged EUR demo totals. Desktop, tablet, 390px and 320px route checks include overflow, accessibility and keyboard handling.
+Frontend verification covers TypeScript, ESLint, production build, wallet/signing fixtures, amount and network validation, rejection, pending and unavailable confirmation, failed/expired transactions, stale positions, insufficient SOL, portfolio reads, and separate historical capital/current-raise metrics. Desktop, tablet, 390px and 320px route checks include overflow, accessibility and keyboard handling.
 
 Final results: TypeScript, ESLint, production build, Rust formatting, local program security tests, exact amount tests and **21 browser regressions pass**. All 16 route/viewport combinations passed automated WCAG 2 A/AA and overflow checks. Browser hydration/console checks passed after waiting for hydration before taking screenshots. A live browser read returned 1.25 JV Test USD, and a Devnet program dump matched the tested binary. These automated checks complement manual accessibility and installed-wallet acceptance testing.
 

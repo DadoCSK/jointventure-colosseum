@@ -3,11 +3,13 @@ export const bavaria = {
   name: "Bavaria Controlled Cultivation Infrastructure",
   location: "Bavaria, Germany",
   category: "Agriculture",
-  target: 250000,
+  target: 250000, // Current raise / unchanged onchain business target.
+  totalProjectCapital: 350000,
+  alreadyInvested: 100000,
   workingCapital: 30000,
   contractedMonthlyRevenue: 33000,
   infrastructureBudget: 220000,
-  status: "Seeking financing",
+  status: "Open",
 };
 export const projects = [bavaria];
 export const foundingLabel = "FOUNDING PROJECT · REAL BUSINESS";

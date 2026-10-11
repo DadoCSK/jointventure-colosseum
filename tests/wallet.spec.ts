@@ -45,11 +45,11 @@ async function respondBalance(route: Route, value: number) {
 async function connect(page: Page) {
   await page
     .locator(".site-header")
-    .getByRole("button", { name: "Connect Solflare" })
+    .getByRole("button", { name: "Connect Wallet" })
     .click();
   await page
     .locator("dialog[open]")
-    .getByRole("button", { name: "Continue to Solflare" })
+    .getByRole("button", { name: "Solflare" })
     .click();
 }
 async function emitWalletEvent(page: Page, type: string, publicKey?: string) {
@@ -80,11 +80,11 @@ test("does not connect or read balances before an explicit user action", async (
   });
   await page.goto("/portfolio");
   await expect(
-    page.getByRole("heading", { name: "Your Solflare wallet" }),
+    page.getByRole("heading", { name: "Your wallet" }),
   ).toBeVisible();
   await page
     .locator(".site-header")
-    .getByRole("button", { name: "Connect Solflare" })
+    .getByRole("button", { name: "Connect Wallet" })
     .click();
   await expect(page.locator("dialog[open]")).toContainText(
     "does not request a signature",
@@ -123,11 +123,11 @@ test("connects, preserves identity across routes, refreshes, changes account, an
   await expect(page.locator(".wallet-balance strong")).toHaveText("2.5 SOL");
   await page
     .locator(".wallet-panel")
-    .getByRole("button", { name: "Disconnect Solflare", exact: true })
+    .getByRole("button", { name: "Disconnect Wallet", exact: true })
     .click();
   await expect(page.locator(".wallet-panel .wallet-address")).toHaveCount(0);
   await expect(page.locator(".site-header .wallet-button")).toHaveText(
-    "Connect Solflare",
+    "Connect Wallet",
   );
   expect(errors).toEqual([]);
 });
@@ -209,7 +209,7 @@ test("an old account response cannot overwrite a new account balance; refresh re
   await expect(page.locator(".wallet-balance strong")).toHaveText("4 SOL");
   await page.reload();
   await expect(page.locator(".site-header .wallet-button")).toHaveText(
-    "Connect Solflare",
+    "Connect Wallet",
   );
   await expect(page.locator(".wallet-panel .wallet-address")).toHaveCount(0);
 });
@@ -243,7 +243,7 @@ test("connected wallet layout fits narrow screens and financing requires connect
   // Full reload clears the in-memory identity; a signature requires a separate reviewed action.
   await page.getByRole("button", { name: "Finance this project" }).click();
   await expect(page.locator('dialog[open]')).toContainText('JV Test USD is not official USDC');
-  await expect(page.locator('dialog[open]').getByRole('button',{name:'Connect Solflare',exact:true})).toBeVisible();
+  await expect(page.locator('dialog[open]').getByRole('button',{name:'Connect Wallet',exact:true})).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.locator("progress")).toHaveCount(0);
   await expect(page.locator("main")).not.toContainText("€75,000");

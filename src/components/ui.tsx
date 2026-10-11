@@ -1,3 +1,4 @@
+import { bavaria, eur } from "@/data/projects";
 import { ArrowRight } from "lucide-react";
 
 export function FacilityCaption() {
@@ -14,12 +15,21 @@ export function PageHeader({ eyebrow, title, subtitle }: { eyebrow: string; titl
 }
 export function BusinessMetrics() {
   return <div className="business-metrics">
-    {[["€250,000", "Financing target"], ["€220,000", "Infrastructure"], ["€30,000", "Working capital"], ["~€33k/month", "Contracted revenue"], ["Obtained", "Licence"], ["Executed", "Agreement"], ["Pre-operational", "Project stage"]].map(([value, label]) => <MetricCard key={label} label={label} value={value} />)}
+    {[[eur(bavaria.totalProjectCapital), "Total project capital"], [eur(bavaria.alreadyInvested), "Already invested"], [eur(bavaria.target), "Current raise"], [eur(bavaria.infrastructureBudget), "Infrastructure & equipment"], [eur(bavaria.workingCapital), "Working capital"], ["~€33k/month", "Contracted rental revenue"], ["Obtained", "Licence"], ["Executed", "Agreement"]].map(([value, label]) => <MetricCard key={label} label={label} value={value} />)}
   </div>;
 }
 export function CapitalFlow() {
   return <section className="capital-flow" aria-label="Capital to infrastructure">
     <span className="eyebrow">SEE WHAT FUNDED INFRASTRUCTURE BECOMES</span>
     <ol>{["Capital", "Infrastructure", "Facility", "Production", "Revenue"].map((label, index) => <li key={label}><span>{label}</span>{index < 4 && <ArrowRight size={16} aria-hidden="true" />}</li>)}</ol>
+  </section>;
+}
+
+export function CapitalStructure() {
+  const invested=bavaria.alreadyInvested/bavaria.totalProjectCapital*100;
+  return <section className="business-capital" aria-label="Business project capital">
+    <div className="capital-heading"><span>Total project capital</span><strong>{eur(bavaria.totalProjectCapital)}</strong><span>Project funded <b>{Math.round(invested)}%</b></span></div>
+    <div className="capital-split-bar" role="img" aria-label="Business capital: €100,000 already invested, 29%; €250,000 current raise, 71%"><span style={{width:`${invested}%`}}/></div>
+    <div className="capital-legend"><span><strong>{eur(bavaria.alreadyInvested)}</strong> Already invested · 29%</span><span><strong>{eur(bavaria.target)}</strong> Current raise · 71%</span></div>
   </section>;
 }

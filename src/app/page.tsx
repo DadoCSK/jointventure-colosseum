@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, Building2, FileCheck2, Activity, Wallet } from "lucide-react";
-import { BusinessMetrics, CapitalFlow, FacilityCaption } from "@/components/ui";
+import { BusinessMetrics, CapitalStructure, CapitalFlow, FacilityCaption } from "@/components/ui";
 import { InvestmentModal } from "@/components/financing";
 import { bavaria, foundingLabel } from "@/data/projects";
 
@@ -22,9 +22,10 @@ export default function Home() {
       </div>
     </section>
     <BusinessMetrics />
+    <CapitalStructure />
     <section className="origin-strip">
       <h2>Built from a real financing problem</h2>
-      <p>Joint Venture was created while developing this regulated cultivation infrastructure project in Bavaria. The licence, facility and commercial agreement are in place; approximately €250,000 is still required for full deployment.</p>
+      <p>Joint Venture grew from this real financing problem: approximately €100,000 has already been invested in licensing, legal, regulatory and facility/project preparation. The remaining €250,000 is required for infrastructure, equipment and initial operating liquidity.</p>
     </section>
     <CapitalFlow />
     <div className="dashboard-shortcuts">

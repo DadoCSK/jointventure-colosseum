@@ -49,7 +49,7 @@ test('production documents stay pending; file hashing is local and uses exact SH
   await dialog.locator('input[type=file]').setInputFiles(fixturePath);
   await expect(dialog.locator('[data-local-hash]')).toHaveText(hash);
   await expect(dialog).toContainText('this hash has not been anchored');
-  await expect(dialog.getByRole('button', {name: 'Anchor fingerprint in Solflare'})).toBeDisabled();
+  await expect(dialog.getByRole('button', {name: 'Anchor fingerprint in Wallet'})).toBeDisabled();
   expect(external.every(url => new URL(url).origin === deployment.rpc)).toBe(true);
   await page.keyboard.press('Escape');
 });

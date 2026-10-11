@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Brand } from "./brand";
 import { WalletButton } from "./wallet";
-import { AppearanceSwitch } from "./ui-variant";
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -35,7 +34,6 @@ export function Navbar() {
           ))}
         </div>
         <div className="nav-actions">
-          <div className="desktop-appearance"><AppearanceSwitch /></div>
           <WalletButton />
           <button
             className="btn btn-ghost menu-toggle"
@@ -49,7 +47,6 @@ export function Navbar() {
         </div>
         {open && (
           <div id="mobile-navigation" className="mobile-navigation">
-            <AppearanceSwitch />
             {links.map((l) => (
               <Link
                 href={l.href}

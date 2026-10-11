@@ -42,7 +42,7 @@ export function OnchainProject({portfolio=false}:{portfolio?:boolean}) {
       <div><span>Network</span><strong>Solana Devnet</strong></div><div><span>Demo financing</span><strong>{current.enabled?'Enabled':'Paused'}</strong></div>
     </div>}
     {error && <p role="alert" className="input-error">{error}</p>}
-    {!current && !loading && !error && <p className="fine-print">{portfolio&&!address?'Connect Solflare to read your position.':'No chain data read yet.'}</p>}
+    {!current && !loading && !error && <p className="fine-print">{portfolio&&!address?'Connect a wallet to read your position.':'No chain data read yet.'}</p>}
     <button className="btn btn-outline" disabled={loading || (portfolio && !address)} onClick={()=>void refreshProject()}><RefreshCw size={14}/>{loading?'Reading Devnet…':'Read Devnet records'}</button>
     <details className="technical-details"><summary>Onchain accounts</summary><ProjectLinks/></details>
   </section>;
@@ -114,7 +114,7 @@ export function InvestmentModal({triggerLabel="Finance this project"}:{triggerLa
             dialog?.close();setShowReceipt(true);
             await wallet.financeProject(currentReview);
             if(dialog?.isConnected && !dialog.open) dialog.showModal();
-          }}>{wallet.busy?'Waiting for Solflare…':'Approve in Solflare'}</button>
+          }}>{wallet.busy?'Waiting for wallet…':'Approve in Wallet'}</button>
           <button className="btn btn-outline" disabled={wallet.busy} onClick={()=>setReview(null)}>Back</button>
         </div>
       </div>:<form onSubmit={event=>{event.preventDefault();void prepare();}}>
@@ -126,12 +126,12 @@ export function InvestmentModal({triggerLabel="Finance this project"}:{triggerLa
         </div>
         <p id="amount-help" className="fine-print">Up to six decimals. JV Test USD is not official USDC. No EUR conversion.</p>
         {!valid && <p className="input-error">Enter a positive amount with at most six decimals.</p>}
-        {wallet.address?<button disabled={!valid || loading || wallet.busy} className="btn btn-primary full-width" type="submit">{loading?'Checking Devnet…':'Review commitment'}</button>:<button className="btn btn-primary full-width" type="button" disabled={wallet.busy} onClick={event=>{event.currentTarget.closest('dialog')?.close();void wallet.connect();}}>Connect Solflare</button>}
+        {wallet.address?<button disabled={!valid || loading || wallet.busy} className="btn btn-primary full-width" type="submit">{loading?'Checking Devnet…':'Review commitment'}</button>:<button className="btn btn-primary full-width" type="button" disabled={wallet.busy} onClick={event=>{event.currentTarget.closest('dialog')?.close();void wallet.connect();}}>Connect Wallet</button>}
         {!wallet.address && <p className="fine-print">Connect first; review before signing.</p>}
       </form>}
       {(error || wallet.financeError) && <p role="alert" className="input-error">{error || wallet.financeError}</p>}
     </Modal>
-    {wallet.financeState==='signing' && <p role="status" className="fine-print">Preparing the transaction or waiting for Solflare…</p>}
+    {wallet.financeState==='signing' && <p role="status" className="fine-print">Preparing the transaction or waiting for wallet…</p>}
     {wallet.financeState==='pending' && <p role="status" className="fine-print">A financing attempt is pending. Open the dialog to check its signature.</p>}
   </>;
 }

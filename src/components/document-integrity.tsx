@@ -114,7 +114,7 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
           } catch (error) {
             setLocalError(submittedReceipt ? 'Submission is uncertain. Keep the signature and check before another attempt.' : error instanceof Error ? error.message : 'The wallet request did not complete.');
           } finally {if (dialog?.isConnected && !dialog.open) dialog.showModal();}
-        }}>Anchor fingerprint in Solflare</button>
+        }}>Anchor fingerprint in Wallet</button>
         {!isAuthority && <p className="fine-print">Project authority required to anchor. Anyone can read and compare.</p>}
       </>}
       {receipt && <div className="integrity-details">

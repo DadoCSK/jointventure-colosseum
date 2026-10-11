@@ -6,7 +6,6 @@ import "./globals.css";
 import "./industrial.css";
 import "./dashboard.css";
 import "./digital-twin.css";
-import { UiVariantProvider, appearanceScript } from "@/components/ui-variant";
 export const metadata: Metadata = {
   title: {
     default: "Joint Venture — Fund real productive infrastructure.",
@@ -19,17 +18,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme="jointventure" data-ui-variant="classic" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: appearanceScript }} /></head>
+    <html lang="en" data-theme="jointventure-industrial" data-scroll-behavior="smooth">
       <body>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-        <UiVariantProvider><WalletProvider>
+        <WalletProvider>
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />
-        </WalletProvider></UiVariantProvider>
+        </WalletProvider>
       </body>
     </html>
   );

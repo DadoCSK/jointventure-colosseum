@@ -36,13 +36,13 @@ test('zone inspection and operations share simulated values and security stays p
   const cooling = (await page.locator('[data-sensor="hvac"]').innerText()).split(' · ')[1];
   await expect(page.locator('.zone-details dd').first()).toHaveText(cooling);
   await expect(page.locator('[data-system="hvac"]')).toHaveText(`Cooling ${cooling}`);
-  for (const name of ['Irrigation', 'Lighting', 'Power', 'Security', 'Sensors', 'Zone B']) {
+  for (const name of ['Irrigation', 'Lighting', 'Power', 'Security', 'Environment', 'Zone B']) {
     await page.locator('.zone-selector').getByRole('button', { name, exact: true }).click();
     await expect(page.locator('.zone-details')).toBeVisible();
     await expect(page.locator('.zone-state')).toHaveText(name === 'Security' ? 'Planned' : 'Simulated Online');
   }
   await expect(page.locator('[data-system="security"]')).toHaveText('Pre-operational');
-  await page.locator('.zone-selector').getByRole('button', { name: 'Sensors', exact: true }).click();
+  await page.locator('.zone-selector').getByRole('button', { name: 'Environment', exact: true }).click();
   await expect(page.locator('.zone-details dd').first()).toHaveText(await page.locator('[data-sensor="temperature"]').innerText());
 });
 
@@ -90,7 +90,7 @@ test('commercial canopy and illustrative height and targets change across all gr
   await expect(page.locator('.cycle-day')).toHaveText('Drying · Day 54');
 });
 
-test('canopy foliage moves, rotates, pauses and preserves its context across appearance changes', async ({ page }) => {
+test('canopy foliage moves, rotates, pauses and preserves its context across zone changes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/facility');
   const model = page.locator('.growth-plant');
@@ -106,8 +106,7 @@ test('canopy foliage moves, rotates, pauses and preserves its context across app
   await model.focus(); await page.keyboard.press('ArrowRight');
   expect((await model.screenshot()).equals(paused)).toBe(false);
   await model.evaluate(node => { (node as HTMLElement).dataset.contextMarker = 'preserved'; });
-  const current = await page.locator('html').getAttribute('data-ui-variant');
-  await page.getByRole('button', { name: current === 'industrial' ? 'Classic' : 'Industrial', exact: true }).first().click();
+  await page.locator('.zone-selector').getByRole('button', { name: 'Climate', exact: true }).click();
   await expect(model).toHaveAttribute('data-context-marker', 'preserved');
   await expect(page.getByRole('button', { name: 'Resume plant motion' })).toHaveAttribute('aria-pressed', 'true');
 });
@@ -140,7 +139,8 @@ test('actual supplied logo is used in navigation and footer without stretching',
   await expect(logos).toHaveCount(2);
   for (const logo of await logos.all()) {
     await expect(logo).toHaveAttribute('src', /jv-logo-black-l/);
-    expect(await logo.evaluate(node => { const image = node as HTMLImageElement; return image.complete && image.naturalWidth > 0 && image.clientWidth === image.clientHeight; })).toBe(true);
+    await logo.scrollIntoViewIfNeeded();
+    await expect.poll(() => logo.evaluate(node => { const image = node as HTMLImageElement; return image.complete && image.naturalWidth > 0 && image.clientWidth === image.clientHeight; })).toBe(true);
   }
   await expect(page.locator('nav').getByRole('link', { name: 'Joint Venture', exact: true })).toBeVisible();
 });
@@ -150,7 +150,7 @@ for (const width of [320,390,768,1440]) {
     await page.setViewportSize({ width, height: 850 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/facility');
-    await page.locator('.zone-selector').getByRole('button', { name: 'HVAC', exact: true }).click();
+    await page.locator('.zone-selector').getByRole('button', { name: 'Climate', exact: true }).click();
     await expect(page.locator('#zone-detail-title')).toHaveText('HVAC');
     await page.locator('.cycle-stepper').getByRole('button', { name: /Flowering/ }).click();
     await expect(page.locator('.cycle-day')).toHaveText('Flowering · Day 45');
@@ -163,7 +163,7 @@ for (const width of [320,390,768,1440]) {
     await page.getByRole('tab', { name: 'CO₂', exact: true }).click();
     await expect(page.locator('.trend-chart')).toHaveAccessibleName(/CO₂: simulated 24h telemetry/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    const overlays = await page.locator('.telemetry-overlay').all();
+    const overlays = await page.locator('.twin-readings > div').all();
     const bounds = await Promise.all(overlays.map(item => item.boundingBox()));
     for (const box of bounds) { expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x+box!.width).toBeLessThanOrEqual(width); }
   });
