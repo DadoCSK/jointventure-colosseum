@@ -33,7 +33,7 @@ export function Modal({
           if (event.key !== "Tab") return;
           const controls = Array.from(
             event.currentTarget.querySelectorAll<HTMLElement>(
-              ".modal-box button:not(:disabled), .modal-box input:not(:disabled), .modal-box select:not(:disabled), .modal-box a[href]",
+              ".modal-box button:not(:disabled), .modal-box input:not(:disabled), .modal-box select:not(:disabled), .modal-box a[href], .modal-box summary",
             ),
           ).filter((element) => element.getClientRects().length > 0);
           const first = controls[0];

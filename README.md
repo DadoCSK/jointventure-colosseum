@@ -57,11 +57,11 @@ The Project page shows the supplied seven-part allocation and a separate **Live 
 
 **Facility** demonstrates planned visibility using explicitly simulated telemetry, smooth 24-hour SVG trends, a selectable growth-cycle illustration and planned/simulated system statuses. Bounded readings change locally every four seconds and can be paused. No external sensor data, hardware, backend or IoT integration exists. The actual facility remains pre-operational.
 
-**Documents** retains local hashing, read/compare and authority-only anchoring. The three project records remain pending; the public harmless fixture is separate. Industrial is the sole appearance; there is no appearance switch or saved appearance preference. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for verification and remaining limits.
+**Project Data Room** presents business records separately from their pending onchain integrity status. The harmless integrity demo has a downloadable public test file, local hashing, read/compare and authority-only anchoring. Private project files are not downloadable. Industrial is the sole appearance; there is no appearance switch or saved appearance preference. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for verification and remaining limits.
 
 ## Document integrity (Phase 2F)
 
-Open Documents → **View record** → **Read integrity record**. The harmless test fixture card reads an actual Devnet record. Select `tests/fixtures/integrity-test.txt` locally to see a match; changing the bytes produces a mismatch. The three actual project categories remain pending because their documents are unavailable. Do not commit sensitive documents to this repository.
+Open Documents → **Download harmless test file**, then the demo's **View record** → **Read integrity record**. Select the downloaded file locally to see a match; changing its bytes produces a mismatch. The download is identical to `tests/fixtures/integrity-test.txt`. The three actual project categories remain pending because their documents are unavailable. Do not commit sensitive documents to this repository.
 
 Browser Web Crypto hashes files in memory (20 MiB limit, HTTPS/localhost required). There is no upload endpoint, document storage or onchain file content. Only the 32-byte digest, public category ID/name, authority and chain timestamp are recorded. Matching a fingerprint proves matching bytes; it does not authenticate the issuer, truth, legality or content.
 

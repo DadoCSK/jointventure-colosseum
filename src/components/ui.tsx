@@ -15,7 +15,7 @@ export function PageHeader({ eyebrow, title, subtitle }: { eyebrow: string; titl
 }
 export function BusinessMetrics() {
   return <div className="business-metrics">
-    {[[eur(bavaria.totalProjectCapital), "Total project capital"], [eur(bavaria.alreadyInvested), "Already invested"], [eur(bavaria.target), "Current raise"], [eur(bavaria.infrastructureBudget), "Infrastructure & equipment"], [eur(bavaria.workingCapital), "Working capital"], ["~€33k/month", "Contracted rental revenue"], ["Obtained", "Licence"], ["Executed", "Agreement"]].map(([value, label]) => <MetricCard key={label} label={label} value={value} />)}
+    {[[eur(bavaria.totalProjectCapital), "Total project capital"], [eur(bavaria.alreadyInvested), "Already invested"], [eur(bavaria.target), "Current raise"], ["~€33k/month", "Contracted rental revenue"]].map(([value, label]) => <MetricCard key={label} label={label} value={value} />)}
   </div>;
 }
 export function CapitalFlow() {

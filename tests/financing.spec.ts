@@ -109,7 +109,7 @@ async function review(page:Page,amount='1.25') {
   await dialog.getByRole('button',{name:'Review Financing'}).click();
   await expect(dialog.getByRole('heading',{name:'Review financing'})).toBeVisible();
 }
-test('validates exact amounts, reviews project accounts, confirms one program transaction and reads the position',async({page})=>{
+test('validates exact amounts, reviews project accounts, confirms one program transaction and reads the position',async({page},testInfo)=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   const {controls,dialog,address}=await fixture(page);
   for(const amount of ['','0','-1','1e3','0.0000000001']){await dialog.getByLabel('Amount',{exact:true}).fill(amount);await expect(dialog.getByRole('button',{name:'Review Financing'})).toBeDisabled();}
@@ -122,6 +122,15 @@ test('validates exact amounts, reviews project accounts, confirms one program tr
   await expect(page.locator('[data-demo-eur]')).toContainText('€540.00');
   await expect(page.locator('[data-live-vault]')).toHaveText('4.501 SOL');
   await expect(page.locator('[data-live-position]')).toHaveText('1.25 SOL');
+  for (const width of [320,1440]) {
+    await page.setViewportSize({width,height:900});
+    await dialog.evaluate(async element=>{await Promise.all(element.getAnimations({subtree:true}).filter(animation=>Number.isFinite(animation.effect?.getComputedTiming().endTime)).map(animation=>animation.finished.catch(()=>{})));});
+    await expect(dialog.locator('.success-amount')).toContainText('1.25 SOL');
+    await expect(dialog.locator('.success-amount')).toContainText('DEVNET DEMO EQUIVALENT');
+    await expect(dialog.getByRole('link',{name:'View Portfolio'})).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await page.screenshot({path:testInfo.outputPath(`success-${width}.png`)});
+  }
   await page.keyboard.press('Escape');
   await page.getByRole('link',{name:'Portfolio',exact:true}).click();
   await expect(page).toHaveURL(/\/portfolio$/);

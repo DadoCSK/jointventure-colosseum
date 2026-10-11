@@ -7,7 +7,7 @@ export default function Portfolio() {
   return <div className="container page-content focused-portfolio">
     <PageHeader eyebrow="BAVARIA · YOUR ONCHAIN RECORDS" title="Portfolio" />
     <OnchainProject portfolio />
-    <WalletPanel />
     <FinancingHistory />
+    <WalletPanel />
   </div>;
 }

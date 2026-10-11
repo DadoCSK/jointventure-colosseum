@@ -31,6 +31,7 @@ async function rpc(page: Page, options: {fail?: boolean; tamperProject?: boolean
 }
 async function openFixture(page: Page) {
   await page.goto('/documents');
+  await expect(page.getByRole('heading', {name:'Project Data Room',exact:true})).toBeVisible();
   await page.locator('[data-document-id="integrity-test-v1"]').getByRole('button', {name: 'View record'}).click();
   return page.locator('dialog[open]');
 }
@@ -39,6 +40,10 @@ test('production documents stay pending; file hashing is local and uses exact SH
   page.on('request', request => {if (!request.url().startsWith('http://localhost:3000')) external.push(request.url());});
   await rpc(page, {fail: true});
   await page.goto('/documents');
+  const [download] = await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name:'Download harmless test file'}).click()]);
+  expect(createHash('sha256').update(fs.readFileSync((await download.path())!)).digest('hex')).toBe(hash);
+  await expect(page.locator('.data-room [data-document-id]')).toHaveCount(3);
+  await expect(page.locator('.data-room')).not.toContainText('Harmless integrity test fixture');
   for (const id of ['license', 'rental', 'budget']) {
     const card = page.locator(`[data-document-id="${id}"]`);
     await expect(card).toContainText('Integrity record pending');

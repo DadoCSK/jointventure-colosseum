@@ -9,24 +9,23 @@ export default function Home() {
     <section className="overview-hero">
       <div className="overview-copy">
         <span className="eyebrow">JOINT VENTURE</span>
-        <h1>Fund real agricultural infrastructure.<br /><span>Track what it becomes.</span></h1>
-        <p>Joint Venture combines onchain financing with real-world project visibility.</p>
-        <div className="hero-actions">
-          <Link className="btn btn-outline" href="/projects/bavaria">Explore Project <ArrowUpRight size={16} /></Link>
-          <InvestmentModal triggerLabel="Finance on Devnet" />
-        </div>
+        <h1>Finance real infrastructure.<br /><span>Verify what your capital is building.</span></h1>
+        <p>Real-world infrastructure. Onchain financing, verifiable records and asset-level transparency.</p>
       </div>
+      <BusinessMetrics />
+      <div className="hero-actions"><Link className="btn btn-primary" href="/projects/bavaria">Explore the Bavaria Project <ArrowUpRight size={16} /></Link><Link className="btn btn-outline" href="#how-it-works">See How It Works</Link></div>
       <div className="overview-facility">
         <div className="overview-project-label"><span className="eyebrow">{foundingLabel}</span><h2>{bavaria.name}</h2><span>Bavaria, Germany · Pre-operational</span></div>
         <FacilityCaption />
       </div>
     </section>
-    <BusinessMetrics />
-    <CapitalStructure />
+    <CapitalStructure showDemo={false} />
+    <div className="overview-readiness"><span>Licence <strong>Obtained</strong></span><span>Agreement <strong>Executed</strong></span><span>Project stage <strong>Pre-operational</strong></span></div>
     <section className="origin-strip">
       <h2>Built from a real financing problem</h2>
-      <p>Joint Venture grew from this real financing problem: approximately €100,000 has already been invested in licensing, legal, regulatory and facility/project preparation. The remaining €250,000 is required for infrastructure, equipment and initial operating liquidity.</p>
+      <p>€100k has already been invested in licensing, legal, regulatory and facility/project preparation. The €250k raise funds €220k of infrastructure & equipment and €30k of initial working capital.</p>
     </section>
+    <section id="how-it-works" className="demo-path" aria-labelledby="demo-path-title"><div><span className="eyebrow">FROM CAPITAL TO VISIBILITY</span><h2 id="demo-path-title">One project. Verifiable progress.</h2></div><ol><li>Explore the project</li><li>Finance on Devnet</li><li>Verify your record</li><li>Inspect the facility</li></ol><InvestmentModal triggerLabel="Finance on Devnet" /></section>
     <CapitalFlow />
     <div className="dashboard-shortcuts">
       {[

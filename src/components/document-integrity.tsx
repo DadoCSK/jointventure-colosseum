@@ -67,10 +67,9 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
 
   const status = anchored ? 'Integrity anchored on Solana' : 'Integrity record pending';
   return <article className="verification-card" data-document-id={record.id}>
-    <FileText size={23}/>
-    {testOnly && <span className="mock-label">HARMLESS TEST FIXTURE · NOT A PROJECT DOCUMENT</span>}
-    <h3>{record.title}</h3>
-    <span className="verification-status"><Clock3 size={14}/>{status}</span>
+    <div className="document-identity"><FileText size={23} aria-hidden="true"/><div>{testOnly && <span className="mock-label">HARMLESS TEST FIXTURE · NOT A PROJECT DOCUMENT</span>}<span className="document-column-label">{testOnly?'DEMO RECORD':'DOCUMENT'}</span><h3>{record.title}</h3></div></div>
+    {!testOnly&&<div className="document-business-status"><span className="document-column-label">PROJECT STATUS</span><strong>{record.id==='license'?'Obtained':record.id==='rental'?'Executed':'Project budget'}</strong></div>}
+    <div className="document-chain-status"><span className="document-column-label">ONCHAIN INTEGRITY</span><span className="verification-status"><Clock3 size={14} aria-hidden="true"/>{status}</span></div>
     {anchored && <>
       <code className="integrity-short-hash">{shortHash(anchored.hashHex)}</code>
       <time dateTime={anchored.createdAt}>{anchored.createdAt.replace('T', ' ').replace('.000Z', ' UTC')}</time>
@@ -130,6 +129,7 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
 
 export function IntegrityTestFixture() {
   return <div className="integrity-test-fixture">
+    <a className="text-link fixture-download" href="/integrity-test.txt" download>Download harmless test file <ArrowUpRight size={14} aria-hidden="true"/></a>
     <DocumentIntegrityCard testOnly record={{id: 'integrity-test-v1', title: 'Harmless integrity test fixture', status: 'Integrity record pending'}}/>
   </div>;
 }

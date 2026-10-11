@@ -17,8 +17,11 @@ test('Bavaria is the only project; navigation has no marketplace or fictional EU
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Built from a real financing problem' })).toBeVisible();
   await expect(page.locator('.overview-facility')).toContainText('FOUNDING PROJECT · REAL BUSINESS');
-  await expect(page.getByRole('link', { name: 'Explore Project', exact: true })).toHaveAttribute('href', '/projects/bavaria');
-  await expect(page.locator('.business-metrics')).toContainText('€250,000');
+  await expect(page.getByRole('link', { name: 'Explore the Bavaria Project', exact: true })).toHaveAttribute('href', '/projects/bavaria');
+  await expect(page.locator('.business-metrics .metric strong')).toHaveText(['€350,000','€100,000','€250,000','~€33k/month']);
+  await expect(page.locator('.business-capital')).not.toContainText('Devnet');
+  await expect(page.getByRole('heading', {level:1})).toHaveText('Finance real infrastructure.Verify what your capital is building.');
+  await expect(page.getByRole('link', {name:'See How It Works'})).toHaveAttribute('href','#how-it-works');
   await expect(page.locator('main progress')).toHaveCount(0);
   await expect(page.locator('.capital-flow li')).toHaveText(['Capital','Infrastructure','Facility','Production','Revenue']);
   await page.getByRole('button', { name: 'Finance on Devnet', exact: true }).click();

@@ -21,14 +21,14 @@ export function OnchainProject({portfolio=false}:{portfolio?:boolean}) {
   const current=projectResult?.address===address?projectResult.data:null;
   useEffect(()=>{if(!portfolio||address)void refreshProject();},[portfolio,address,refreshProject]);
   return <section className="panel onchain-panel" aria-label={portfolio?'Your Devnet Position':'Live Devnet Financing'}>
-    <div className="onchain-heading"><span className="eyebrow">SOLANA DEVNET</span><span className="status-badge">Native SOL · Demo</span></div>
+    <div className="onchain-heading"><span className="eyebrow">SOLANA DEVNET</span><span className="simulation-badge">DEVNET DEMO</span></div>
     <h2>{portfolio?'Your Devnet Position':'Live Devnet Financing'}</h2>
     <p>Devnet SOL has no monetary value. Demo contributions are not real capital.</p>
     {portfolio&&<div className="position-project"><span>Project</span><strong>{bavaria.name}</strong></div>}
     {loading&&<p role="status">Reading Devnet…</p>}
     {current&&<div className="chain-metrics" aria-live="polite">
       {!portfolio&&<><div><span>Devnet SOL contributed</span><strong data-live-total>{formatSolLamports(current.totalLamports)} SOL</strong></div><div><span>Devnet demo equivalent</span><strong><EurEquivalent lamports={current.totalLamports} price={price}/></strong></div></>}
-      {address&&<><div className={portfolio?'primary-position':''}><span>Your Devnet Position · Demo</span><strong data-live-position>{formatSolLamports(current.contributedLamports)} SOL</strong></div><div><span>Current EUR equivalent · Demo</span><strong><EurEquivalent lamports={current.contributedLamports} price={price}/></strong></div><div><span>Wallet balance</span><strong>{formatSolLamports(current.balanceLamports)} SOL</strong></div></>}
+      {address&&<><div className={portfolio?'primary-position':''}><span>Contributed · Devnet demo position</span><strong data-live-position>{formatSolLamports(current.contributedLamports)} SOL</strong></div><div className={portfolio?'primary-equivalent':''}><span>Current EUR equivalent · Demo</span><strong><EurEquivalent lamports={current.contributedLamports} price={price}/></strong></div>{!portfolio&&<div><span>Wallet balance</span><strong>{formatSolLamports(current.balanceLamports)} SOL</strong></div>}</>}
       <div><span>Project SOL vault balance</span><strong data-live-vault>{formatSolLamports(current.vaultBalanceLamports)} SOL</strong><small>Includes account rent and any direct deposits.</small></div>
       {error&&<small>Last successful read shown.</small>}
       <div><span>Network</span><strong>Solana Devnet</strong></div><div><span>Demo financing</span><strong>{current.enabled?'Enabled':'Paused'}</strong></div>
@@ -77,23 +77,20 @@ export function InvestmentModal({triggerLabel="Finance this project"}:{triggerLa
   return <>
     <Modal trigger={<>{triggerLabel} <ArrowUpRight size={18}/></>} title="Finance Bavaria Project" className="btn btn-primary finance-button">
       <span className="modal-phase">NATIVE SOL · SOLANA DEVNET</span>
-      {receiptVisible ? <div className="completion">
+      {receiptVisible ? <div className={`completion ${wallet.financeState==='confirmed'?'financing-confirmed':''}`}>
         {wallet.financeState==='confirmed' && <CheckCircle2 size={36}/>}
         <h3>{wallet.financeState==='confirmed'?'Financing recorded on Solana':wallet.financeState==='failed'?'Transaction failed':wallet.financeState==='expired'?'Transaction expired':'Confirmation pending'}</h3>
-        <p role="status">{wallet.financeState==='confirmed'?`${receipt!.amount} SOL recorded.`:wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>
+        {wallet.financeState!=='confirmed'&&<p role="status">{wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>}
         {wallet.financeState==='confirmed' && <div className="success-summary">
-          <p><span>Amount</span><strong>{receipt!.amount} SOL</strong></p>
-          <p><span>Current EUR equivalent · Demo</span><strong><EurEquivalent lamports={parseSolAmount(receipt!.amount)!.toString()} price={wallet.price}/></strong></p>
+          <div className="success-amount" role="status"><span className="simulation-badge">DEVNET DEMO EQUIVALENT</span><strong>{receipt!.amount} SOL</strong><span><EurEquivalent lamports={parseSolAmount(receipt!.amount)!.toString()} price={wallet.price}/></span><small>At current market price · not real capital</small></div>
           <p><span>Project</span><strong>{bavaria.name}</strong></p>
           <p><span>Network</span><strong>Solana Devnet</strong></p>
           <p><span>Updated project demo total</span><strong>{wallet.projectResult && !wallet.projectError && !wallet.projectLoading ? `${formatSolLamports(wallet.projectResult.data.totalLamports)} SOL` : wallet.projectLoading ? 'Reading confirmed chain state…' : 'Unavailable — retry the live read'}</strong></p>
           {wallet.projectError && <p role="alert">{wallet.projectError}</p>}
-          <Link className="btn btn-outline" href="/portfolio" onClick={event=>event.currentTarget.closest('dialog')?.close()}>View Portfolio</Link>
         </div>}
-        <p className="fine-print">EUR equivalent calculated using the displayed market price.</p><PriceLabel price={wallet.price}/>
-        <a className="text-link" href={`https://explorer.solana.com/tx/${receipt!.signature}?cluster=devnet`} target="_blank" rel="noreferrer">View transaction on Solana Explorer <ArrowUpRight size={14}/></a>
-        <code className="wallet-address">{receipt!.signature}</code>
-        {wallet.financeState==='pending'?<button className="btn btn-outline" disabled={wallet.busy} onClick={()=>void wallet.checkFinancing()}>Check confirmation</button>:<button className="btn btn-outline" onClick={()=>{setShowReceipt(false);setReview(null);setError(null);}}>Review another commitment</button>}
+        <div className="receipt-actions"><a className="btn btn-outline" aria-label="View transaction on Solana Explorer" href={`https://explorer.solana.com/tx/${receipt!.signature}?cluster=devnet`} target="_blank" rel="noreferrer">View Transaction <ArrowUpRight size={14}/></a>{wallet.financeState==='confirmed'&&<Link className="btn btn-primary" href="/portfolio" onClick={event=>event.currentTarget.closest('dialog')?.close()}>View Portfolio</Link>}</div>
+        <details className="technical-details" open={wallet.financeState!=='confirmed'}><summary>Receipt details</summary><code className="wallet-address">{receipt!.signature}</code><PriceLabel price={wallet.price}/><p>EUR equivalent uses the displayed market price; it is not recorded onchain.</p></details>
+        {wallet.financeState==='pending'?<button className="btn btn-outline" disabled={wallet.busy} onClick={()=>void wallet.checkFinancing()}>Check confirmation</button>:<button className="text-link review-again" onClick={()=>{setShowReceipt(false);setReview(null);setError(null);}}>Review another commitment</button>}
       </div>:currentReview ? <div>
         <h3>Review financing</h3>
         <p><strong>{currentReview.amount} SOL</strong> to the Project SOL Vault.</p>

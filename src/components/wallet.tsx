@@ -11,7 +11,7 @@ const sol = (balance: number) =>
 
 export function WalletButton() {
   const {address,busy,error,disconnect,connect,walletName}=useWallet();
-  return <div className="wallet-control">{address?<Modal title="Wallet details" trigger={<><Wallet size={16}/>{shortAddress(address)}</>} triggerDisabled={busy} className="btn btn-outline wallet-button">
+  return <div className="wallet-control">{address?<Modal title="Wallet details" trigger={<><Wallet size={16}/><span className="connected-wallet-title">{shortAddress(address)}<small>Solana Devnet</small></span></>} triggerDisabled={busy} className="btn btn-outline wallet-button">
     <span className="modal-phase">SOLANA DEVNET</span><code className="wallet-address">{address}</code><p className="fine-print">{walletName}</p>
     <button className="btn btn-outline" onClick={event=>{event.currentTarget.closest('dialog')?.close();void disconnect();}}>Disconnect Wallet</button>
   </Modal>:<button className="btn btn-outline wallet-button" disabled={busy} onClick={()=>void connect()}><Wallet size={16}/>{busy?'Connecting…':'Connect Wallet'}</button>}
@@ -62,7 +62,7 @@ export function WalletPanel() {
                     ? "Unavailable"
                     : `${sol(balance)} SOL`}
               </strong>
-              <small>Test tokens · not a custodial account</small>
+              <small>Devnet SOL · no monetary value</small>
             </div>
           </div>
           {balanceError && (

@@ -8,11 +8,11 @@ import "./dashboard.css";
 import "./digital-twin.css";
 export const metadata: Metadata = {
   title: {
-    default: "Joint Venture — Fund real productive infrastructure.",
+    default: "Joint Venture — Finance real infrastructure.",
     template: "%s | Joint Venture",
   },
   description:
-    "Fund real productive infrastructure and see what your capital is building. Bavaria project financing, onchain records and planned facility visibility.",
+    "Finance real infrastructure. Verify what your capital is building. Bavaria project financing, onchain records and planned facility visibility.",
 };
 export default function RootLayout({
   children,
