@@ -1,0 +1,167 @@
+@plugin "daisyui/theme" {
+  name: "jointventure-industrial";
+  default: false;
+  color-scheme: dark;
+  --color-base-100: #151e2c;
+  --color-base-200: #0c1422;
+  --color-base-300: #334154;
+  --color-base-content: #e5eaf2;
+  --color-primary: #8bdde5;
+  --color-primary-content: #081420;
+  --color-secondary: #253245;
+  --color-secondary-content: #e5eaf2;
+  --color-accent: #c4b3e5;
+  --color-accent-content: #101827;
+  --color-neutral: #253245;
+  --color-neutral-content: #e5eaf2;
+  --color-info: #8bdde5;
+  --color-success: #a2dbbe;
+  --color-warning: #f2cf94;
+  --color-error: #ffb1a8;
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+}
+
+/* Shared navigation additions; existing Classic page styles remain intact. */
+.appearance-switch { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+.appearance-switch button { cursor: pointer; padding: 8px 10px; border: 0; border-radius: 4px; color: var(--muted); font-size: 11px; font-weight: 600; min-height: 36px; }
+.appearance-switch button[aria-pressed="true"] { background: var(--green); color: white; }
+.industrial-only { display: none; }
+@media (max-width: 1100px) {
+  .desktop-links { gap: 16px; margin-left: 0; }
+}
+@media (max-width: 950px) {
+  .desktop-links, .desktop-appearance { display: none; }
+  .menu-toggle { display: inline-flex; }
+}
+
+html[data-ui-variant="industrial"] {
+  --ink: #e5eaf2; --muted: #b3bfd0; --green: #8bdde5; --line: #334154; --paper: #0c1422;
+  color-scheme: dark;
+}
+html[data-ui-variant="industrial"] {
+  body { background: radial-gradient(ellipse at 95% 10%, #31254455, transparent 40%), var(--paper); }
+  :focus-visible { outline-color: #8bdde5; }
+  h1, h2, h3 { font-weight: 500; letter-spacing: -0.045em; }
+  .eyebrow, .brand-period, .desktop-links, .hero-copy > p, .hero-trust, .visual-kicker,
+  .dashboard-card > p, .dashboard-stats small, .floating-record small, .platform-stats span,
+  .platform-stats small, .stats-note, .stats-note p, .stats-note strong, .project-location,
+  .verification-status, .step-top, .step-top span, .steps-grid p, .footer-links > span,
+  .footer-bottom, .metric small, .funds-number, .modal-box label, .fingerprint, .art-label { color: var(--muted); }
+  .site-header { background: #0c1422f5; border-color: var(--line); }
+  .mobile-navigation { background: #151e2c; border-color: var(--line); }
+  .wordmark { color: var(--ink); }
+  .brand-icon, .dashboard-icon, .position-icon, .transaction-type > svg, .floating-record > span { background: #253245; color: var(--green); }
+  .btn { border-radius: 3px; }
+  .btn-primary { background: var(--green); color: #081420; border-color: var(--green); }
+  .btn-primary:hover { background: #b4eef2; }
+  .btn-outline { color: var(--ink); border-color: #65758a; }
+  .btn-outline:hover { background: #253245; border-color: var(--green); }
+  .appearance-switch { background: #101827; border-radius: 4px; }
+  .appearance-switch button[aria-pressed="true"] { color: #081420; }
+  .industrial-only { display: block; }
+  .hero-section { position: relative; background: linear-gradient(90deg, #08111ff5 0%, #08111fd4 35%, #11192855 100%), url('/images/illustrative-facility.jpeg') center / cover; border-bottom: 1px solid var(--line); }
+  .hero-layout { min-height: 660px; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 60px; }
+  .hero-copy { padding: 75px 0; }
+  .hero-copy h1 { font-size: clamp(40px, 4.5vw, 66px); line-height: 1.05; }
+  .hero-copy h1 span { color: #a7e4eb; }
+  .hero-copy > p { color: #d2dbe8; max-width: 460px; }
+  .small-line { background: var(--green); }
+  .hero-trust { color: #d2dbe8; }
+  .hero-visual { min-height: 0; padding: 0; align-items: stretch; }
+  .visual-orbit, .visual-sprout, .visual-kicker { display: none; }
+  .dashboard-card { background: #101827ed; width: 100%; transform: none; border: 1px solid #65758a; border-radius: 4px; padding: 30px 30px 0; box-shadow: 0 25px 80px #050b1666; }
+  .dashboard-card h2 { font-size: 26px; }
+  .dashboard-link { margin: 0 -30px; padding: 20px 30px; background: #1e2a3d; color: var(--green); }
+  .floating-record { background: #101827ed; border-color: var(--line); border-radius: 4px; align-self: stretch; box-shadow: none; }
+  .floating-record > svg { color: var(--muted); }
+  .facility-caption { padding: 12px 0; font-size: 11px; color: #e5eaf2; line-height: 1.6; }
+  .facility-caption span { color: #d2dbe8; }
+  .hero-section > .container:last-child { padding-bottom: 10px; }
+  .platform-stats { border-bottom: 1px solid var(--line); }
+  .demo-banner { background: #172338; border-color: #44566e; color: #d2dbe8; border-radius: 3px; }
+  .demo-dot, .status-badge > span { background: var(--green); }
+  .status-badge { color: #c2eceb; background: #1b303d; border-color: #446471; border-radius: 3px; }
+  .founding-story { padding: 70px 0; }
+  .origin-metrics { gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .origin-metrics > div { background: #151e2c; padding: 24px; }
+  .origin-metrics strong { color: #e5eaf2; font-size: 27px; }
+  .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .project-card { background: #151e2c; border-color: var(--line); border-radius: 4px; box-shadow: none; }
+  .project-card:hover { transform: none; border-color: #65758a; box-shadow: none; }
+  .project-art { background: linear-gradient(135deg, #253245, #332943); }
+  .art-grid { opacity: .3; }
+  .greenhouse { filter: grayscale(1); opacity: .35; }
+  .category-tag { background: #101827ed; color: #d2dbe8; border: 1px solid #44566e; border-radius: 3px; }
+  .founding-card { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-color: #65758a; }
+  .founding-card .project-art { height: auto; min-height: 400px; background: linear-gradient(0deg, #08111fe8, transparent 70%), url('/images/illustrative-facility.jpeg') center / cover; }
+  .founding-card .art-grid, .founding-card .greenhouse, .founding-card .art-label { display: none; }
+  .founding-card .facility-caption { position: absolute; bottom: 15px; left: 20px; right: 20px; }
+  .founding-card .project-body { background: #151e2c; padding: 32px; }
+  .project-body h3 { font-size: 24px; min-height: 0; }
+  .project-description { min-height: 0; margin-bottom: 24px; }
+  .project-numbers { padding: 20px 0; }
+  .how-section { background: #121c2c; border-top: 1px solid var(--line); }
+  .step-top { border-color: var(--line); }
+  .site-footer { background: #09111f; }
+  .filter { color: var(--muted); }
+  .filter.selected { background: #253245; color: #e5eaf2; border-color: #65758a; }
+  .empty-state { border-color: var(--line); }
+  .empty-state > svg { color: var(--green); }
+  .facility-masthead { height: 300px; position: relative; background: linear-gradient(0deg, #08111fe8, #08111f11 70%), url('/images/illustrative-facility.jpeg') center 55% / cover; border: 1px solid var(--line); }
+  .facility-masthead .facility-caption { position: absolute; bottom: 12px; left: 24px; right: 24px; }
+  .panel, .portfolio-metrics .metric, .verification-card { background: #151e2c; border-color: var(--line); border-radius: 4px; }
+  .founding-statement { background: #172338; border-left-color: var(--green); }
+  .metrics-grid, .readiness-grid { gap: 20px; }
+  .metrics-grid .metric, .readiness-grid .metric { padding: 16px; background: #0f1827; border-top: 1px solid #44566e; }
+  .metric strong { color: #e5eaf2; }
+  .onchain-panel { background: #101e2c; border: 1px solid #597586; border-top: 3px solid var(--green); }
+  .demo-action-heading { padding-top: 24px; border-top: 1px solid #597586; color: var(--green); }
+  .mock-label, .modal-phase { background: #253245; color: #d2dbe8; }
+  .verification-card > svg, .completion > svg { color: var(--green); }
+  .modal-box { background: #151e2c; color: var(--ink); border: 1px solid #65758a; border-radius: 4px; }
+  .input, .select, .wallet-address { background: #0c1422; color: var(--ink); border-color: #65758a; }
+  .wallet-notice { background: #30291e; color: #f2cf94; border-color: #806b4b; }
+  .wallet-error, .modal-box .input-error, .input-error { color: #ffb1a8 !important; }
+  .progress { background: #334154; color: var(--green); }
+  .progress-primary::-webkit-progress-value { background: var(--green); }
+  .progress-primary::-moz-progress-bar { background: var(--green); }
+  .portfolio-page { display: flex; flex-direction: column; }
+  .portfolio-page > .page-header { order: -5; }
+  .portfolio-page > .wallet-panel { order: -4; }
+  .portfolio-page > .onchain-panel { order: -3; }
+  .portfolio-page > .demo-banner { order: -2; margin-top: 32px; }
+  .portfolio-page > .portfolio-metrics { order: -1; }
+  .portfolio-metrics .metric { border-top: 2px solid #65758a; }
+  .table th { color: var(--muted); }
+}
+@media (max-width: 950px) {
+  html[data-ui-variant="industrial"] .hero-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  html[data-ui-variant="industrial"] .hero-copy { padding: 55px 0 35px; max-width: 650px; }
+  html[data-ui-variant="industrial"] .hero-visual { padding-bottom: 30px; width: 100%; max-width: 650px; gap: 16px; }
+}
+@media (max-width: 600px) {
+  html[data-ui-variant="industrial"] {
+    .hero-copy h1 { font-size: clamp(35px, 10vw, 54px); }
+    .dashboard-card { padding: 24px 24px 0; }
+    .dashboard-link { margin: 0 -24px; padding: 18px 24px; }
+    .project-grid, .founding-card { grid-template-columns: minmax(0, 1fr); }
+    .founding-card .project-art { min-height: 250px; }
+    .founding-card .project-body { padding: 22px; }
+    .project-body h3 { font-size: 22px; }
+    .origin-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .origin-metrics > div { padding: 16px; }
+    .origin-metrics strong { font-size: 21px; }
+    .facility-masthead { height: 230px; }
+    .metrics-grid .metric, .readiness-grid .metric { padding: 12px; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui-variant="industrial"] *, .appearance-switch * { transition: none !important; animation: none !important; }
+}
+/* Root state also styles the control before React synchronizes aria-pressed. */
+html[data-ui-variant="classic"] .appearance-switch button[data-appearance="classic"] { background: var(--green); color: white; }
+html[data-ui-variant="classic"] .appearance-switch button[data-appearance="industrial"] { background: transparent; color: var(--muted); }
+html[data-ui-variant="industrial"] .appearance-switch button[data-appearance="industrial"] { background: var(--green); color: #081420; }
+html[data-ui-variant="industrial"] .appearance-switch button[data-appearance="classic"] { background: transparent; color: var(--muted); }

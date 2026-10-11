@@ -52,13 +52,21 @@ App connection and pending-receipt state are in memory across client navigation 
 
 ## Demo content
 
-Bavaria is a real-world-inspired case; the Netherlands and Spain projects are fictional demos. The EUR target is €250,000, with €75,000 demo committed (30%) and €175,000 remaining. Approximate contracted monthly revenue is €33,000 and the infrastructure budget is €220,000. Seven representative allocations total €250,000. These figures do not describe live token deposits. The broader demo platform statistics are independent of the three visible projects.
+Bavaria is the real founding project, currently pre-operational; the Netherlands and Spain projects are fictional demos. The real full-deployment target is €250,000 and the capital raise is open; no fictional EUR progress is shown. Approximate contracted monthly revenue is €33,000 and the infrastructure budget is €220,000. The supplied approximate allocation is €220,000 infrastructure/equipment plus €30,000 initial working capital. These figures do not describe live token deposits. The homepage scope metrics show one founding project, two fictional examples and a technical Devnet demo.
 
 Cultivation Licence, Customer Rental Agreement and Infrastructure Budget display **Integrity record pending**, with no invented fingerprints. Phase 2F supports local SHA-256 hashing, authority-only anchoring and live record reads/file matching; only an explicitly harmless public test fixture has been anchored. Matching bytes do not authenticate the issuer, legality or contents. Project listing is informational and the GitHub link remains unavailable until a repository URL is supplied. There is no backend, database, custodial user account or Mainnet functionality.
 
 The user-wallet acceptance check recorded two finalized **1 JV Test USD** contributions with successive nonces. Its position totals **2 JV Test USD**; the project total and vault were **3.25 JV Test USD** at verification. See `chain/receipts/wallet-acceptance.json`. These are real Devnet test-token records, separate from the EUR demo portfolio.
 
 The Devnet smoke test recorded **1.25 JV Test USD** using an isolated test wallet through the financing instruction. Its public receipt is in `chain/receipts/financing-smoke.json`; this is test activity, separate from the EUR demo commitments. Direct SPL transfers into the vault are not attributed as project financing; recorded totals derive only from successful program financing instructions.
+
+## Product truth and live demo (Phase 3)
+
+Bavaria is the real project that inspired Joint Venture, clearly distinguished from the two fictional marketplace examples. The licence, lease and commercial rental agreement are business facts supplied by the project developer, not independently authenticated documents. The business is not operating yet; contracted monthly rental revenue is approximately €33,000 and financial projections are not guaranteed returns.
+
+A separate **Live Devnet Financing Demo** reads the existing Project PDA automatically and displays recorded contributions against an illustrative **100 JV Test USD** target. The token has no monetary value and there is no EUR conversion. After confirmed financing, the project total and connected wallet Position/token balance are re-read automatically. The success view shows the signed/confirmed receipt amount, updated live total, Explorer link and View Portfolio action. Opening Portfolio also re-reads the connected wallet position; fictional EUR examples reference a fictional project and remain separate.
+
+RPC failures never fabricate a zero or progress; previous successful reads are labelled when refresh fails. Other-wallet activity needs a new read/page visit. Pending receipts and display state remain in memory. No program upgrade, protocol changes or public deployment were needed for Phase 3. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for tests and limitations.
 
 ## Document integrity (Phase 2F)
 
@@ -97,6 +105,6 @@ Local program tests cover unauthorized and duplicate initialization, decimal res
 
 Frontend verification covers TypeScript, ESLint, production build, wallet/signing fixtures, amount and network validation, rejection, pending and unavailable confirmation, failed/expired transactions, stale positions, insufficient SOL, portfolio reads, and unchanged EUR demo totals. Desktop, tablet, 390px and 320px route checks include overflow, accessibility and keyboard handling.
 
-Final results: TypeScript, ESLint, production build, Rust formatting, local program security tests, exact amount tests and **17 browser regressions pass**. All 16 route/viewport combinations passed automated WCAG 2 A/AA and overflow checks. Browser hydration/console checks passed after waiting for hydration before taking screenshots. A live browser read returned 1.25 JV Test USD, and a Devnet program dump matched the tested binary. These automated checks complement manual accessibility and installed-wallet acceptance testing.
+Final results: TypeScript, ESLint, production build, Rust formatting, local program security tests, exact amount tests and **21 browser regressions pass**. All 16 route/viewport combinations passed automated WCAG 2 A/AA and overflow checks. Browser hydration/console checks passed after waiting for hydration before taking screenshots. A live browser read returned 1.25 JV Test USD, and a Devnet program dump matched the tested binary. These automated checks complement manual accessibility and installed-wallet acceptance testing.
 
 `npm audit` reports 20 findings (10 moderate, 10 high), including development ESLint/glob dependencies and transitive Solana/Anchor dependencies (`bigint-buffer`, `toml`, legacy `uuid`, `stream-json`). No incompatible forced upgrades were applied. The `toml` functionality is Node tooling rather than the browser financing path; the dependency findings still require review before production use. Public Devnet RPC calls can time out or be rate-limited; failed reads show unavailable/error states rather than invented balances.

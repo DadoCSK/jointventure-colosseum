@@ -33,8 +33,7 @@ export function Footer() {
         <div className="footer-bottom">
           <span>© 2026 Joint Venture. Devnet MVP.</span>
           <p>
-            Demo only. All financial figures are projections, not guaranteed
-            returns. Financing uses Devnet test tokens. EUR portfolio figures
+            Agricultural infrastructure financing inspired by a real founding project. Financial projections are not guaranteed returns. This MVP’s financing transactions use Devnet-only tokens with no monetary value. EUR portfolio figures
             are demo data. Document fingerprints establish file integrity,
             without independently authenticating issuers or contents.
           </p>

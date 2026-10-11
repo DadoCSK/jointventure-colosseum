@@ -15,7 +15,7 @@ async function fixture(page:Page) {
   const program=new Program(idl,{connection:new Connection(deployment.rpc)});
   const [position]=PublicKey.findProgramAddressSync([Buffer.from('position'),project.toBuffer(),investor.publicKey.toBuffer()],program.programId);
   const source=getAssociatedTokenAddressSync(mint,investor.publicKey);
-  const controls={reject:false,outcome:'confirmed' as 'confirmed'|'pending'|'failed',statusUnavailable:false,height:90,wrongNetwork:false,balance:BigInt(20_000_000_000),sol:1e9,signs:0,sends:0,nonce:0,contribution:BigInt(0)};
+  const controls={reject:false,outcome:'confirmed' as 'confirmed'|'pending'|'failed',statusUnavailable:false,height:90,wrongNetwork:false,balance:BigInt(20_000_000_000),sol:1e9,signs:0,sends:0,nonce:0,contribution:BigInt(0),projectTotal:BigInt(3_250_000),amount:BigInt(1_250_000),readFailure:false};
   await page.exposeFunction('fixtureSign',(encoded:string)=>{
     controls.signs++;
     if(controls.reject) throw Error('User rejected request');
@@ -43,6 +43,7 @@ async function fixture(page:Page) {
   await page.route(deployment.rpc,async route=>{
     const request=route.request().postDataJSON();
     const context={slot:1};
+    if(controls.readFailure && request.method === 'getAccountInfo'){await route.fulfill({json:{jsonrpc:'2.0',id:request.id,error:{code:-32005,message:'Read unavailable'}}});return;}
     let result:unknown;
     const account=(data:Buffer,owner:PublicKeyType)=>({data:[data.toString('base64'),'base64'],owner:owner.toBase58(),lamports:1_000_000,executable:false,rentEpoch:0});
     switch(request.method) {
@@ -51,9 +52,9 @@ async function fixture(page:Page) {
       case 'getAccountInfo':{
         const key=request.params[0];
         let value:unknown=null;
-        if(key===deployment.projectPda) value=account(await program.coder.accounts.encode('project',{version:1,bump:PublicKey.findProgramAddressSync([Buffer.from('project'),Buffer.from('bavaria')],program.programId)[1],vaultBump:PublicKey.findProgramAddressSync([Buffer.from('vault'),project.toBuffer()],program.programId)[1],authority:new PublicKey(deployment.authority),acceptedMint:mint,slug:'bavaria',name:'Bavaria Cultivation Facility',targetEurCents:new BN(25_000_000),infrastructureEurCents:new BN(22_000_000),contractedMonthlyRevenueEurCents:new BN(3_300_000),totalFinancedUnits:new BN(controls.contribution.toString()),financingEnabled:true}),program.programId);
+        if(key===deployment.projectPda) value=account(await program.coder.accounts.encode('project',{version:1,bump:PublicKey.findProgramAddressSync([Buffer.from('project'),Buffer.from('bavaria')],program.programId)[1],vaultBump:PublicKey.findProgramAddressSync([Buffer.from('vault'),project.toBuffer()],program.programId)[1],authority:new PublicKey(deployment.authority),acceptedMint:mint,slug:'bavaria',name:'Bavaria Cultivation Facility',targetEurCents:new BN(25_000_000),infrastructureEurCents:new BN(22_000_000),contractedMonthlyRevenueEurCents:new BN(3_300_000),totalFinancedUnits:new BN(controls.projectTotal.toString()),financingEnabled:true}),program.programId);
         else if(key===deployment.mint){const data=Buffer.alloc(MintLayout.span);MintLayout.encode({mintAuthorityOption:1,mintAuthority:new PublicKey(deployment.authority),supply:BigInt(20_000_000_000),decimals:6,isInitialized:true,freezeAuthorityOption:0,freezeAuthority:SystemProgram.programId},data);value=account(data,TOKEN_PROGRAM_ID);}
-        else if(key===deployment.vaultPda || key===source.toBase58()) {const data=Buffer.alloc(AccountLayout.span);AccountLayout.encode({mint,owner:key===deployment.vaultPda?project:investor.publicKey,amount:key===deployment.vaultPda?controls.contribution:controls.balance,delegateOption:0,delegate:SystemProgram.programId,state:1,isNativeOption:0,isNative:BigInt(0),delegatedAmount:BigInt(0),closeAuthorityOption:0,closeAuthority:SystemProgram.programId},data);value=account(data,TOKEN_PROGRAM_ID);}
+        else if(key===deployment.vaultPda || key===source.toBase58()) {const data=Buffer.alloc(AccountLayout.span);AccountLayout.encode({mint,owner:key===deployment.vaultPda?project:investor.publicKey,amount:key===deployment.vaultPda?controls.projectTotal:controls.balance,delegateOption:0,delegate:SystemProgram.programId,state:1,isNativeOption:0,isNative:BigInt(0),delegatedAmount:BigInt(0),closeAuthorityOption:0,closeAuthority:SystemProgram.programId},data);value=account(data,TOKEN_PROGRAM_ID);}
         else if(key===position.toBase58() && controls.nonce>0)value=account(await program.coder.accounts.encode('position',{project,investor:investor.publicKey,contributedUnits:new BN(controls.contribution.toString()),nextNonce:new BN(controls.nonce),bump:PublicKey.findProgramAddressSync([Buffer.from('position'),project.toBuffer(),investor.publicKey.toBuffer()],program.programId)[1]}),program.programId);
         result={context,value};break;
       }
@@ -67,9 +68,9 @@ async function fixture(page:Page) {
         const instruction=new BorshInstructionCoder(program.idl).decode(transaction.instructions[0].data)!;
         expect(instruction.name).toBe('finance');
         const args=instruction.data as {amount:{toString():string};expectedNonce:{toString():string}};
-        expect(args.amount.toString()).toBe('1250000');
+        expect(args.amount.toString()).toBe(controls.amount.toString());
         expect(args.expectedNonce.toString()).toBe('0');
-        if(controls.outcome==='confirmed'){controls.nonce=1;controls.contribution=BigInt(1_250_000);controls.balance-=BigInt(1_250_000);}
+        if(controls.outcome==='confirmed'){controls.nonce=1;controls.contribution=controls.amount;controls.projectTotal+=controls.amount;controls.balance-=controls.amount;}
         result=utils.bytes.bs58.encode(transaction.signature!);break;
       }
       case 'getSignatureStatuses':
@@ -87,9 +88,9 @@ async function fixture(page:Page) {
   await page.getByRole('button',{name:'Finance this project'}).click();
   return {controls,dialog:page.locator('dialog[open]'),address};
 }
-async function review(page:Page) {
+async function review(page:Page,amount='1.25') {
   const dialog=page.locator('dialog[open]');
-  await dialog.getByLabel('Amount',{exact:true}).fill('1.25');
+  await dialog.getByLabel('Amount',{exact:true}).fill(amount);
   await dialog.getByRole('button',{name:'Review commitment'}).click();
   await expect(dialog.getByRole('heading',{name:'Review your test commitment'})).toBeVisible();
 }
@@ -101,15 +102,14 @@ test('validates exact amounts, reviews project accounts, confirms one program tr
   await expect(dialog).toContainText(address);
   expect(controls.signs).toBe(0);expect(controls.sends).toBe(0);
   await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
-  await expect(page.locator('dialog[open]')).toContainText('Test financing confirmed');
+  await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.signs).toBe(1);expect(controls.sends).toBe(1);
-  await expect(page.locator('progress')).toHaveAttribute('value','75000');
+  await expect(page.locator('progress')).toHaveAttribute('value','4.5');
   await page.keyboard.press('Escape');
   await page.getByRole('link',{name:'My Portfolio',exact:true}).click();
   await expect(page).toHaveURL(/\/portfolio$/);
   await expect(page.getByRole('heading',{name:'My Portfolio',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Read Devnet records'}).click();
-  await expect(page.locator('.chain-metrics')).toContainText('1.25 JV Test USD');
+  await expect(page.locator('[data-live-position]')).toHaveText('1.25 JV Test USD');
   await expect(page.locator('.portfolio-metrics')).toContainText('€10,000');
   expect(errors).toEqual([]);
 });
@@ -120,17 +120,26 @@ test('wallet rejection submits nothing and permits review retry',async({page})=>
   expect(controls.sends).toBe(0);
   controls.reject=false;
   await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
-  await expect(page.locator('dialog[open]')).toContainText('Test financing confirmed');
+  await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.sends).toBe(1);
 });
 test('pending confirmation blocks another submission and can be checked',async({page})=>{
-  const {controls,dialog}=await fixture(page);controls.outcome='pending';
+  const {controls,dialog,address}=await fixture(page);controls.outcome='pending';
   await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Confirmation pending');
+  const signature = await dialog.locator('code.wallet-address').innerText();
+  const before = await page.locator('html').getAttribute('data-ui-variant');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', {name: before === 'classic' ? 'Industrial' : 'Classic', exact: true}).click();
+  await expect(page.locator('.site-header .wallet-button')).toContainText(address.slice(0,4));
+  await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
+  await page.getByRole('button',{name:'Finance this project'}).click();
+  await expect(dialog).toContainText('Confirmation pending');
+  await expect(dialog.locator('code.wallet-address')).toHaveText(signature);
   await expect(page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'})).toHaveCount(0);
   controls.outcome='confirmed';
   await page.locator('dialog[open]').getByRole('button',{name:'Check confirmation'}).click();
-  await expect(page.locator('dialog[open]')).toContainText('Test financing confirmed');
+  await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.sends).toBe(1);
 });
 test('insufficient test tokens and a wrong network stop before signing',async({page})=>{
@@ -156,10 +165,10 @@ test('confirmation RPC failure retains the signature and permits status checking
   const {controls,dialog}=await fixture(page);controls.statusUnavailable=true;
   await review(page);await dialog.getByRole('button',{name:'Approve in Solflare'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Confirmation is unavailable');
-  await expect(page.locator('dialog[open]').getByRole('link',{name:'View transaction on Devnet'})).toHaveAttribute('href',/cluster=devnet/);
+  await expect(page.locator('dialog[open]').getByRole('link',{name:'View transaction on Solana Explorer'})).toHaveAttribute('href',/cluster=devnet/);
   controls.statusUnavailable=false;
   await page.locator('dialog[open]').getByRole('button',{name:'Check confirmation'}).click();
-  await expect(page.locator('dialog[open]')).toContainText('Test financing confirmed');
+  await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.sends).toBe(1);
 });
 test('failed and expired transactions provide a fresh review rather than resubmitting',async({page})=>{
@@ -171,4 +180,39 @@ test('failed and expired transactions provide a fresh review rather than resubmi
   await review(page);await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
   await expect(page.locator('dialog[open]')).toContainText('Transaction expired');
   expect(controls.sends).toBe(2);expect(controls.nonce).toBe(0);
+});
+
+test('10-token confirmed contribution refreshes live demo total and wallet position automatically',async({page})=>{
+  const {controls}=await fixture(page); controls.amount=BigInt(10_000_000);
+  await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
+  await expect(page.locator('progress')).toHaveAttribute('value','3.25');
+  await review(page,'10');
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
+  await expect(page.locator('dialog[open]')).toContainText('13.25 / 100 JV Test USD');
+  await expect(page.locator('progress')).toHaveAttribute('value','13.25');
+  await expect(page.locator('[data-live-total]')).toHaveText('13.25 / 100 JV Test USD');
+  await expect(page.locator('dialog[open]')).toContainText('10 JV Test USD');
+  await expect(page.locator('dialog[open]').getByRole('link',{name:'View transaction on Solana Explorer'})).toHaveAttribute('href',/https:\/\/explorer.solana.com\/tx\/.*\?cluster=devnet/);
+  await page.locator('dialog[open]').getByRole('link',{name:'View Portfolio'}).click();
+  await expect(page.locator('[data-live-position]')).toHaveText('10 JV Test USD');
+  expect(controls.sends).toBe(1);
+});
+test('pending and rejected contributions never fabricate progress; RPC failure leaves business facts usable',async({page})=>{
+  const {controls}=await fixture(page);
+  await expect(page.locator('[data-live-total]')).toHaveText('3.25 / 100 JV Test USD');
+  controls.reject=true; await review(page);
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await expect(page.locator('dialog[open]')).toContainText('User rejected');
+  await expect(page.locator('progress')).toHaveAttribute('value','3.25');
+  controls.reject=false;controls.outcome='pending';
+  await page.locator('dialog[open]').getByRole('button',{name:'Approve in Solflare'}).click();
+  await expect(page.locator('dialog[open]')).toContainText('Confirmation pending');
+  await expect(page.locator('progress')).toHaveAttribute('value','3.25');
+  await page.keyboard.press('Escape'); controls.readFailure=true;
+  await page.getByRole('button',{name:'Read Devnet records'}).click();
+  await expect(page.locator('.onchain-panel')).toContainText('Last successful read shown');
+  await expect(page.getByRole('heading',{name:'Project Readiness'})).toBeVisible();
+  await expect(page.locator('main')).toContainText('€250,000');
+  await expect(page.locator('main')).not.toContainText('€75,000');
 });

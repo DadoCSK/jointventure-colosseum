@@ -182,7 +182,7 @@ export function WalletPanel() {
         <>
           <p>
             Connect Solflare to view your wallet address and Devnet SOL balance.
-            Portfolio commitments above remain demo data.
+            EUR portfolio commitments remain demo data.
           </p>
           <div className="wallet-panel-actions">
             <WalletButton />

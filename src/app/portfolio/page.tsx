@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, ArrowDownLeft, BriefcaseBusiness } from "lucide-react";
 import { WalletPanel } from "@/components/wallet";
 import {OnchainProject} from '@/components/financing';
-import { bavaria, eur, portfolio } from "@/data/projects";
+import { projects, eur, portfolio } from "@/data/projects";
 import {
   DemoBanner,
   MetricCard,
@@ -12,16 +12,17 @@ import {
 } from "@/components/ui";
 export const metadata: Metadata = { title: "My Portfolio" };
 export default function Portfolio() {
+  const demoProject = projects.find(project => project.id === "netherlands")!;
   return (
-    <div className="container page-content">
+    <div className="container page-content portfolio-page">
       <PageHeader
         eyebrow="YOUR DASHBOARD"
         title="My Portfolio"
         subtitle="A clear view of your infrastructure financing positions."
       />
-      <DemoBanner>
+      <DemoBanner label="FICTIONAL EUR DATA">
         Portfolio positions and activity are demo data, independent of your
-        wallet. Live Devnet test contributions are shown separately below.
+        wallet. Live Devnet test contributions are shown separately.
       </DemoBanner>
       <div className="portfolio-metrics">
         <MetricCard
@@ -50,8 +51,8 @@ export default function Portfolio() {
       <section className="portfolio-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">YOUR POSITIONS</span>
-            <h2>Capital at work.</h2>
+            <span className="eyebrow">FICTIONAL EUR PORTFOLIO EXAMPLE</span>
+            <h2>Illustrative position.</h2>
           </div>
           <span className="muted">1 demo position</span>
         </div>
@@ -61,8 +62,8 @@ export default function Portfolio() {
               <BriefcaseBusiness size={25} />
             </span>
             <div>
-              <h3>{bavaria.name}</h3>
-              <p>{bavaria.location}</p>
+              <h3>{demoProject.name}</h3>
+              <p>{demoProject.location}</p>
             </div>
             <StatusBadge>Active · demo</StatusBadge>
           </div>
@@ -74,9 +75,9 @@ export default function Portfolio() {
             <MetricCard label="Repayments" value={eur(portfolio.repayments)} />
             <MetricCard
               label="Project funding"
-              value={`${Math.round((bavaria.funded / bavaria.target) * 100)}%`}
+              value={`${Math.round(((demoProject.funded ?? 0) / demoProject.target) * 100)}%`}
             />
-            <Link href="/projects/bavaria" className="btn btn-outline">
+            <Link href="/projects" className="btn btn-outline">
               View project <ArrowUpRight size={16} />
             </Link>
           </div>
@@ -84,12 +85,12 @@ export default function Portfolio() {
       </section>
       <section className="portfolio-section panel">
         <span className="eyebrow">ACTIVITY</span>
-        <h2>Transaction history</h2>
+        <h2>Illustrative transaction history</h2>
         <div
           className="table-wrapper"
           tabIndex={0}
           role="region"
-          aria-label="Transaction history table"
+          aria-label="Illustrative transaction history table"
         >
           <table className="table">
             <thead>
@@ -109,7 +110,7 @@ export default function Portfolio() {
                     Demo commitment
                   </span>
                 </td>
-                <td>{bavaria.name}</td>
+                <td>{demoProject.name}</td>
                 <td>
                   <time dateTime={portfolio.transaction.date}>1 Oct 2026</time>
                 </td>

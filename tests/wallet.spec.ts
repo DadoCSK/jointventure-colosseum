@@ -31,7 +31,9 @@ async function mockSolflare(
 }
 async function respondBalance(route: Route, value: number) {
   const request = route.request().postDataJSON();
-  expect(request.method).toBe("getBalance");
+  if (request.method !== "getBalance") {
+    await route.fulfill({json:{jsonrpc:"2.0",id:request.id,error:{code:-32005,message:"Project read unavailable in wallet-only fixture"}}}); return;
+  }
   await route.fulfill({
     json: {
       jsonrpc: "2.0",
@@ -156,7 +158,7 @@ test("a failed RPC read is unavailable, never a fake zero; external disconnect c
       return;
     }
     const request = route.request().postDataJSON();
-    expect(request.method).toBe("getBalance");
+    expect(["getBalance", "getGenesisHash"]).toContain(request.method);
     await route.fulfill({
       json: {
         jsonrpc: "2.0",
@@ -188,7 +190,7 @@ test("an old account response cannot overwrite a new account balance; refresh re
   await mockSolflare(page);
   await page.route(rpc, async (route) => {
     const request = route.request().postDataJSON();
-    if (request.params[0] === firstAccount) {
+    if (request.method === "getBalance" && request.params[0] === firstAccount) {
       await new Promise<void>((resolve) => {
         release = resolve;
       });
@@ -243,5 +245,6 @@ test("connected wallet layout fits narrow screens and financing requires connect
   await expect(page.locator('dialog[open]')).toContainText('JV Test USD is not official USDC');
   await expect(page.locator('dialog[open]').getByRole('button',{name:'Connect Solflare',exact:true})).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator("progress")).toHaveAttribute("value", "75000");
+  await expect(page.locator("progress")).toHaveCount(0);
+  await expect(page.locator("main")).not.toContainText("€75,000");
 });

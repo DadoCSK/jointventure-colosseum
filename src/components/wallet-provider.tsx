@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
-import type {FinanceReview,FinanceReceipt,Confirmation} from '@/chain/client';
+import type {FinanceReview,FinanceReceipt,Confirmation,ProjectReadout} from '@/chain/client';
 import type {DocumentReview, DocumentReceipt} from '@/chain/documents';
 
 export const DEVNET_RPC = "https://api.devnet.solana.com";
@@ -30,6 +30,10 @@ type WalletContextValue = {
   financeError: string | null;
   financeProject: (review:FinanceReview) => Promise<void>;
   checkFinancing: () => Promise<void>;
+  projectResult: {address: string | null; data: ProjectReadout} | null;
+  projectLoading: boolean;
+  projectError: string | null;
+  refreshProject: () => Promise<void>;
   anchorDocument: (review: DocumentReview, submitted: (receipt: DocumentReceipt) => void) => Promise<DocumentReceipt>;
 };
 const WalletContext = createContext<WalletContextValue | null>(null);
@@ -50,6 +54,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [financeState,setFinanceState]=useState<'idle'|'signing'|Confirmation>('idle');
   const [financeError,setFinanceError]=useState<string|null>(null);
   const pendingReceipt=useRef<FinanceReceipt|null>(null);
+  const [projectResult, setProjectResult] = useState<{address: string | null; data: ProjectReadout} | null>(null);
+  const [projectLoading, setProjectLoading] = useState(false);
+  const [projectError, setProjectError] = useState<string | null>(null);
+  const projectRequest = useRef(0);
+  const refreshProject = useCallback(async () => {
+    const request = ++projectRequest.current;
+    const account = addressRef.current;
+    setProjectLoading(true); setProjectError(null);
+    try {
+      const {readProject} = await import('@/chain/client');
+      const data = await readProject(account ?? undefined);
+      if (mountedRef.current && request === projectRequest.current && account === addressRef.current) setProjectResult({address: account, data});
+    } catch {
+      if (mountedRef.current && request === projectRequest.current && account === addressRef.current) setProjectError('Live Devnet data is unavailable. Try reading again. The real business information remains available.');
+    } finally {
+      if (mountedRef.current && request === projectRequest.current) setProjectLoading(false);
+    }
+  }, []);
 
   const loadBalance = useCallback(async (account: string) => {
     balanceRequest.current?.abort();
@@ -206,11 +228,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setFinanceState(state);
       setFinanceError(state==='failed'?'The transaction failed. No financing was recorded.':null);
       if(state!=='pending') pendingReceipt.current=null;
-      if(state==='confirmed' && addressRef.current) void loadBalance(addressRef.current);
+      if(state==='confirmed') {
+        if(addressRef.current) void loadBalance(addressRef.current);
+        await refreshProject();
+      }
     } catch {
       setFinanceError('Confirmation is unavailable. Keep this signature and check again before another commitment.');
     } finally {busyRef.current=false;setBusy(false);}
-  },[loadBalance]);
+  },[loadBalance,refreshProject]);
 
   const financeProject=useCallback(async(review:FinanceReview)=>{
     if(busyRef.current || pendingReceipt.current) return;
@@ -261,7 +286,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         disconnect,
         refreshBalance,
         financeReceipt,financeState,financeError,financeProject,checkFinancing,
-        anchorDocument,
+        anchorDocument, projectResult, projectLoading, projectError, refreshProject,
       }}
     >
       {children}

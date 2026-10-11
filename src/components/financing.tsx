@@ -1,8 +1,10 @@
 "use client";
-import {useRef,useState} from 'react';
+import {useEffect,useState} from 'react';
 import {ArrowUpRight,CheckCircle2,RefreshCw} from 'lucide-react';
 import {Modal} from './modal';
 import {useWallet} from './wallet-provider';
+import Link from 'next/link';
+import {bavaria} from '@/data/projects';
 import deployment from '@/chain/deployment.json';
 import {formatTokenUnits,parseTokenAmount} from '@/chain/amount';
 import type {FinanceReview,ProjectReadout} from '@/chain/client';
@@ -13,46 +15,45 @@ function ProjectLinks() {
     {([['Project PDA',deployment.projectPda],['Project vault',deployment.vaultPda],['JV Test USD mint',deployment.mint]] as const).map(([label,address])=><a className="text-link" href={explorer(address)} target="_blank" rel="noreferrer" key={label}>{label} <ArrowUpRight size={13}/></a>)}
   </div>;
 }
+export const DEMO_TARGET_UNITS = BigInt(100_000_000);
 export function OnchainProject({portfolio=false}:{portfolio?:boolean}) {
-  const {address}=useWallet();
-  const [result,setResult]=useState<{address:string|null;data:ProjectReadout}|null>(null);
-  const [loading,setLoading]=useState(false);
-  const [error,setError]=useState<string|null>(null);
-  const request=useRef(0);
-  const current=result && result.address===(portfolio?address:null)?result.data:null;
-  async function refresh() {
-    const id=++request.current;
-    const account=portfolio?address:null;
-    setLoading(true);setError(null);setResult(null);
-    try {
-      const {readProject}=await import('@/chain/client');
-      const data=await readProject(account??undefined);
-      if(request.current===id) setResult({address:account,data});
-    } catch {if(request.current===id) setError('Unable to read the Devnet project. Try refreshing.');}
-    finally {if(request.current===id) setLoading(false);}
-  }
-  return <section className="panel onchain-panel" aria-label={portfolio?'Your Devnet contribution':'Bavaria on Solana Devnet'}>
-    <span className="eyebrow">LIVE DEVNET · TEST TOKENS</span>
-    <h2>{portfolio?'Your Bavaria test position':'Bavaria project account'}</h2>
-    <p>{portfolio?'Read the connected wallet’s contribution from the project program.':'A real Joint Venture project PDA with a program-controlled token vault.'}</p>
+  const {address, projectResult, projectLoading: loading, projectError: error, refreshProject} = useWallet();
+  const current = projectResult && (!portfolio || projectResult.address === address) ? projectResult.data : null;
+  useEffect(() => {
+    if (!portfolio || address) void refreshProject();
+  }, [portfolio, address, refreshProject]);
+  const total = current ? BigInt(current.totalUnits) : null;
+  const percent = total === null ? null : Number(total * BigInt(10000) / DEMO_TARGET_UNITS) / 100;
+  return <section className="panel onchain-panel" aria-label={portfolio?'Your Devnet contribution':'Live Devnet Financing Demo'}>
+    <span className="eyebrow">LIVE CHAIN DATA · TECHNICAL DEMONSTRATION</span>
+    <h2>{portfolio?'Your Bavaria Devnet position':'Live Devnet Financing Demo'}</h2>
+    <p>JV Test USD is a Devnet-only demo token with no monetary value.</p>
+    <p>This live demo round is separate from the project’s €250,000 real-world financing requirement. The 100-token target is illustrative and has no EUR relationship.</p>
     <ProjectLinks/>
+    {loading && <p role="status">Reading live Devnet financing state…</p>}
     {current && <div className="chain-metrics" aria-live="polite">
-      <div><span>Recorded project deposits</span><strong>{formatTokenUnits(current.totalUnits)} JV Test USD</strong></div>
+      <div><span>Live committed</span><strong data-live-total>{formatTokenUnits(current.totalUnits)} / 100 JV Test USD</strong></div>
+      <div><span>Demo target</span><strong>100 JV Test USD</strong></div>
+      <div className="live-progress">
+        <span>{percent}% of demo target</span>
+        <progress className="progress progress-primary" aria-label="Live Devnet demo financing" aria-valuetext={`${formatTokenUnits(current.totalUnits)} of 100 JV Test USD, ${percent}%`} max={100} value={Math.min(percent!,100)}/>
+      </div>
+      {error && <p className="fine-print">Last successful read shown; the latest total could not be refreshed.</p>}
       {portfolio && address && <>
-        <div><span>Your recorded contribution</span><strong>{formatTokenUnits(current.contributedUnits)} JV Test USD</strong></div>
+        <div><span>Your recorded contribution</span><strong data-live-position>{formatTokenUnits(current.contributedUnits)} JV Test USD</strong></div>
         <div><span>Your wallet’s demo-token balance</span><strong>{formatTokenUnits(current.balanceUnits)} JV Test USD</strong></div>
       </>}
-      <p className="fine-print">Financing {current.enabled?'enabled':'paused'} on Devnet.</p>
+      <p className="fine-print">Demo financing {current.enabled?'enabled':'paused'} on Devnet.</p>
     </div>}
     {error && <p role="alert" className="input-error">{error}</p>}
-    <button className="btn btn-outline" disabled={loading || (portfolio && !address)} onClick={()=>void refresh()}><RefreshCw size={14}/>{loading?'Reading Devnet…':'Read Devnet records'}</button>
+    {!current && !loading && !error && <p className="fine-print">Live totals have not been read. No estimated amount is shown.</p>}
+    <button className="btn btn-outline" disabled={loading || (portfolio && !address)} onClick={()=>void refreshProject()}><RefreshCw size={14}/>{loading?'Reading Devnet…':'Read Devnet records'}</button>
     {portfolio && !address && <p className="fine-print">Connect Solflare to read your position.</p>}
-    <p className="fine-print">JV Test USD is a dedicated demo token, not official USDC. Live test-token deposits are separate from the EUR case metrics and demo portfolio. No exchange rate, repayment or return is implied.</p>
   </section>;
 }
 export function InvestmentModal() {
   const wallet=useWallet();
-  const [amount,setAmount]=useState('10000');
+  const [amount,setAmount]=useState('10');
   const [review,setReview]=useState<FinanceReview|null>(null);
   const [readout,setReadout]=useState<ProjectReadout|null>(null);
   const [loading,setLoading]=useState(false);
@@ -80,9 +81,17 @@ export function InvestmentModal() {
       <span className="modal-phase">JV TEST USD · SOLANA DEVNET</span>
       {receiptVisible ? <div className="completion">
         {wallet.financeState==='confirmed' && <CheckCircle2 size={36}/>}
-        <h3>{wallet.financeState==='confirmed'?'Test financing confirmed':wallet.financeState==='failed'?'Transaction failed':wallet.financeState==='expired'?'Transaction expired':'Confirmation pending'}</h3>
-        <p role="status">{wallet.financeState==='confirmed'?`${receipt!.amount} JV Test USD was recorded against Bavaria. EUR demo totals remain separate.`:wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>
-        <a className="text-link" href={`https://explorer.solana.com/tx/${receipt!.signature}?cluster=devnet`} target="_blank" rel="noreferrer">View transaction on Devnet <ArrowUpRight size={14}/></a>
+        <h3>{wallet.financeState==='confirmed'?'Financing recorded on Solana':wallet.financeState==='failed'?'Transaction failed':wallet.financeState==='expired'?'Transaction expired':'Confirmation pending'}</h3>
+        <p role="status">{wallet.financeState==='confirmed'?`${receipt!.amount} JV Test USD demo financing contribution was recorded. This is separate from the real EUR capital raise.`:wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>
+        {wallet.financeState==='confirmed' && <div className="success-summary">
+          <p><span>Amount</span><strong>{receipt!.amount} JV Test USD</strong></p>
+          <p><span>Project</span><strong>{bavaria.name}</strong></p>
+          <p><span>Network</span><strong>Solana Devnet</strong></p>
+          <p><span>Updated project demo total</span><strong>{wallet.projectResult && !wallet.projectError && !wallet.projectLoading ? `${formatTokenUnits(wallet.projectResult.data.totalUnits)} / 100 JV Test USD` : wallet.projectLoading ? 'Reading confirmed chain state…' : 'Unavailable — retry the live read'}</strong></p>
+          {wallet.projectError && <p role="alert">{wallet.projectError}</p>}
+          <Link className="btn btn-outline" href="/portfolio" onClick={event=>event.currentTarget.closest('dialog')?.close()}>View Portfolio</Link>
+        </div>}
+        <a className="text-link" href={`https://explorer.solana.com/tx/${receipt!.signature}?cluster=devnet`} target="_blank" rel="noreferrer">View transaction on Solana Explorer <ArrowUpRight size={14}/></a>
         <code className="wallet-address">{receipt!.signature}</code>
         {wallet.financeState==='pending'?<button className="btn btn-outline" disabled={wallet.busy} onClick={()=>void wallet.checkFinancing()}>Check confirmation</button>:<button className="btn btn-outline" onClick={()=>{setShowReceipt(false);setReview(null);setError(null);}}>Review another commitment</button>}
       </div>:currentReview ? <div>

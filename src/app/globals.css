@@ -1963,3 +1963,37 @@ h3 {
 .integrity-details, .local-document-check { margin-top: 20px; }
 .local-document-check input { width: 100%; max-width: 100%; }
 .integrity-file-name, .integrity-details .fingerprint, [data-local-hash] { overflow-wrap: anywhere; word-break: break-all; }
+
+/* Phase 3: business facts and the live technical demo remain distinct. */
+.founding-card { border-color: #88a68b; box-shadow: 0 4px 20px #1e4b2c0c; }
+.project-identity { display: block; margin-bottom: 14px; color: var(--green); font-size: .65rem; font-weight: 750; letter-spacing: .07em; line-height: 1.6; }
+.founding-card .project-body { background: #f7faf4; }
+.business-raise { display: grid; gap: 8px; }
+.business-raise strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.business-raise span, .business-raise small { color: var(--muted); font-size: .8rem; }
+.founding-story { border-top: 1px solid var(--line); }
+.founding-story > p { max-width: 850px; color: var(--muted); line-height: 1.8; }
+.founding-story h2 { margin: 15px 0 22px; }
+.origin-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; margin: 32px 0; }
+.origin-metrics strong { display: block; font-size: 1.5rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.origin-metrics span { display: block; color: var(--muted); margin-top: 8px; font-size: .85rem; }
+.founding-statement { margin: 24px 0; border-left: 3px solid #88a68b; background: #f7faf4; }
+.readiness-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; margin: 26px 0; }
+.readiness-grid .metric strong { font-size: 1.1rem; }
+.live-progress { grid-column: 1 / -1; }
+.live-progress progress { width: 100%; }
+.success-summary { text-align: left; margin: 24px 0; }
+.success-summary p { display: grid; gap: 5px; }
+.success-summary span { color: var(--muted); font-size: .8rem; }
+.success-summary strong { overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .origin-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .origin-metrics strong { font-size: 1.15rem; }
+  .readiness-grid { grid-template-columns: 1fr; }
+}
+
+.demo-action-heading { margin: 24px 0 14px; font-size: 1rem; }
+
+/* Keep the transparency notice clear of financial figures as titles wrap. */
+.hero-visual { height: auto; min-height: 450px; flex-direction: column; gap: 24px; padding: 20px 0; }
+.floating-record { position: relative; inset: auto; align-self: flex-end; max-width: 100%; }

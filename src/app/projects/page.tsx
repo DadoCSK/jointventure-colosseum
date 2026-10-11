@@ -11,12 +11,11 @@ export default function Projects() {
         subtitle="Explore agricultural infrastructure financing. Controlled-environment cultivation is our first use case."
       />
       <DemoBanner>
-        Mock marketplace. Bavaria is real-world-inspired; the Spain and
-        Netherlands projects are fictional demos.
+        Bavaria is our real founding project, currently seeking financing. The Netherlands and Spain listings are fictional demo projects, not real customers.
       </DemoBanner>
       <Marketplace />
       <div className="marketplace-note">
-        Financial figures are illustrative projections, not guaranteed returns.
+        Bavaria business facts are supplied by the project developer. Demo listing figures are illustrative; financial projections are not guaranteed returns.
       </div>
     </div>
   );

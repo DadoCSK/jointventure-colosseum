@@ -37,6 +37,7 @@ async function openFixture(page: Page) {
 test('production documents stay pending; file hashing is local and uses exact SHA-256', async ({page}) => {
   const external: string[] = [];
   page.on('request', request => {if (!request.url().startsWith('http://localhost:3000')) external.push(request.url());});
+  await rpc(page, {fail: true});
   await page.goto('/projects/bavaria');
   for (const id of ['license', 'rental', 'budget']) {
     const card = page.locator(`[data-document-id="${id}"]`);
@@ -49,12 +50,12 @@ test('production documents stay pending; file hashing is local and uses exact SH
   await expect(dialog.locator('[data-local-hash]')).toHaveText(hash);
   await expect(dialog).toContainText('this hash has not been anchored');
   await expect(dialog.getByRole('button', {name: 'Anchor fingerprint in Solflare'})).toBeDisabled();
-  expect(external).toEqual([]);
+  expect(external.every(url => new URL(url).origin === deployment.rpc)).toBe(true);
   await page.keyboard.press('Escape');
 });
 test('reads a real-format record, displays timestamp/PDA links, matches and detects altered local files', async ({page}) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  const requests: string[] = []; page.on('request', request => {if (request.url() === deployment.rpc) requests.push(request.postData() ?? '');});
+  const requests: string[] = []; page.on('request', request => {if (new URL(request.url()).origin === deployment.rpc) requests.push(request.postData() ?? '');});
   await rpc(page);
   const dialog = await openFixture(page);
   await dialog.getByRole('button', {name: 'Read integrity record'}).click();
@@ -81,8 +82,9 @@ test('RPC failure leaves the project and financing usable and never invents a fi
   await expect(dialog).toContainText('Integrity record pending');
   await expect(dialog.locator('.integrity-details')).toHaveCount(0);
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('heading', {name: 'Bavaria Cultivation Facility'})).toBeVisible();
-  await expect(page.locator('progress')).toHaveAttribute('value', '75000');
+  await expect(page.getByRole('heading', {name: 'Bavaria Controlled Cultivation Infrastructure'})).toBeVisible();
+  await expect(page.locator('progress')).toHaveCount(0);
+  await expect(page.locator('.onchain-panel')).toContainText('Live Devnet data is unavailable');
   await page.getByRole('button', {name: 'Finance this project'}).click();
   await expect(page.locator('dialog[open]')).toContainText('JV TEST USD');
 });

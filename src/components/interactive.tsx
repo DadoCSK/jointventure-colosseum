@@ -13,6 +13,7 @@ import {
 import { ProjectCard } from "./ui";
 import { Modal } from "./modal";
 import { WalletButton } from "./wallet";
+import { AppearanceSwitch } from "./ui-variant";
 export function NoticeButton({
   children,
   title,
@@ -62,6 +63,7 @@ export function Navbar() {
           ))}
         </div>
         <div className="nav-actions">
+          <div className="desktop-appearance"><AppearanceSwitch /></div>
           <WalletButton />
           <button
             className="btn btn-ghost menu-toggle"
@@ -75,6 +77,7 @@ export function Navbar() {
         </div>
         {open && (
           <div id="mobile-navigation" className="mobile-navigation">
+            <AppearanceSwitch />
             {links.map((l) => (
               <Link
                 href={l.href}

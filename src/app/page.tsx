@@ -15,9 +15,10 @@ import {
   FundingProgress,
   ProjectCard,
   StatusBadge,
+  FacilityCaption,
 } from "@/components/ui";
 import { NoticeButton } from "@/components/interactive";
-import { bavaria, eur, phase2, platformStats, projects } from "@/data/projects";
+import { bavaria, eur, phase2, platformStats, projects, foundingLabel } from "@/data/projects";
 export default function Home() {
   return (
     <>
@@ -33,7 +34,7 @@ export default function Home() {
               <span>Shared opportunity.</span>
             </h1>
             <p>
-              Connect capital with agriculture. Finance the infrastructure
+              An onchain financing platform for agricultural infrastructure. Finance the infrastructure
               behind tomorrow’s agricultural businesses, with transparent
               project records every step of the way.
             </p>
@@ -69,11 +70,9 @@ export default function Home() {
                 </span>
                 <StatusBadge>Funding open</StatusBadge>
               </div>
-              <small className="eyebrow">FEATURED OPPORTUNITY · DEMO</small>
+              <small className="eyebrow">{foundingLabel}</small>
               <h2>
-                Bavaria Cultivation
-                <br />
-                Facility
+                Bavaria Controlled Cultivation Infrastructure
               </h2>
               <p>
                 Bavaria, Germany <span>·</span> Agriculture
@@ -99,7 +98,7 @@ export default function Home() {
               </span>
               <div>
                 <strong>Built on transparency</strong>
-                <small>3 mock verification records</small>
+                <small>Project document integrity pending</small>
               </div>
               <Clock3 size={16} />
             </div>
@@ -108,6 +107,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <div className="container"><FacilityCaption /></div>
       </section>
       <div className="container">
         <div className="platform-stats">
@@ -115,7 +115,7 @@ export default function Home() {
             <div key={s.label}>
               <strong>{s.value}</strong>
               <span>{s.label}</span>
-              <small>Demo platform statistic</small>
+              <small>MVP scope</small>
             </div>
           ))}
           <div className="stats-note">
@@ -129,13 +129,24 @@ export default function Home() {
         </div>
         <DemoBanner />
       </div>
+      <section className="section container founding-story">
+        <span className="eyebrow">{foundingLabel}</span>
+        <h2>Built from a real financing problem</h2>
+        <p>Joint Venture began while developing a regulated controlled-environment agricultural infrastructure project in Bavaria. After obtaining the cultivation association’s licence, securing the facility under lease and executing the commercial rental agreement, infrastructure financing remained the final major barrier to launch.</p>
+        <p>We built Joint Venture to solve that problem — and then asked whether the same model could finance agricultural infrastructure more broadly. The business is pre-operational and the full €250,000 has not been raised.</p>
+        <div className="origin-metrics">
+          {[["€250,000", "Full financing requirement"], ["€220,000", "Infrastructure & equipment"], ["€30,000", "Initial working capital"], ["~€33,000/month", "Contracted rental revenue"], ["Obtained", "Licence"], ["Executed", "Commercial agreement"]].map(([value,label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
+        </div>
+        <p className="fine-print">Business facts supplied by the project developer; documents have not been independently authenticated. Contracted revenue is not current operating revenue or a guaranteed investor return.</p>
+        <Link className="btn btn-primary" href="/projects/bavaria">View Founding Project <ArrowUpRight size={18}/></Link>
+      </section>
       <section className="section container">
         <div className="section-heading">
           <div>
             <span className="eyebrow">THE MARKETPLACE</span>
             <h2>Built for what comes next.</h2>
             <p>
-              Discover infrastructure projects ready for their next chapter.
+              Our real founding project, alongside two fictional examples of future agricultural infrastructure expansion.
             </p>
           </div>
           <Link href="/projects" className="text-link">
@@ -170,12 +181,12 @@ export default function Home() {
               {
                 icon: Building2,
                 title: "Finance real infrastructure",
-                text: "Support the facilities and equipment that help agricultural businesses build their next phase.",
+                text: "Explore agricultural infrastructure financing. This MVP demonstrates contributions using Devnet-only tokens with no monetary value.",
               },
               {
                 icon: ShieldCheck,
                 title: "Follow transparent records",
-                text: "Review project documentation and verification records. This MVP uses labelled mock records.",
+                text: "Compare local files with SHA-256 fingerprints anchored on Solana. Integrity does not establish legal authenticity; actual project records remain pending.",
               },
             ].map((s, i) => (
               <article key={s.title}>

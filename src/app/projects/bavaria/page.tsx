@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, MapPin, Sprout, Clock3, ArrowLeft } from "lucide-react";
-import { bavaria, eur, useOfFunds, verifications } from "@/data/projects";
+import { bavaria, eur, useOfFunds, verifications, readiness, foundingLabel } from "@/data/projects";
 import {
-  DemoBanner,
-  FundingProgress,
   MetricCard,
   StatusBadge,
+  FacilityCaption,
 } from "@/components/ui";
 import { InvestmentModal, VerificationCard } from "@/components/interactive";
 import {OnchainProject} from '@/components/financing';
 import {IntegrityTestFixture} from '@/components/document-integrity';
-export const metadata: Metadata = { title: "Bavaria Cultivation Facility" };
+export const metadata: Metadata = { title: "Bavaria Controlled Cultivation Infrastructure" };
 export default function Bavaria() {
   return (
     <div className="container page-content">
@@ -22,7 +21,7 @@ export default function Bavaria() {
       </nav>
       <header className="detail-header">
         <div>
-          <span className="eyebrow">AGRICULTURAL INFRASTRUCTURE</span>
+          <span className="eyebrow">{foundingLabel}</span>
           <h1>{bavaria.name}</h1>
           <div className="detail-metadata">
             <span>
@@ -35,17 +34,19 @@ export default function Bavaria() {
             </span>
             <span>
               <Clock3 size={16} />
-              Verification pending
+              Document integrity pending
             </span>
           </div>
         </div>
         <StatusBadge>{bavaria.status}</StatusBadge>
       </header>
-      <DemoBanner>
-        Real-world-inspired case. EUR funding activity is demo data. Live Devnet
-        test-token contributions are separate. Document fingerprints establish
-        file integrity; Joint Venture does not authenticate issuers or contents.
-      </DemoBanner>
+      <div className="facility-masthead industrial-only"><FacilityCaption /></div>
+      <section className="founding-statement panel">
+        <span className="eyebrow">REAL BUSINESS · PROJECT DEVELOPER FACTS</span>
+        <h2>Joint Venture was created from this project.</h2>
+        <p>This is a real agricultural infrastructure financing requirement in Bavaria, Germany — not a fictional marketplace listing. The underlying cultivation association is licensed, the facility has been secured under lease, and the commercial rental agreement has been executed. The project is seeking capital for infrastructure deployment.</p>
+        <p className="fine-print">The business has not started operating and the full €250,000 has not been raised. These facts are supplied by the project developer; Joint Venture has not independently authenticated the supporting legal documents.</p>
+      </section>
       <div className="detail-layout">
         <div className="detail-main">
           <section className="panel">
@@ -56,47 +57,37 @@ export default function Bavaria() {
                 label="Financing target"
                 value={eur(bavaria.target)}
               />
-              <MetricCard
-                label="Capital committed"
-                value={eur(bavaria.funded)}
-              />
-              <MetricCard
-                label="Remaining capital"
-                value={eur(bavaria.target - bavaria.funded)}
-              />
+              <MetricCard label="Current raise status" value="Open"/>
+              <MetricCard label="Capital raised" value="Seeking financing"/>
               <MetricCard
                 label="Contracted monthly revenue"
                 value={`~${eur(bavaria.contractedMonthlyRevenue!)}`}
-                note="Document verification pending"
+                note="Contracted · not yet operating revenue"
               />
               <MetricCard
                 label="Infrastructure budget"
                 value={eur(bavaria.infrastructureBudget!)}
               />
-              <MetricCard label="Category" value={bavaria.category} />
+              <MetricCard label="Initial working capital" value={eur(bavaria.workingCapital!)} />
             </div>
             <p className="projection-note">
-              Contracted revenue describes the project’s customer rental
-              agreement, not an investor return. Document verification is
-              pending. No investment rate or repayment term has been
-              established.
+              Contracted rental revenue is approximately €33,000/month, not a guaranteed investor return. The business is pre-operational. Any financial projections are not guaranteed; no investor return or repayment terms are established.
             </p>
           </section>
           <section className="panel">
             <span className="eyebrow">BUSINESS OVERVIEW</span>
             <h2>Infrastructure for the next stage.</h2>
             <p>
-              The Bavaria project is a real-world-inspired example of financing
-              agricultural infrastructure, with controlled-environment
-              cultivation as the first use case. The proposed infrastructure
-              includes lighting, climate control, irrigation, security, and
-              facility improvements.
+              The infrastructure company is a GmbH. It has executed a commercial rental agreement with the licensed cultivation association. Cultivation work is performed by association members. Infrastructure deployment is the remaining major financing requirement before launch.
             </p>
-            <p>
-              This demonstration illustrates how a project’s financing needs and
-              supporting records could be presented. It makes no claim about the
-              operating status, licensing, or performance of an actual business.
-            </p>
+            <p>Controlled-environment cultivation is the founding use case; agricultural infrastructure financing is the broader platform focus.</p>
+          </section>
+          <section className="panel">
+            <span className="eyebrow">REAL BUSINESS READINESS</span>
+            <h2>Project Readiness</h2>
+            <div className="readiness-grid">{readiness.map(item => <MetricCard key={item.label} label={item.label} value={item.value}/>)}</div>
+            <p className="fine-print">Phased deployment may be possible from approximately €50,000, with infrastructure expansion as operations scale. The preferred full-deployment target remains €250,000.</p>
+            <p className="fine-print">Business readiness is distinct from document integrity: supporting document fingerprints remain pending.</p>
           </section>
           <OnchainProject/>
           <section className="panel">
@@ -105,7 +96,7 @@ export default function Bavaria() {
                 <span className="eyebrow">CAPITAL ALLOCATION</span>
                 <h2>Use of funds</h2>
               </div>
-              <span className="mock-label">DEMO BREAKDOWN</span>
+              <span className="mock-label">APPROXIMATE REQUIREMENT</span>
             </div>
             <div className="funds-list">
               {useOfFunds.map((f, i) => (
@@ -132,7 +123,9 @@ export default function Bavaria() {
             {eur(bavaria.target)}
             <span>financing target</span>
           </div>
-          <FundingProgress project={bavaria} />
+          <p className="business-raise">Capital raise open · Seeking financing</p>
+          <p className="fine-print">No EUR financing progress is represented here. The Devnet action below is a separate technical demonstration.</p>
+          <h3 className="demo-action-heading">Try the Devnet demo</h3>
           <InvestmentModal />
           <div className="finance-details">
             <div>
@@ -146,8 +139,7 @@ export default function Bavaria() {
           </div>
           <p className="fine-print">
             Financing uses a real Devnet project account and test-token vault.
-            Wallet connection alone submits no transaction. EUR demo funding
-            totals stay separate; no currency conversion is performed.
+            Wallet connection alone submits no transaction. The real €250,000 financing requirement stays separate; no currency conversion is performed.
           </p>
         </aside>
       </div>
@@ -157,8 +149,7 @@ export default function Bavaria() {
             <span className="eyebrow">PROJECT TRANSPARENCY</span>
             <h2>Verification records</h2>
             <p>
-              Compare local files with fingerprints recorded for this project.
-              Integrity records do not independently authenticate issuers or contents.
+              Files are hashed locally in your browser; only SHA-256 fingerprints are anchored on Solana. Contents are not uploaded. Matching proves file integrity, not legal authenticity or the truth of the contents.
             </p>
           </div>
         </div>
