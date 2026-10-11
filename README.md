@@ -1,6 +1,6 @@
 # Joint Venture Devnet MVP
 
-Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and Solflare. The approved cream/green design is retained. Bavaria now has a real project account and token vault on Solana Devnet; financing calls the Joint Venture program and records per-wallet test contributions.
+Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and Solflare. The Bavaria-only dashboard offers Classic and Industrial appearances. Bavaria now has a real project account and token vault on Solana Devnet; financing calls the Joint Venture program and records per-wallet test contributions.
 
 ## Run
 
@@ -16,7 +16,7 @@ npm run test:e2e
 node scripts/test-amount.mjs
 ```
 
-Routes: `/`, `/projects`, `/projects/bavaria`, `/portfolio`. Browser tests require Chromium (`npx playwright install chromium`). Node 24 was used, including its TypeScript stripping for the amount-check and mint scripts.
+Routes: `/` (Overview), `/projects/bavaria` (Project), `/facility`, `/documents`, `/portfolio`. `/projects` redirects to Bavaria. Browser tests require Chromium (`npx playwright install chromium`). Node 24 was used, including its TypeScript stripping for the amount-check and mint scripts.
 
 ## Devnet deployment
 
@@ -46,31 +46,23 @@ JV Test USD has six decimals and is a dedicated demo token—not official USDC, 
 3. On Bavaria, select **Finance this project**, enter an amount with up to six decimals, then **Review commitment**. Review the wallet, mint, project and vault links and the test-token limitations.
 4. Select **Approve in Solflare** and approve the Devnet transaction. The app checks token balance, SOL fees/rent, project state and position nonce before signing. It validates the signed message and signature before submission.
 5. Inspect the transaction link. If confirmation is pending or unavailable, use **Check confirmation**. The app retains the signature and blocks another submission while that attempt remains unresolved; it never automatically creates another deposit.
-6. In **My Portfolio**, use **Read Devnet records** to read the connected wallet's persistent onchain test position. The EUR demo portfolio remains separate.
+6. In **Portfolio**, use **Read Devnet records** to read the connected wallet's persistent onchain test position. The latest app-session transaction and wallet activity link to Explorer.
 
 App connection and pending-receipt state are in memory across client navigation and reset on a full refresh. Keep a pending transaction's Explorer link before refreshing; reconnect and read the onchain position before another review. Position nonces protect against replaying the same attempt. No automatic reconnection is performed. A user subsequently confirmed two actual wallet approvals, and both financing transactions were verified on Devnet. Installed-wallet rejection, account switching, reconnect behavior and mobile handoff still need manual validation; automated browser tests use a signing fixture.
 
-## Demo content
+## Single-project dashboard
 
-Bavaria is the real founding project, currently pre-operational; the Netherlands and Spain projects are fictional demos. The real full-deployment target is €250,000 and the capital raise is open; no fictional EUR progress is shown. Approximate contracted monthly revenue is €33,000 and the infrastructure budget is €220,000. The supplied approximate allocation is €220,000 infrastructure/equipment plus €30,000 initial working capital. These figures do not describe live token deposits. The homepage scope metrics show one founding project, two fictional examples and a technical Devnet demo.
+Bavaria is the only MVP project: a real, pre-operational founding business with a €250,000 financing requirement (€220,000 infrastructure and €30,000 working capital). Contracted rent is approximately €33,000/month, not current revenue or an investor return. Developer-supplied business facts and project documents are not independently authenticated. Fictional marketplace listings, filters, totals and EUR portfolio examples have been removed.
 
-Cultivation Licence, Customer Rental Agreement and Infrastructure Budget display **Integrity record pending**, with no invented fingerprints. Phase 2F supports local SHA-256 hashing, authority-only anchoring and live record reads/file matching; only an explicitly harmless public test fixture has been anchored. Matching bytes do not authenticate the issuer, legality or contents. Project listing is informational and the GitHub link remains unavailable until a repository URL is supplied. There is no backend, database, custodial user account or Mainnet functionality.
+The Project page shows the supplied seven-part allocation and a separate **Live Devnet Financing** card. It reads actual Project/Position accounts against an illustrative 100 JV Test USD target, with no EUR conversion. Confirmed financing re-reads the project total and connected wallet position/balance. Failed reads do not invent totals; pending receipts remain in memory and can be checked before another submission.
 
-The user-wallet acceptance check recorded two finalized **1 JV Test USD** contributions with successive nonces. Its position totals **2 JV Test USD**; the project total and vault were **3.25 JV Test USD** at verification. See `chain/receipts/wallet-acceptance.json`. These are real Devnet test-token records, separate from the EUR demo portfolio.
+**Facility** demonstrates planned visibility using explicitly simulated telemetry, smooth 24-hour SVG trends, a selectable growth-cycle illustration and planned/simulated system statuses. Bounded readings change locally every four seconds and can be paused. No external sensor data, hardware, backend or IoT integration exists. The actual facility remains pre-operational.
 
-The Devnet smoke test recorded **1.25 JV Test USD** using an isolated test wallet through the financing instruction. Its public receipt is in `chain/receipts/financing-smoke.json`; this is test activity, separate from the EUR demo commitments. Direct SPL transfers into the vault are not attributed as project financing; recorded totals derive only from successful program financing instructions.
-
-## Product truth and live demo (Phase 3)
-
-Bavaria is the real project that inspired Joint Venture, clearly distinguished from the two fictional marketplace examples. The licence, lease and commercial rental agreement are business facts supplied by the project developer, not independently authenticated documents. The business is not operating yet; contracted monthly rental revenue is approximately €33,000 and financial projections are not guaranteed returns.
-
-A separate **Live Devnet Financing Demo** reads the existing Project PDA automatically and displays recorded contributions against an illustrative **100 JV Test USD** target. The token has no monetary value and there is no EUR conversion. After confirmed financing, the project total and connected wallet Position/token balance are re-read automatically. The success view shows the signed/confirmed receipt amount, updated live total, Explorer link and View Portfolio action. Opening Portfolio also re-reads the connected wallet position; fictional EUR examples reference a fictional project and remain separate.
-
-RPC failures never fabricate a zero or progress; previous successful reads are labelled when refresh fails. Other-wallet activity needs a new read/page visit. Pending receipts and display state remain in memory. No program upgrade, protocol changes or public deployment were needed for Phase 3. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for tests and limitations.
+**Documents** retains local hashing, read/compare and authority-only anchoring. The three project records remain pending; the public harmless fixture is separate. The Classic/Industrial switch still persists appearance only. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for verification and remaining limits.
 
 ## Document integrity (Phase 2F)
 
-Open Bavaria → **View record** → **Read integrity record**. The harmless test fixture card reads an actual Devnet record. Select `tests/fixtures/integrity-test.txt` locally to see a match; changing the bytes produces a mismatch. The three actual project categories remain pending because their documents are unavailable. Do not commit sensitive documents to this repository.
+Open Documents → **View record** → **Read integrity record**. The harmless test fixture card reads an actual Devnet record. Select `tests/fixtures/integrity-test.txt` locally to see a match; changing the bytes produces a mismatch. The three actual project categories remain pending because their documents are unavailable. Do not commit sensitive documents to this repository.
 
 Browser Web Crypto hashes files in memory (20 MiB limit, HTTPS/localhost required). There is no upload endpoint, document storage or onchain file content. Only the 32-byte digest, public category ID/name, authority and chain timestamp are recorded. Matching a fingerprint proves matching bytes; it does not authenticate the issuer, truth, legality or content.
 
@@ -94,7 +86,7 @@ The same program was upgraded compatibly; original Project/Position layouts and 
 - `scripts/`: guarded deployment, initialization, pause/enable, demo minting, local program tests, amount checks and idempotent Devnet smoke verification.
 - `src/chain/`: public deployment configuration, generated IDL/types, exact token parsing, validated reads and program transaction construction.
 - `src/components/financing.tsx`, `wallet-provider.tsx`, `wallet.tsx`: review, signing, confirmation recovery, independent token positions and wallet reads.
-- `src/data/projects.ts`: typed EUR demo content and document notices.
+- `src/data/projects.ts`: the sole Bavaria business facts, allocation and document notices.
 - `tests/`: real adapter/SDK browser tests with fixture wallet and RPC responses.
 
 New client dependencies are `@coral-xyz/anchor` 0.32.1 and `@solana/spl-token` 0.4.15, alongside the existing Solflare adapter and web3.js. Rust uses Anchor 0.32.1. The build used official platform-tools v1.57, SBPF v3, and Agave CLI/validator 4.3.0 for deployment/testing. This machine required isolated temporary compiler/Cargo directories because its pre-existing caches are not writable. Program and mint keypairs stay in ignored `.localkeys/`; generated binaries, local ledgers and build directories are also ignored.

@@ -12,46 +12,53 @@ import type {FinanceReview,ProjectReadout} from '@/chain/client';
 const explorer=(address:string)=>`https://explorer.solana.com/address/${address}?cluster=devnet`;
 function ProjectLinks() {
   return <div className="chain-links">
-    {([['Project PDA',deployment.projectPda],['Project vault',deployment.vaultPda],['JV Test USD mint',deployment.mint]] as const).map(([label,address])=><a className="text-link" href={explorer(address)} target="_blank" rel="noreferrer" key={label}>{label} <ArrowUpRight size={13}/></a>)}
+    {([['Program',deployment.programId],['Project PDA',deployment.projectPda],['Project vault',deployment.vaultPda],['JV Test USD mint',deployment.mint]] as const).map(([label,address])=><a className="text-link" href={explorer(address)} target="_blank" rel="noreferrer" key={label}>{label} <ArrowUpRight size={13}/></a>)}
   </div>;
 }
 export const DEMO_TARGET_UNITS = BigInt(100_000_000);
 export function OnchainProject({portfolio=false}:{portfolio?:boolean}) {
   const {address, projectResult, projectLoading: loading, projectError: error, refreshProject} = useWallet();
-  const current = projectResult && (!portfolio || projectResult.address === address) ? projectResult.data : null;
+  const current = projectResult && projectResult.address === address ? projectResult.data : null;
   useEffect(() => {
     if (!portfolio || address) void refreshProject();
   }, [portfolio, address, refreshProject]);
   const total = current ? BigInt(current.totalUnits) : null;
   const percent = total === null ? null : Number(total * BigInt(10000) / DEMO_TARGET_UNITS) / 100;
-  return <section className="panel onchain-panel" aria-label={portfolio?'Your Devnet contribution':'Live Devnet Financing Demo'}>
-    <span className="eyebrow">LIVE CHAIN DATA · TECHNICAL DEMONSTRATION</span>
-    <h2>{portfolio?'Your Bavaria Devnet position':'Live Devnet Financing Demo'}</h2>
-    <p>JV Test USD is a Devnet-only demo token with no monetary value.</p>
-    <p>This live demo round is separate from the project’s €250,000 real-world financing requirement. The 100-token target is illustrative and has no EUR relationship.</p>
-    <ProjectLinks/>
-    {loading && <p role="status">Reading live Devnet financing state…</p>}
+  return <section className="panel onchain-panel" aria-label={portfolio?'Your Devnet Position':'Live Devnet Financing'}>
+    <div className="onchain-heading"><span className="eyebrow">SOLANA DEVNET</span><span className="status-badge">Technical demo</span></div>
+    <h2>{portfolio?'Your Devnet Position':'Live Devnet Financing'}</h2>
+    <p>Technical demo only. JV Test USD has no monetary value.</p>
+    {portfolio && <div className="position-project"><span>Project</span><strong>{bavaria.name}</strong></div>}
+    {loading && <p role="status">Reading Devnet…</p>}
     {current && <div className="chain-metrics" aria-live="polite">
-      <div><span>Live committed</span><strong data-live-total>{formatTokenUnits(current.totalUnits)} / 100 JV Test USD</strong></div>
+      <div><span>JV Test USD committed</span><strong data-live-total>{formatTokenUnits(current.totalUnits)} / 100 JV Test USD</strong></div>
       <div><span>Demo target</span><strong>100 JV Test USD</strong></div>
-      <div className="live-progress">
-        <span>{percent}% of demo target</span>
-        <progress className="progress progress-primary" aria-label="Live Devnet demo financing" aria-valuetext={`${formatTokenUnits(current.totalUnits)} of 100 JV Test USD, ${percent}%`} max={100} value={Math.min(percent!,100)}/>
-      </div>
-      {error && <p className="fine-print">Last successful read shown; the latest total could not be refreshed.</p>}
-      {portfolio && address && <>
-        <div><span>Your recorded contribution</span><strong data-live-position>{formatTokenUnits(current.contributedUnits)} JV Test USD</strong></div>
-        <div><span>Your wallet’s demo-token balance</span><strong>{formatTokenUnits(current.balanceUnits)} JV Test USD</strong></div>
+      <div className="live-progress"><span>{percent}% of demo target</span><progress className="progress progress-primary" aria-label="Live Devnet demo financing" aria-valuetext={`${formatTokenUnits(current.totalUnits)} of 100 JV Test USD, ${percent}%`} max={100} value={Math.min(percent!,100)}/></div>
+      {address && <>
+        <div className={portfolio?'primary-position':''}><span>Your Devnet Position</span><strong data-live-position>{formatTokenUnits(current.contributedUnits)} JV Test USD</strong></div>
+        <div><span>Wallet token balance</span><strong>{formatTokenUnits(current.balanceUnits)} JV Test USD</strong></div>
       </>}
-      <p className="fine-print">Demo financing {current.enabled?'enabled':'paused'} on Devnet.</p>
+      {error && <small>Last successful read shown.</small>}
+      <div><span>Network</span><strong>Solana Devnet</strong></div><div><span>Demo financing</span><strong>{current.enabled?'Enabled':'Paused'}</strong></div>
     </div>}
     {error && <p role="alert" className="input-error">{error}</p>}
-    {!current && !loading && !error && <p className="fine-print">Live totals have not been read. No estimated amount is shown.</p>}
+    {!current && !loading && !error && <p className="fine-print">{portfolio&&!address?'Connect Solflare to read your position.':'No chain data read yet.'}</p>}
     <button className="btn btn-outline" disabled={loading || (portfolio && !address)} onClick={()=>void refreshProject()}><RefreshCw size={14}/>{loading?'Reading Devnet…':'Read Devnet records'}</button>
-    {portfolio && !address && <p className="fine-print">Connect Solflare to read your position.</p>}
+    <details className="technical-details"><summary>Onchain accounts</summary><ProjectLinks/></details>
   </section>;
 }
-export function InvestmentModal() {
+
+export function FinancingHistory() {
+  const {address, financeReceipt: receipt, financeState} = useWallet();
+  const currentReceipt = receipt && receipt.address === address ? receipt : null;
+  return <section className="panel financing-history"><span className="eyebrow">DEVNET EXPLORER</span><h2>Transaction history</h2>
+    {currentReceipt ? <div className="history-row"><strong>{currentReceipt.amount} JV Test USD</strong><span>{financeState}</span><a className="text-link" href={`https://explorer.solana.com/tx/${currentReceipt.signature}?cluster=devnet`} target="_blank" rel="noreferrer">View transaction <ArrowUpRight size={14}/></a></div> : <p>No transaction submitted in this app session.</p>}
+    {address && <a className="text-link" href={explorer(address)} target="_blank" rel="noreferrer">Wallet activity on Explorer <ArrowUpRight size={14}/></a>}
+    <small>Latest app-session transaction only. Earlier records are on Explorer.</small>
+  </section>;
+}
+
+export function InvestmentModal({triggerLabel="Finance this project"}:{triggerLabel?:string}) {
   const wallet=useWallet();
   const [amount,setAmount]=useState('10');
   const [review,setReview]=useState<FinanceReview|null>(null);
@@ -77,12 +84,12 @@ export function InvestmentModal() {
     finally {setLoading(false);}
   }
   return <>
-    <Modal trigger={<>Finance this project <ArrowUpRight size={18}/></>} title="Finance Bavaria" className="btn btn-primary finance-button">
+    <Modal trigger={<>{triggerLabel} <ArrowUpRight size={18}/></>} title="Finance Bavaria" className="btn btn-primary finance-button">
       <span className="modal-phase">JV TEST USD · SOLANA DEVNET</span>
       {receiptVisible ? <div className="completion">
         {wallet.financeState==='confirmed' && <CheckCircle2 size={36}/>}
         <h3>{wallet.financeState==='confirmed'?'Financing recorded on Solana':wallet.financeState==='failed'?'Transaction failed':wallet.financeState==='expired'?'Transaction expired':'Confirmation pending'}</h3>
-        <p role="status">{wallet.financeState==='confirmed'?`${receipt!.amount} JV Test USD demo financing contribution was recorded. This is separate from the real EUR capital raise.`:wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>
+        <p role="status">{wallet.financeState==='confirmed'?`${receipt!.amount} JV Test USD recorded.`:wallet.financeState==='expired'?'No transaction was found before its blockhash expired. Refresh your position before a new review.':wallet.financeState==='failed'?'No contribution was recorded by this failed transaction.':'Keep the signature and check its status before another commitment.'}</p>
         {wallet.financeState==='confirmed' && <div className="success-summary">
           <p><span>Amount</span><strong>{receipt!.amount} JV Test USD</strong></p>
           <p><span>Project</span><strong>{bavaria.name}</strong></p>
@@ -99,8 +106,8 @@ export function InvestmentModal() {
         <p><strong>{currentReview.amount} JV Test USD</strong> to the Bavaria project vault.</p>
         <label>Signing wallet</label><code className="wallet-address">{currentReview.address}</code>
         <ProjectLinks/>
-        <p className="fine-print">Your wallet holds {formatTokenUnits(readout!.balanceUnits)} JV Test USD. Solflare will request a Devnet transaction signature. Devnet SOL pays fees and first-position rent. Test tokens will be held in the project vault; this MVP has no withdrawal or repayment instruction.</p>
-        <p className="fine-print">This creates an onchain demo contribution, with no EUR conversion or established investment terms.</p>
+        <p className="fine-print">Balance: {formatTokenUnits(readout!.balanceUnits)} JV Test USD. Devnet SOL covers fees and position rent. No EUR conversion.</p>
+        <details className="technical-details"><summary>Transaction details</summary><p>JV Test USD stays in the project vault. No withdrawals, repayments or investment terms are implemented.</p></details>
         <div className="wallet-panel-actions">
           <button className="btn btn-primary" disabled={wallet.busy} onClick={async(event)=>{
             const dialog=event.currentTarget.closest('dialog');
@@ -111,16 +118,16 @@ export function InvestmentModal() {
           <button className="btn btn-outline" disabled={wallet.busy} onClick={()=>setReview(null)}>Back</button>
         </div>
       </div>:<form onSubmit={event=>{event.preventDefault();void prepare();}}>
-        <p>Finance Bavaria through its Joint Venture program using dedicated Devnet test tokens.</p>
+        <p>Technical demo only. JV Test USD has no monetary value.</p>
         <label htmlFor="amount">Amount</label>
         <div className="amount-fields">
           <input id="amount" className="input input-bordered" type="text" inputMode="decimal" maxLength={26} required value={amount} onChange={event=>{setAmount(event.target.value);setReview(null);}} aria-describedby="amount-help"/>
           <label className="sr-only" htmlFor="currency">Currency</label><select id="currency" className="select select-bordered" defaultValue="JV Test USD"><option>JV Test USD</option></select>
         </div>
-        <p id="amount-help" className="fine-print">Positive amount, up to six decimals. JV Test USD is not official USDC and has no real monetary value. Project metrics are in EUR; no currency conversion is performed.</p>
+        <p id="amount-help" className="fine-print">Up to six decimals. JV Test USD is not official USDC. No EUR conversion.</p>
         {!valid && <p className="input-error">Enter a positive amount with at most six decimals.</p>}
         {wallet.address?<button disabled={!valid || loading || wallet.busy} className="btn btn-primary full-width" type="submit">{loading?'Checking Devnet…':'Review commitment'}</button>:<button className="btn btn-primary full-width" type="button" disabled={wallet.busy} onClick={event=>{event.currentTarget.closest('dialog')?.close();void wallet.connect();}}>Connect Solflare</button>}
-        {!wallet.address && <p className="fine-print">Connection shares your public address. A financing signature is requested only after reviewing a commitment.</p>}
+        {!wallet.address && <p className="fine-print">Connect first; review before signing.</p>}
       </form>}
       {(error || wallet.financeError) && <p role="alert" className="input-error">{error || wallet.financeError}</p>}
     </Modal>

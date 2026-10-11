@@ -30,7 +30,7 @@ async function rpc(page: Page, options: {fail?: boolean; tamperProject?: boolean
   });
 }
 async function openFixture(page: Page) {
-  await page.goto('/projects/bavaria');
+  await page.goto('/documents');
   await page.locator('[data-document-id="integrity-test-v1"]').getByRole('button', {name: 'View record'}).click();
   return page.locator('dialog[open]');
 }
@@ -38,7 +38,7 @@ test('production documents stay pending; file hashing is local and uses exact SH
   const external: string[] = [];
   page.on('request', request => {if (!request.url().startsWith('http://localhost:3000')) external.push(request.url());});
   await rpc(page, {fail: true});
-  await page.goto('/projects/bavaria');
+  await page.goto('/documents');
   for (const id of ['license', 'rental', 'budget']) {
     const card = page.locator(`[data-document-id="${id}"]`);
     await expect(card).toContainText('Integrity record pending');
@@ -82,6 +82,7 @@ test('RPC failure leaves the project and financing usable and never invents a fi
   await expect(dialog).toContainText('Integrity record pending');
   await expect(dialog.locator('.integrity-details')).toHaveCount(0);
   await page.keyboard.press('Escape');
+  await page.goto('/projects/bavaria');
   await expect(page.getByRole('heading', {name: 'Bavaria Controlled Cultivation Infrastructure'})).toBeVisible();
   await expect(page.locator('progress')).toHaveCount(0);
   await expect(page.locator('.onchain-panel')).toContainText('Live Devnet data is unavailable');

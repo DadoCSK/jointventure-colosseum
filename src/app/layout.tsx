@@ -4,14 +4,16 @@ import { WalletProvider } from "@/components/wallet-provider";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 import "./industrial.css";
+import "./dashboard.css";
+import "./digital-twin.css";
 import { UiVariantProvider, appearanceScript } from "@/components/ui-variant";
 export const metadata: Metadata = {
   title: {
-    default: "Joint Venture — Real infrastructure. Shared opportunity.",
+    default: "Joint Venture — Fund real productive infrastructure.",
     template: "%s | Joint Venture",
   },
   description:
-    "Explore transparent agricultural infrastructure financing. Inspired by Bavaria’s real founding project, with a separate live Solana Devnet financing demo.",
+    "Fund real productive infrastructure and see what your capital is building. Bavaria project financing, onchain records and planned facility visibility.",
 };
 export default function RootLayout({
   children,

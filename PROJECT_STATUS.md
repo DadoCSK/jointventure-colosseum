@@ -1,10 +1,10 @@
 # Joint Venture — implementation status
 
-Updated 10 October 2026.
+Updated 11 October 2026.
 
-**Phase 3 — Product Truth & Demo Polish is complete.** Bavaria is now presented as the real founding project behind Joint Venture. Its €250,000 business requirement is separate from a live 100 JV Test USD technical demo. The fictional €75,000 Bavaria commitment has been removed. No protocol code, deployment or financing transaction architecture changed; no public deployment was performed.
+**Current direction: Bavaria-only financing and infrastructure dashboard.** The latest phase turns Facility into an interactive, clearly simulated Digital Twin and uses the supplied umbrella logo. The Bavaria-only strategy and existing Solana financing/document architecture remain intact. The final phase report appears at the end of this file.
 
-The sections below retain prior milestone history; Phase 3 supersedes their earlier demo business copy.
+Earlier milestone sections are retained as history. The single-project phase supersedes their marketplace and fictional-demo descriptions; the latest Digital Twin section supersedes earlier Facility layouts and simulation parameters.
 
 ## Existing financing implementation
 
@@ -154,3 +154,103 @@ The separate `industrial.css` contains the additional DaisyUI theme and root-sco
 - Classic screenshots retain the cream/green composition, original illustrations, cards and page ordering, apart from navigation accommodation for the appearance control. Verification used browser wallet/RPC fixtures; no installed-wallet transaction was requested. Existing Devnet availability and manual authority-wallet limitations remain unchanged.
 
 The local comparison server is available at `http://localhost:3000` while `npm run dev` is running. Screenshot/accessibility evidence for this session is in `/tmp/jv-appearance-results.json` and `/tmp/jv-classic-*.png` / `/tmp/jv-industrial-*.png`.
+
+## Bavaria-only financing dashboard — 11 October 2026
+
+### Single-project strategy and routes
+
+Bavaria Controlled Cultivation Infrastructure is now the **only MVP project**, marked **FOUNDING PROJECT · REAL BUSINESS**. Netherlands Greenhouse Expansion and Spanish Indoor Produce Facility were removed from application data and UI. Their cards, fictional funding totals, category filters, listing action, platform aggregates and fictional EUR portfolio/history were removed rather than replaced. Agricultural infrastructure remains the broader positioning.
+
+Navigation is **Overview / Project / Facility / Documents / Portfolio / Connect Solflare**, with the existing Classic/Industrial appearance preference retained. Overview is `/`; Project remains `/projects/bavaria`; `/facility` and `/documents` are new. `/portfolio` remains. `/projects` now redirects to Bavaria, preserving existing entry links without a dead route.
+
+### Copy and project presentation
+
+Overview has the short agricultural-infrastructure headline, one-line subtext, Explore Project and Finance on Devnet actions, seven compact business metrics and a two-sentence origin section. The origin story is no longer repeated on Project. The capital-to-infrastructure flow shows **Capital → Infrastructure → Facility → Production → Revenue** in one glance. Four compact shortcuts replace the marketplace and educational sections.
+
+Project shows the unchanged **€250,000** real requirement, **€220,000** infrastructure, **€30,000** working capital, approximately **€33k/month** contracted rent, readiness badges and the user-supplied allocation: €90k facility/security/electrical/water; €70k large vegetation infrastructure; €25k vegetation/climate; €15k drying/climate; €10k processing; €10k other equipment; €30k working capital. Allocation bars show budget composition, not capital raised. No EUR funded total or financing-progress bar is fabricated. Contracted rent is labeled as neither operating revenue nor an investor return.
+
+Long project descriptions, duplicate explanatory paragraphs and repeated prototype notices were cut. There is one concise global prototype notice in the footer, with essential token wording retained in the transaction area. Account links and integrity/transaction explanations use expandable details. Business facts remain developer-supplied and documents are not independently authenticated. Illustrative facility imagery remains labeled as not depicting the Bavaria site. Both appearances use the new compact composition; no new dependency was added.
+
+### Facility simulation
+
+Facility is explicitly **pre-operational** and labels the preview **SIMULATED TELEMETRY**, **Simulated 24h data**, **Simulated growth cycle** and **PLANNED FACILITY DEMO**. No hardware or external sensor data is claimed or fetched.
+
+- Browser-only sinusoidal readings update every four seconds and can be paused. Temperature stays within 23.7–24.9 °C; humidity within 58.5–63.5%; CO₂ within 780–844 ppm; VPD within 1.07–1.17 kPa; lighting within 76–80%; simulated cooling load within 39–45%. The environment badge describes the stable simulation.
+- Three lightweight, accessible SVG charts show smooth, bounded temperature, humidity and CO₂ demo trends over 24 hours. Chart coordinates are rounded for consistent server/browser rendering.
+- The five-stage stepper covers Propagation, Vegetative, Flowering, Drying and Processing. The default is Vegetative · Day 18. A keyboard-accessible day slider, Day 1/14/28/45/60 shortcuts and stage controls change a lightweight WebGL plant/staged-processing model. Timing is illustrative, not an operational schedule or actual plant tracking.
+- Security, electrical, HVAC A/B, irrigation, sensors and lighting default to **Planned**. The preview toggle changes all to **Simulated Online**, never an unqualified online claim. This toggle does not control telemetry, hardware or any backend.
+
+### Preserved Solana functionality
+
+The existing Program, Bavaria Project PDA, Vault PDA, JV Test USD mint, Position derivation and document-record architecture were not changed, reset or redeployed. `src/chain/client.ts`, `src/chain/documents.ts`, the deployment manifest, IDL and wallet provider match their pre-phase SHA-256 checksums byte for byte. Program source and chain artifacts were not edited. No real Devnet transaction, new document record or public deployment was performed by this phase.
+
+**Live Devnet Financing** remains separate from the EUR requirement and uses actual validated Solana reads against the existing illustrative **100 JV Test USD** display target. Confirmed contributions still re-read Project total, Position and token balance, update the bar and show the signed receipt/Explorer link. The Project view now also shows the connected wallet position. Portfolio uses onchain Devnet records only, shows the latest transaction receipt for the connected wallet from this app session and links to wallet activity on Explorer. There is no EUR/token conversion or invented transaction history.
+
+Documents retains the same categories/IDs, local SHA-256 hashing, read/compare, authority-only Solflare anchoring, pending-signature handling and harmless public test record. The three production records remain pending. No private files, fingerprints or records were invented.
+
+### Testing results
+
+- **72 Playwright tests passed** across Classic and Industrial. Coverage includes the sole-project data/€250k allocation, removal of fictional UI/EUR progress, `/projects` redirect and every mobile navigation destination; actual-format Project/Position reads; signed SDK financing with exact amounts/nonces, rejection/pending/failure recovery, refreshed total/bar/wallet position and session Explorer receipt; wallet account changes, stale-read guards and disconnect; document reads/local matching/altered-file checks; appearance persistence and state preservation.
+- Facility tests verify explicit simulated labels, initial values, bounded drift, pause/resume, no external requests, smooth 49-point charts with accessible SVG descriptions, day/stage illustration changes and Planned/Simulated Online status toggles. Hydration issues found during development were corrected, including single-string SVG titles and rounded chart coordinates.
+- **48 route/appearance/viewport checks passed**: five destination pages plus the `/projects` alias, both appearances, at **320 / 390 / 768 / 1440 px**. No page overflow, automated WCAG 2 A/AA violations, console errors or page errors remained. Screenshots were reviewed for image cropping, compact hierarchy, mobile chart/stepper layouts and visible simulation labels. Keyboard controls and reduced-motion layouts are covered. Session evidence is in `/tmp/jv-single-project-check.json` and `/tmp/jv-single-*.png`.
+- TypeScript, ESLint, exact six-decimal amount validation, `git diff --check` and the final production build passed (`npm run build -- --webpack`). All destination routes and the alias remain statically prerendered. No package/dependency changes were required.
+- Pre-phase checksums confirmed the Solana transaction/document clients, deployment manifest, IDL and wallet provider unchanged. Browser financing uses isolated wallet/RPC fixtures; no real network funds or onchain accounts were mutated during verification.
+
+### Remaining limitations and stop point
+
+Telemetry, 24h curves, growth timing and system previews are frontend illustrations, not hardware measurements or collected history. The actual facility is pre-operational; no IoT backend/integration exists. No financing/telemetry/receipt data is persisted locally. Portfolio shows the latest available connected-wallet receipt from this app session; earlier activity is accessed on Explorer rather than fabricated or queried into an app history feed.
+
+Public Devnet RPC can fail or be rate-limited, with explicit retry/last-read behavior. Pending receipts remain in memory, so the transaction link should be retained before reloading. Production document fingerprints remain pending and project facts/documents are not independently authenticated. Authority-wallet anchoring and installed-wallet acceptance remain the previously documented manual limitations; existing signing and integrity browser fixtures passed here.
+
+**Stopped after this frontend phase. No public deployment, protocol features, repayments, withdrawals, yield, Mainnet, authentication, real sensors or IoT integration were added.**
+
+
+## Follow-up: interactive 3D simulated growth
+
+Replaced the flat plant SVG with a procedural WebGL model in the Facility cultivation-cycle preview. It has a nursery pot and soil, branching stems, folded serrated leaves with veins, flowering buds, drying foliage and a harvested processing state. Day controls animate growth between sizes; foliage sways gently in the browser. Drag, left/right arrow keys or rotation buttons turn the model. Plant motion can be paused separately, also follows the facility pause, and respects reduced-motion preferences. The existing canvas stays mounted across appearance/day changes; GPU resources are cleaned up on unmount and recreated after context restoration.
+
+The viewer is labeled **3D GROWTH PREVIEW · SIMULATED**, alongside the existing **Simulated growth cycle** and illustrative-stage notice. It is a stylized frontend model, not a scientific cultivation model, real plant tracking or sensor feed. No generated raster asset, external request or new dependency is required. A visible fallback preserves stage controls when WebGL is unavailable. No Solana code or state was changed.
+
+Verification: **10 Facility Playwright tests passed** across Classic and Industrial, including stage-dependent rendering, bounded telemetry, charts, keyboard rotation, actual foliage animation, paused/reduced-motion stillness, canvas preservation while switching appearance, and unavailable-WebGL fallback. **Eight Facility viewport/appearance checks** at 320, 390, 768 and 1440 px passed without overflow, automated WCAG 2 A/AA violations, console errors or page errors. Screenshots checked the seedling/default and mature model framing. TypeScript, ESLint, diff whitespace validation and production build passed. No public deployment or real IoT integration.
+
+
+## Facility Digital Twin — frontend redesign
+
+### Experience and interactions
+
+Facility is now **Facility Digital Twin**, with the subtitle “Simulated preview of the planned Bavaria cultivation environment.” A dominant dark isometric cutaway replaces the initial metric-card grid. The code-authored SVG illustrates cultivation/nursery rows, plants, suspended horticultural lights, HVAC and ducting, drip irrigation, sensor locations, electrical distribution and a security point. It explicitly says **SIMULATED DIGITAL TWIN**, **Pre-operational** and **ILLUSTRATIVE LAYOUT · NOT A SITE SURVEY**. It is neither a real facility photograph nor an accurate CAD/site layout.
+
+Floating translucent telemetry supports the scene instead of competing with it. Eight selectable zones — Cultivation A/B, HVAC, Irrigation, Lighting, Security, Power and Environmental Sensors — update one inline detail panel. SVG zones support click and Enter/Space, with equivalent labeled buttons beneath the scene. Simulated Online always remains qualified; Security stays Planned. A six-column operations strip replaces generic status boxes and the former systems-preview checkbox. It uses the same temperature, humidity, CO₂, cooling, lighting, power and irrigation-cycle values as the zone panel and overlays. The capital flow is a compact sequence with Facility emphasized: **Capital → Infrastructure → Facility → Production → Revenue**.
+
+### Simulation and motion
+
+A deterministic browser-only curve advances every 200 ms while the tab is visible. Values are rounded for presentation: temperature 23.7–24.9 °C; humidity 58.5–63.5%; CO₂ 780–844 ppm; VPD 1.07–1.17 kPa; lighting 76–80%; HVAC cooling 37–47%; simulated power load 65–71%. Irrigation shows an illustrative repeating 1:42 countdown. Small reading color transitions and smooth gauge changes accompany the numerical drift. Foliage, fan blades, light output and irrigation lines move subtly in the SVG. Pause freezes the simulated clock, countdown, scene animations and canopy motion; there is also a separate canopy-motion control. Reduced-motion preferences disable decorative movement and GPU wind/morph animation. No external telemetry fetches, hardware connections, sensor claims or persistence were added.
+
+### Cultivation and trends
+
+The small potted plant was removed. A larger procedural WebGL canopy shows three staged specimens on a commercial growing bench, with branching/leaf growth, flowering buds, drying foliage and harvested material at Processing. Propagation / Vegetative / Flowering / Drying / Processing remain selectable, defaulting to **Vegetative · Day 18**. The touch-friendly Day 1–60 slider and Day 1/14/28/45/60 buttons update geometry, timeline, day, illustrative height and environment target. The camera adapts to growth and narrow aspect ratios. The visual is labeled **3D CANOPY PREVIEW · SIMULATED**, with **SIMULATED GROWTH CYCLE**, illustrative targets and no plant-tracking claim. Drag, arrow keys and rotation buttons orbit the view.
+
+Three chart cards were consolidated into **Environment · Last 24 Hours** with one graph and Temperature / Humidity / CO₂ tabs. Tabs support arrows, Home/End and normal keyboard focus. Each curve has 49 smooth, bounded synthesized points and an accessible description, labeled **Simulated 24h telemetry**. The graph uses a narrower viewBox on mobile without hydration mismatch. These are fixed example curves, not measured history or an accumulating sensor log.
+
+### Logo, responsiveness and performance
+
+The actual supplied **jv-logo-black-l.png** is used in navbar and footer, inside a black rounded square with a Joint Venture text label. Source image is untouched; the public copy matches byte for byte. Square dimensions preserve its aspect ratio, and Next Image serves optimized sizes. No Nano Banana, image/model generation service or generated raster asset was used: the facility is SVG and the canopy is procedural geometry. No package/dependency was added.
+
+The hero is dominant on desktop. Below 800 px telemetry moves beneath the scene into readable clusters; narrow screens use two columns plus a full-width equipment strip. Systems become three/two columns, zone details two columns, and the cultivation timeline scrolls inside its own container. Stage buttons, slider and chart tabs remain usable without page overflow. Both Classic and Industrial retain their global appearances, with a restrained dark green/charcoal twin scene.
+
+The SVG scene is memoized so telemetry updates do not rebuild it. The WebGL viewer loads in a separate client chunk and has a visible unavailable-WebGL fallback. Drawing is capped at 30 fps with pixel ratio capped at 1.5; it stops GPU drawing offscreen/when the tab is hidden and skips unchanged paused/reduced-motion frames. One canvas/context survives day and appearance switches; resources are released on unmount. Context loss provides a fallback and restoration recreates GPU resources. No video, Flow background, heavy 3D dependency, IoT backend or authentication was added.
+
+### Preserved architecture and verification
+
+Program, Project/Position/Vault PDAs, mint, financing state and €250k business economics were not changed or recreated. SHA-256 comparisons confirm the transaction client, document client, deployment manifest, IDL, wallet provider, financing component, document-integrity component and wallet UI are byte-for-byte unchanged from this phase's start. Browser financing/document checks use isolated RPC and wallet fixtures; no real onchain transaction, account mutation or deployment occurred.
+
+- **80 regression tests passed** across Classic and Industrial, covering existing financing, wallet identity/account changes, live Project/Position readback, contribution/bar refresh, pending/rejected/failure recovery, document hashing/read/compare, product truth and appearance persistence.
+- **22 final Facility tests passed** across both appearances, including simulated labels and bounded drift, global pause/resume, no external requests or console/page errors, keyboard SVG zone selection, shared zone/system values, Planned Security, one-graph chart/tab keyboard behavior, stage-dependent geometry/height/target changes, slider shortcuts, animated/paused/reduced-motion canopy, preserved context on appearance switching, no-WebGL fallback and actual-logo rendering. Interaction tests exercise **320 / 390 / 768 / 1440 px** explicitly.
+- **48 route/appearance/viewport checks passed**, followed by **eight final Facility framing checks** at those same widths: zero horizontal overflow, automated WCAG 2 A/AA violations, console errors or page errors. Screenshots reviewed the dominant scene, readable mobile telemetry, timeline scrolling, mobile chart labels, day/age layout, default/mature canopy framing and logo. Evidence: `/tmp/jv-twin-all-project-check.json`, `/tmp/jv-twin-project-check.json`, `/tmp/jv-twin-*.png` and `/tmp/jv-twin-canopy-*.png`.
+- TypeScript, ESLint, exact six-decimal token amount checks and `git diff --check` passed. Preserved-source checksums passed; source logo/public asset byte comparison passed. The final production build passed (`npm run build -- --webpack`); all destination routes and the `/projects` alias remain statically prerendered.
+
+### Remaining limitations and stop point
+
+The cutaway, growth model, plant height, stages, targets, system states, countdown and history are illustrative frontend simulations. They are not architectural measurements, botanical predictions, actual crops, operational schedules, real sensors or investment-return projections. The facility remains pre-operational. WebGL availability depends on the browser/device; the facility SVG and growth controls remain usable if the canopy cannot render. Automated accessibility checks and software-rendered browser tests do not substitute for every assistive technology or physical mobile-device/GPU check. Existing installed-wallet and authority-document manual limitations remain as previously documented.
+
+**Stopped after this frontend phase. No public deployment, new protocol feature, real IoT integration, backend, hardware or new milestone.**

@@ -106,12 +106,12 @@ test("connects, preserves identity across routes, refreshes, changes account, an
   await expect(page.locator(".site-header .wallet-button")).toHaveText(
     /1111…1111/,
   );
-  await page.getByRole("link", { name: "My Portfolio", exact: true }).click();
+  await page.getByRole("link", { name: "Portfolio", exact: true }).click();
   await expect(page.locator(".wallet-panel")).toContainText("1.5 SOL");
   await expect(page.locator(".wallet-panel .wallet-address")).toHaveText(
     firstAccount,
   );
-  await expect(page.locator(".portfolio-metrics")).toContainText("€10,000");
+  await expect(page.locator("main")).not.toContainText("€10,000");
   value = 0;
   await page.getByRole("button", { name: "Refresh balance" }).click();
   await expect(page.locator(".wallet-balance strong")).toHaveText("0 SOL");

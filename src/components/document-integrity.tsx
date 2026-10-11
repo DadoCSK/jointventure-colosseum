@@ -8,7 +8,7 @@ import type {DocumentReceipt, IntegrityRecord} from '@/chain/documents';
 import type {VerificationRecord} from '@/data/projects';
 import deployment from '@/chain/deployment.json';
 
-export const INTEGRITY_EXPLANATION = 'Compare a local file to the fingerprint recorded at that time. A matching fingerprint means the file has the same bytes. It does not independently authenticate the document’s issuer or contents.';
+export const INTEGRITY_EXPLANATION = 'Matching fingerprints prove identical bytes. This does not independently authenticate the issuer or contents.';
 const shortHash = (hex: string) => `${hex.slice(0, 12)}…${hex.slice(-12)}`;
 
 export function DocumentIntegrityCard({record, testOnly = false}: {record: VerificationRecord; testOnly?: boolean}) {
@@ -70,7 +70,6 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
     <FileText size={23}/>
     {testOnly && <span className="mock-label">HARMLESS TEST FIXTURE · NOT A PROJECT DOCUMENT</span>}
     <h3>{record.title}</h3>
-    <p>{record.description}</p>
     <span className="verification-status"><Clock3 size={14}/>{status}</span>
     {anchored && <>
       <code className="integrity-short-hash">{shortHash(anchored.hashHex)}</code>
@@ -80,8 +79,8 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
     <Modal trigger={<>View record <ArrowUpRight size={14}/></>} title={record.title} className="text-link">
       <span className="modal-phase">{testOnly ? 'HARMLESS TEST FIXTURE · SOLANA DEVNET' : 'DOCUMENT INTEGRITY · SOLANA DEVNET'}</span>
       <p role="status">{status}</p>
-      {testOnly && <p>This record tests the mechanism using public, harmless text. It does not represent the licence, agreement or infrastructure budget.</p>}
-      <p>{INTEGRITY_EXPLANATION}</p>
+      {testOnly && <p>Public test text. It does not represent the licence, agreement or budget.</p>}
+      <details className="technical-details"><summary>How integrity works</summary><p>{INTEGRITY_EXPLANATION}</p></details>
       <button className="btn btn-outline" disabled={reading} onClick={() => void read()}>{reading ? 'Reading Devnet…' : 'Read integrity record'}</button>
       {readError && <p role="alert" className="input-error">{readError}</p>}
       {anchored ? <div className="integrity-details">
@@ -90,11 +89,11 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
         <p>SHA-256 fingerprint</p><code className="fingerprint">{anchored.hashHex}</code>
         <p>DocumentRecord PDA</p><code className="wallet-address">{anchored.pda}</code>
         <a className="text-link" href={`https://explorer.solana.com/address/${anchored.pda}?cluster=devnet`} target="_blank" rel="noreferrer">View record on Devnet Explorer <ArrowUpRight size={14}/></a>
-      </div> : <p className="fine-print">No onchain fingerprint is displayed until an actual record is read. The underlying project document has not been supplied or authenticated by Joint Venture.</p>}
+      </div> : <p className="fine-print">No fingerprint read. Project documents remain unauthenticated.</p>}
       <div className="local-document-check">
         <label htmlFor={`local-file-${record.id}`}>Select a local file to calculate its SHA-256 fingerprint</label>
         <input id={`local-file-${record.id}`} type="file" onChange={event => void selectFile(event)} disabled={wallet.busy || pending} className="file-input file-input-bordered"/>
-        <p className="fine-print">Your file stays in this browser. No file contents or filename are uploaded or stored. Maximum file size: 20 MiB.</p>
+        <p className="fine-print">Local only · no upload · maximum 20 MiB.</p>
         {hashing && <p role="status">Calculating SHA-256 locally…</p>}
         {hash && <>
           <p>Local file: <span className="integrity-file-name">{fileName}</span></p>
@@ -103,7 +102,7 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
         </>}
       </div>
       {!anchored && <>
-        <p className="fine-print">Only the project authority can anchor this category. Recording is permanent in this MVP; replacement and versioning are not available. Only the fingerprint, category ID/name and authority are sent onchain.</p>
+        <p className="fine-print">Authority only · permanent record · fingerprint and metadata only.</p>
         <button className="btn btn-primary" disabled={!isAuthority || !hash || hashing || reading || wallet.busy || pending} onClick={async event => {
           if (!hash || !wallet.address || !isAuthority) return;
           const dialog = event.currentTarget.closest('dialog');
@@ -116,7 +115,7 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
             setLocalError(submittedReceipt ? 'Submission is uncertain. Keep the signature and check before another attempt.' : error instanceof Error ? error.message : 'The wallet request did not complete.');
           } finally {if (dialog?.isConnected && !dialog.open) dialog.showModal();}
         }}>Anchor fingerprint in Solflare</button>
-        {!isAuthority && <p className="fine-print">Connect the project authority wallet to enable anchoring. Other wallets can read and compare fingerprints.</p>}
+        {!isAuthority && <p className="fine-print">Project authority required to anchor. Anyone can read and compare.</p>}
       </>}
       {receipt && <div className="integrity-details">
         <p role="status">Document transaction: {confirmation ?? 'pending'}</p>
@@ -131,6 +130,6 @@ export function DocumentIntegrityCard({record, testOnly = false}: {record: Verif
 
 export function IntegrityTestFixture() {
   return <div className="integrity-test-fixture">
-    <DocumentIntegrityCard testOnly record={{id: 'integrity-test-v1', title: 'Harmless integrity test fixture', description: 'Public test text used to demonstrate fingerprint matching. It is unrelated to the three project documents.', status: 'Integrity record pending'}}/>
+    <DocumentIntegrityCard testOnly record={{id: 'integrity-test-v1', title: 'Harmless integrity test fixture', status: 'Integrity record pending'}}/>
   </div>;
 }

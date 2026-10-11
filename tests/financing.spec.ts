@@ -105,12 +105,13 @@ test('validates exact amounts, reviews project accounts, confirms one program tr
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   expect(controls.signs).toBe(1);expect(controls.sends).toBe(1);
   await expect(page.locator('progress')).toHaveAttribute('value','4.5');
-  await page.keyboard.press('Escape');
-  await page.getByRole('link',{name:'My Portfolio',exact:true}).click();
-  await expect(page).toHaveURL(/\/portfolio$/);
-  await expect(page.getByRole('heading',{name:'My Portfolio',exact:true})).toBeVisible();
   await expect(page.locator('[data-live-position]')).toHaveText('1.25 JV Test USD');
-  await expect(page.locator('.portfolio-metrics')).toContainText('€10,000');
+  await page.keyboard.press('Escape');
+  await page.getByRole('link',{name:'Portfolio',exact:true}).click();
+  await expect(page).toHaveURL(/\/portfolio$/);
+  await expect(page.getByRole('heading',{name:'Portfolio',exact:true})).toBeVisible();
+  await expect(page.locator('[data-live-position]')).toHaveText('1.25 JV Test USD');
+  await expect(page.locator('main')).not.toContainText('€10,000');
   expect(errors).toEqual([]);
 });
 test('wallet rejection submits nothing and permits review retry',async({page})=>{
@@ -191,11 +192,14 @@ test('10-token confirmed contribution refreshes live demo total and wallet posit
   await expect(page.locator('dialog[open]')).toContainText('Financing recorded on Solana');
   await expect(page.locator('dialog[open]')).toContainText('13.25 / 100 JV Test USD');
   await expect(page.locator('progress')).toHaveAttribute('value','13.25');
+  await expect(page.locator('[data-live-position]')).toHaveText('10 JV Test USD');
   await expect(page.locator('[data-live-total]')).toHaveText('13.25 / 100 JV Test USD');
   await expect(page.locator('dialog[open]')).toContainText('10 JV Test USD');
   await expect(page.locator('dialog[open]').getByRole('link',{name:'View transaction on Solana Explorer'})).toHaveAttribute('href',/https:\/\/explorer.solana.com\/tx\/.*\?cluster=devnet/);
   await page.locator('dialog[open]').getByRole('link',{name:'View Portfolio'}).click();
   await expect(page.locator('[data-live-position]')).toHaveText('10 JV Test USD');
+  await expect(page.locator('.financing-history')).toContainText('10 JV Test USD');
+  await expect(page.locator('.financing-history').getByRole('link',{name:'View transaction',exact:true})).toHaveAttribute('href',/https:\/\/explorer.solana.com\/tx\/.*\?cluster=devnet/);
   expect(controls.sends).toBe(1);
 });
 test('pending and rejected contributions never fabricate progress; RPC failure leaves business facts usable',async({page})=>{

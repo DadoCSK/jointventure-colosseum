@@ -1,62 +1,34 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Leaf,
-  Menu,
-  X,
-} from "lucide-react";
-import {
-  projects,
-} from "@/data/projects";
-import { ProjectCard } from "./ui";
-import { Modal } from "./modal";
+import { Menu, X } from "lucide-react";
+import { Brand } from "./brand";
 import { WalletButton } from "./wallet";
 import { AppearanceSwitch } from "./ui-variant";
-export function NoticeButton({
-  children,
-  title,
-  message,
-  className,
-}: {
-  children: ReactNode;
-  title: string;
-  message: string;
-  className?: string;
-}) {
-  return (
-    <Modal trigger={children} title={title} className={className}>
-      <span className="modal-phase">PHASE 2</span>
-      <p>{message}</p>
-    </Modal>
-  );
-}
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const links = [
-    { href: "/projects", label: "Marketplace" },
-    { href: "/portfolio", label: "My Portfolio" },
-    { href: "/#how-it-works", label: "How It Works" },
+    { href: "/", label: "Overview" },
+    { href: "/projects/bavaria", label: "Project" },
+    { href: "/facility", label: "Facility" },
+    { href: "/documents", label: "Documents" },
+    { href: "/portfolio", label: "Portfolio" },
   ];
   return (
     <header className="site-header">
       <nav className="container nav" aria-label="Main navigation">
         <Link className="wordmark" href="/" onClick={() => setOpen(false)}>
-          <span className="brand-icon">
-            <Leaf size={22} />
-          </span>
-          joint<span className="wordmark-light">venture</span>
-          <span className="brand-period">.</span>
+          <Brand />
         </Link>
         <div className="desktop-links">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              aria-current={pathname.startsWith(l.href) ? "page" : undefined}
-              className={pathname.startsWith(l.href) ? "active" : ""}
+              aria-current={pathname === l.href ? "page" : undefined}
+              className={pathname === l.href ? "active" : ""}
             >
               {l.label}
             </Link>
@@ -92,56 +64,5 @@ export function Navbar() {
         )}
       </nav>
     </header>
-  );
-}
-export { InvestmentModal } from "./financing";
-export { DocumentIntegrityCard as VerificationCard } from "./document-integrity";
-export function Marketplace() {
-  const [filter, setFilter] = useState("All projects");
-  const filters = ["All projects", "Agriculture", "Processing", "Storage"];
-  const filtered = projects.filter(
-    (p) => filter === "All projects" || p.category === filter,
-  );
-  return (
-    <>
-      <div className="filter-bar">
-        <div className="filters" role="group" aria-label="Filter projects">
-          {filters.map((f) => (
-            <button
-              key={f}
-              className={`btn filter ${filter === f ? "selected" : ""}`}
-              aria-pressed={filter === f}
-              onClick={() => setFilter(f)}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-        <span className="result-count" aria-live="polite">
-          {filtered.length} projects
-        </span>
-      </div>
-      {filtered.length ? (
-        <div className="project-grid">
-          {filtered.map((p) => (
-            <ProjectCard key={p.id} project={p} index={projects.indexOf(p)} />
-          ))}
-        </div>
-      ) : (
-        <div className="empty-state">
-          <Leaf size={32} />
-          <h2>No {filter.toLowerCase()} projects yet</h2>
-          <p>
-            New demo opportunities will appear here as the marketplace grows.
-          </p>
-          <button
-            className="btn btn-outline"
-            onClick={() => setFilter("All projects")}
-          >
-            View all projects
-          </button>
-        </div>
-      )}
-    </>
   );
 }

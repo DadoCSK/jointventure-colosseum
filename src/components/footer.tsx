@@ -1,44 +1,8 @@
 import Link from "next/link";
-import { Leaf, ArrowUpRight } from "lucide-react";
+import { Brand } from "./brand";
 export function Footer() {
-  return (
-    <footer className="site-footer">
-      <div className="container">
-        <div className="footer-top">
-          <div>
-            <Link href="/" className="wordmark">
-              <span className="brand-icon">
-                <Leaf size={20} />
-              </span>
-              joint<span className="wordmark-light">venture</span>
-              <span className="brand-period">.</span>
-            </Link>
-            <p>Real infrastructure. Shared opportunity.</p>
-          </div>
-          <div className="footer-links">
-            <Link href="/projects">
-              Marketplace <ArrowUpRight size={14} />
-            </Link>
-            <Link href="/#how-it-works">
-              How It Works <ArrowUpRight size={14} />
-            </Link>
-            <span
-              aria-disabled="true"
-              title="Repository URL has not been supplied"
-            >
-              GitHub <small>Unavailable · URL pending</small>
-            </span>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <span>© 2026 Joint Venture. Devnet MVP.</span>
-          <p>
-            Agricultural infrastructure financing inspired by a real founding project. Financial projections are not guaranteed returns. This MVP’s financing transactions use Devnet-only tokens with no monetary value. EUR portfolio figures
-            are demo data. Document fingerprints establish file integrity,
-            without independently authenticating issuers or contents.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
+  return <footer className="site-footer compact-footer"><div className="container">
+    <div><Link href="/" className="footer-brand"><Brand /></Link><span>Fund real productive infrastructure. See what your capital is building.</span></div>
+    <p>Prototype · Devnet tokens have no monetary value · Facility data is simulated. Business facts are developer-supplied; documents are not independently authenticated.</p>
+  </div></footer>;
 }

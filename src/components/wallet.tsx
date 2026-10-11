@@ -49,15 +49,10 @@ export function WalletButton() {
         {address ? (
           <>
             <p>
-              Your Solflare wallet is connected. The app reads its Devnet SOL
-              balance.
+              Connected to Solana Devnet.
             </p>
             <code className="wallet-address">{address}</code>
-            <p className="fine-print">
-              Demo commitments and verification records are separate from this
-              wallet. Financing requires a separate transaction review and
-              approval, and sends only JV Test USD to the project vault.
-            </p>
+
             <button
               className="btn btn-outline"
               onClick={(event) => {
@@ -71,14 +66,9 @@ export function WalletButton() {
         ) : (
           <>
             <p>
-              Connect Solflare to share your public address and read your SOL
-              balance on Solana Devnet. Set Solflare to Devnet to compare the
-              balances.
+              Connect Solflare to read your public address and Devnet balance. Connection does not request a signature.
             </p>
-            <p className="fine-print">
-              Devnet SOL is for testing. This step does not request a signature
-              or transfer funds.
-            </p>
+
             <ConnectAction />
             <p className="fine-print">
               New to Solflare?{" "}
@@ -181,8 +171,7 @@ export function WalletPanel() {
       ) : (
         <>
           <p>
-            Connect Solflare to view your wallet address and Devnet SOL balance.
-            EUR portfolio commitments remain demo data.
+            Connect Solflare to view your Devnet balance.
           </p>
           <div className="wallet-panel-actions">
             <WalletButton />
@@ -199,10 +188,7 @@ export function WalletPanel() {
           {error}
         </p>
       )}
-      <p className="fine-print">
-        This app reads Solana Devnet only. Wallet connection does not finance a
-        project or authenticate its documents.
-      </p>
+
     </section>
   );
 }

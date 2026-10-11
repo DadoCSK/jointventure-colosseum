@@ -39,15 +39,13 @@ test('unavailable storage defaults safely and allows keyboard switching', async 
   await expect(page.locator('html')).toHaveAttribute('data-ui-variant', 'classic');
 });
 
-test('switch preserves marketplace filter and route; stores only appearance', async ({ page }) => {
+test('switch preserves the project route; stores only appearance', async ({ page }) => {
   await page.goto('/projects');
-  await page.getByRole('button', { name: 'Storage', exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/bavaria$/);
   const current = await page.locator('html').getAttribute('data-ui-variant');
   const next = current === 'classic' ? 'Industrial' : 'Classic';
   await page.getByRole('button', { name: next, exact: true }).click();
-  await expect(page).toHaveURL(/\/projects$/);
-  await expect(page.getByRole('button', { name: 'Storage', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.project-card')).toHaveCount(0);
+  await expect(page).toHaveURL(/\/projects\/bavaria$/);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual(['jv-ui-variant']);
   await page.reload();
   await expect(page.getByRole('button', { name: next, exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -75,24 +73,19 @@ for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.route('https://api.devnet.solana.com', route => route.fulfill({ json: { jsonrpc: '2.0', id: route.request().postDataJSON().id, error: { code: -32005, message: 'Layout fixture unavailable' } } }));
-    for (const route of ['/', '/projects', '/projects/bavaria', '/portfolio']) {
+    for (const route of ['/', '/projects', '/projects/bavaria', '/facility', '/documents', '/portfolio']) {
       await page.goto(route);
       await expect(page.locator('h1')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       if (route === '/') {
-        for (const selector of ['.dashboard-card', '.dashboard-card h2', '.dashboard-stats', '.floating-record']) {
+        for (const selector of ['.overview-copy', '.overview-facility', '.business-metrics', '.dashboard-shortcuts']) {
           const bounds = await page.locator(selector).boundingBox();
           expect(bounds).not.toBeNull();
           expect(bounds!.x).toBeGreaterThanOrEqual(0);
           expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
         }
       }
-      if (width === 1440 && route === '/projects' && await page.locator('html').getAttribute('data-ui-variant') === 'industrial') {
-        const founding = await page.locator('.founding-card').boundingBox();
-        const grid = await page.locator('.project-grid').boundingBox();
-        expect(founding!.width).toBe(grid!.width);
-        await expect(page.locator('.founding-card .facility-caption')).toContainText('Does not depict the Bavaria site.');
-      }
+
     }
   });
 }
