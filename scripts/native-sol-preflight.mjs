@@ -1,0 +1,13 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+import {PublicKey} from '@solana/web3.js';import {chainClient,LOADER} from './chain-client.mjs';
+const {connection,program,project,authority}=await chainClient();
+const deployed=await connection.getAccountInfo(program.programId);assert.ok(deployed.executable);assert.ok(deployed.owner.equals(LOADER));assert.equal(deployed.data.readUInt32LE(0),2);
+const programData=new PublicKey(deployed.data.subarray(4,36)),raw=await connection.getAccountInfo(programData);
+assert.ok(raw.owner.equals(LOADER));assert.equal(raw.data.readUInt32LE(0),3);assert.equal(raw.data[12],1);assert.ok(new PublicKey(raw.data.subarray(13,45)).equals(authority.publicKey),'Unexpected upgrade authority');
+const state=await program.account.project.fetch(project);assert.ok(state.authority.equals(authority.publicKey));assert.equal(state.targetEurCents.toString(),'25000000');
+const binary=fs.readFileSync('chain/target/deploy/joint_venture.so');
+const bufferRent=await connection.getMinimumBalanceForRentExemption(binary.length+37),programRent=await connection.getMinimumBalanceForRentExemption(binary.length+45);
+const additionalProgramRent=Math.max(0,programRent-raw.lamports);
+if(process.argv.includes('--verify-binary'))assert.ok(raw.data.subarray(45,45+binary.length).equals(binary),'Deployed executable differs from tested binary');
+const result={network:'devnet',verifiedAt:new Date().toISOString(),programId:program.programId.toBase58(),programData:programData.toBase58(),upgradeAuthority:authority.publicKey.toBase58(),programDataBytes:raw.data.length,compiledBytes:binary.length,compiledSha256:createHash('sha256').update(binary).digest('hex'),deployedBinarySha256:createHash('sha256').update(raw.data.subarray(45,45+binary.length)).digest('hex'),legacyTargetEurCents:state.targetEurCents.toString(),legacyFinancingUnits:state.totalFinancedUnits.toString(),bufferRentLamports:bufferRent,additionalProgramRentLamports:additionalProgramRent,estimatedUploadRequirementSol:(bufferRent+additionalProgramRent+5_000_000)/1e9,authorityBalanceSol:await connection.getBalance(authority.publicKey)/1e9,binaryMatches:raw.data.subarray(45,45+binary.length).equals(binary)};
+fs.writeFileSync('chain/receipts/native-sol-'+(process.argv.includes('--verify-binary')?'deployment-verified':'preflight')+'.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

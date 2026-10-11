@@ -71,10 +71,12 @@ test('commercial canopy and illustrative height and targets change across all gr
   await page.goto('/facility');
   await expect(page.getByText('SIMULATED GROWTH CYCLE', { exact: true })).toBeVisible();
   await expect(page.locator('.cycle-day')).toHaveText('Vegetative · Day 18');
+  await expect(page.getByLabel('Explore growth')).toHaveAttribute('max', '90');
+  await expect(page.locator('.growth-age')).toHaveText('Day 18/ 90');
   const model = page.locator('.growth-plant');
   await expect(model).toHaveAttribute('data-model-ready', 'true');
   const initial = await model.screenshot();
-  for (const [day, stage] of [[1,'Propagation'],[14,'Vegetative'],[28,'Vegetative'],[45,'Flowering'],[60,'Processing']] as const) {
+  for (const [day, stage] of [[1,'Propagation'],[14,'Vegetative'],[28,'Vegetative'],[60,'Flowering'],[90,'Processing']] as const) {
     await page.getByRole('button', { name: `Day ${day}`, exact: true }).click();
     await expect(page.locator('.cycle-day')).toHaveText(`${stage} · Day ${day}`);
     await expect(model).toHaveAccessibleName(new RegExp(`Simulated ${stage.toLowerCase()}.*day ${day}`));
@@ -83,11 +85,11 @@ test('commercial canopy and illustrative height and targets change across all gr
   expect((await model.screenshot()).equals(initial)).toBe(false);
   await expect(page.locator('.cycle-insight dd').first()).toHaveText('Harvested');
   await page.locator('.cycle-stepper').getByRole('button', { name: /Drying/ }).click();
-  await expect(page.locator('.cycle-day')).toHaveText('Drying · Day 55');
+  await expect(page.locator('.cycle-day')).toHaveText('Drying · Day 83');
   await expect(page.locator('.cycle-insight dd').nth(1)).toHaveText('19°C · 55% RH');
   await page.getByLabel('Explore growth').focus();
   await page.keyboard.press('ArrowLeft');
-  await expect(page.locator('.cycle-day')).toHaveText('Drying · Day 54');
+  await expect(page.locator('.cycle-day')).toHaveText('Drying · Day 82');
 });
 
 test('canopy foliage moves, rotates, pauses and preserves its context across zone changes', async ({ page }) => {
@@ -129,8 +131,8 @@ test('reduced motion is still and the no-WebGL fallback preserves stage controls
   });
   await page.reload();
   await expect(page.getByText('3D preview unavailable on this device.')).toBeVisible();
-  await page.getByRole('button', { name: 'Day 45', exact: true }).click();
-  await expect(page.locator('.cycle-day')).toHaveText('Flowering · Day 45');
+  await page.getByRole('button', { name: 'Day 60', exact: true }).click();
+  await expect(page.locator('.cycle-day')).toHaveText('Flowering · Day 60');
 });
 
 test('actual supplied logo is used in navigation and footer without stretching', async ({ page }) => {
@@ -153,7 +155,7 @@ for (const width of [320,390,768,1440]) {
     await page.locator('.zone-selector').getByRole('button', { name: 'Climate', exact: true }).click();
     await expect(page.locator('#zone-detail-title')).toHaveText('HVAC');
     await page.locator('.cycle-stepper').getByRole('button', { name: /Flowering/ }).click();
-    await expect(page.locator('.cycle-day')).toHaveText('Flowering · Day 45');
+    await expect(page.locator('.cycle-day')).toHaveText('Flowering · Day 60');
     await page.getByLabel('Explore growth').focus();
     await page.keyboard.press('Home');
     await page.keyboard.press('ArrowRight');

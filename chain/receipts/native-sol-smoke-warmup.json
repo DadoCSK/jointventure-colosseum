@@ -1,0 +1,7 @@
+{
+  "network": "devnet",
+  "signature": "5DpdpryY8WxMrELvtATVJ9WNoposUfDFFr4uWs6nw3oXKi5ojZhR6w2u9eftGhKf3UGoffVYZt8JveuGfUtZsK5e",
+  "investor": "6AGhRPUnRcRhjr3wcD563H4ziqBgMFwmyAUakULNVTdJ",
+  "lamports": "1",
+  "purpose": "Create native vault/position; first-time account rent is additional to contribution and network fee"
+}

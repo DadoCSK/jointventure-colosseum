@@ -1,6 +1,6 @@
 # Joint Venture Devnet MVP
 
-Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and compatible Solana wallets. The Bavaria-only dashboard uses a single Industrial appearance with charcoal surfaces, white branding and restrained sage accents. Bavaria now has a real project account and token vault on Solana Devnet; financing calls the Joint Venture program and records per-wallet test contributions.
+Agricultural infrastructure financing with Next.js App Router, TypeScript, Tailwind CSS, DaisyUI, Lucide React and compatible Solana wallets. The Bavaria-only dashboard uses a single Industrial appearance with charcoal surfaces, white branding and restrained sage accents. Bavaria has a project account and a separate native SOL custody vault on Solana Devnet; financing transfers actual lamports through the Joint Venture program and records native demo positions. Legacy test-token accounts remain intact.
 
 ## Run
 
@@ -24,37 +24,36 @@ Routes: `/` (Overview), `/projects/bavaria` (Project), `/facility`, `/documents`
 | --- | --- |
 | Program | `Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ` |
 | Bavaria project PDA | `9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U` |
-| Project vault PDA | `2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN` |
-| JV Test USD mint | `BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL` |
+| Legacy token vault PDA | `2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN` |
+| Legacy JV Test USD mint | `BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL` |
+| Native SOL vault PDA | `85dT3wXkBVom6e7w9c2zcwntBedAoC88nqLt417hufHX` |
 
 [View the project on Devnet Explorer](https://explorer.solana.com/address/9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U?cluster=devnet). Public addresses and generated IDL are in `src/chain/`; deployment and verification receipts are in `chain/receipts/`.
 
 The minimal project was deployed and initialized **before** adding the financing instruction and upgrading the same program. The project stores the agreed EUR metrics in integer cents and fixes the accepted mint. Initialization checks the deployed program's upgrade authority. The vault accepts classic SPL tokens and is controlled by the project PDA, not a recipient wallet. Financing validates the project, mint, source owner and vault, transfers through the program, and atomically updates the project total and a position PDA derived from project + investor. Expected nonces reject replayed attempts. An authority-only instruction can pause financing.
 
-JV Test USD has six decimals and is a dedicated demo token—not official USDC, a stablecoin, or redeemable currency. Its name is an application label; token metadata has not been published. No production investment terms, yield, repayment schedule or EUR exchange rate is implied. Test tokens are held in the project vault; the MVP has **no withdrawal or repayment instruction**. Upgrade and mint authorities are retained for development. This program has not undergone an independent security audit.
+**Legacy state:** JV Test USD has six decimals and is a dedicated demo token, not official USDC or redeemable currency. Historical tokens remain in the legacy vault and are absent from the normal financing UI. Native SOL and legacy token custody have **no withdrawal or repayment instruction**. Upgrade and mint authorities are retained for development. This program has not undergone an independent security audit.
 
-## Try financing with a wallet
+## Try native SOL financing
 
-1. Select **Connect Wallet**, then choose a detected compatible Wallet Standard wallet or the supported Solflare web wallet. Use Solana Devnet. Connection alone shares the public address and reads native test SOL; it requests no transaction signature.
-2. Have Devnet SOL for fees and first-position rent, and the dedicated JV Test USD token. The development authority can issue demo tokens to an explicitly supplied wallet:
+1. Select **Connect Wallet**, then a detected compatible Wallet Standard wallet or the supported Solflare web wallet. Use **Solana Devnet** and have native Devnet SOL in the wallet.
+2. On Bavaria, choose **Finance this project**, enter a positive SOL amount (up to nine decimals), then **Review Financing**. The review shows the project-derived SOL vault, signing wallet, network and current EUR demo estimate.
+3. Select **Approve in Wallet**. The client rechecks the native balance, network fee, rent for any new vault/position, financing pause and position nonce. It verifies the exact returned message and signature before submission.
+4. Confirmed financing re-reads the native project total, wallet position, vault and wallet balances automatically. Inspect the Explorer transaction and **Portfolio**. Pending attempts retain their signature and block another submission; use **Check confirmation** before retrying.
 
-   ```sh
-   node scripts/mint-test-usd.mjs YOUR_PUBLIC_WALLET_ADDRESS 10000
-   ```
+**Devnet SOL has no monetary value and this is not a real investment.** Market-price estimates are presentation data, never onchain accounting. `/api/sol-eur` uses CoinGecko SOL/EUR with Kraken SOLEUR fallback, a 60-second in-process cache and concurrent-request deduplication. Invalid/stale/unavailable prices show EUR unavailable; financing still works. The source and quote/retrieval age are displayed.
 
-   This script uses the existing local CLI authority (or `JV_ADMIN_KEYPAIR`) and checks Devnet. Private keys are never sent to the frontend. The app provides no public minting endpoint.
-3. On Bavaria, select **Finance this project**, enter an amount with up to six decimals, then **Review commitment**. Review the wallet, mint, project and vault links and the test-token limitations.
-4. Select **Approve in Wallet** and approve the Devnet transaction. The app checks token balance, SOL fees/rent, project state and position nonce before signing. It validates the signed message and signature before submission.
-5. Inspect the transaction link. If confirmation is pending or unavailable, use **Check confirmation**. The app retains the signature and blocks another submission while that attempt remains unresolved; it never automatically creates another deposit.
-6. In **Portfolio**, use **Read Devnet records** to read the connected wallet's persistent onchain test position. The latest app-session transaction and wallet activity link to Explorer.
+`finance_sol(lamports, expected_nonce)` uses a **SolVault** PDA at `["sol-vault", project]` (49 bytes including discriminator) and **SolPosition** at `["sol-position", project, investor]` (89 bytes). Both are program-owned and initialized when first needed, with rent paid by the contributor. The vault holds native SOL and stores the recorded project total; its balance also includes rent and any direct deposits, which do not increase recorded financing. Canonical project/vault/position checks, signer requirements, checked arithmetic, atomic transfer/recording, pause and nonce protections apply. No withdrawal/close/reset path exists.
 
-App connection and pending-receipt state are in memory across client navigation and reset on a full refresh. Keep a pending transaction's Explorer link before refreshing; reconnect and read the onchain position before another review. Position nonces protect against replaying the same attempt. No automatic reconnection is performed. A user subsequently confirmed two actual wallet approvals, and both financing transactions were verified on Devnet. Detected Wallet Standard wallets must support Devnet accounts and legacy transaction signing. Solflare retains its existing adapter/web fallback; Phantom Standard signing and portfolio refresh are covered by a cryptographic signing fixture. Installed-extension acceptance, rejection, account switching and mobile handoff still need manual validation; no unregistered wallet is advertised.
+Project, legacy Position and DocumentRecord layouts are unchanged. Legacy token totals remain token units; native positions use lamports and separate PDAs. JV Test USD is retired from the normal UI, not deleted from Devnet. App wallet and pending-receipt state remain in memory; retain a pending Explorer link before refreshing. Installed Phantom/Solflare acceptance and mobile handoff still require manual testing; automated fixtures cover both signing paths, and an isolated Wallet Standard test signer exercised the actual Devnet frontend flow.
+
+Explicit smoke command: `node scripts/smoke-native-sol.mjs`. It refuses duplicate deposits, uses an isolated Node signing key and funds only a very small Devnet contribution. Public receipts and compatibility checks are in `chain/receipts/native-sol-*.json`; private keys remain ignored. See PROJECT_STATUS.md for the completed deployment and smoke evidence.
 
 ## Single-project dashboard
 
 Bavaria is the only MVP project: a real, pre-operational founding business with €350,000 total project capital: €100,000 already spent on licensing, legal, regulatory and facility/project preparation, plus a €250,000 current raise (€220,000 infrastructure & equipment and €30,000 working capital). The 29% business-capital bar represents historical spend, not installed productive equipment or Devnet contributions. The deployed business financing target remains €250,000. Contracted rent is approximately €33,000/month, not current revenue or an investor return. Developer-supplied business facts and project documents are not independently authenticated. Fictional marketplace listings, filters, totals and EUR portfolio examples have been removed.
 
-The Project page shows the supplied seven-part allocation and a separate **Live Devnet Financing** card. It reads actual Project/Position accounts against an illustrative 100 JV Test USD target, with no EUR conversion. Confirmed financing re-reads the project total and connected wallet position/balance. Failed reads do not invent totals; pending receipts remain in memory and can be checked before another submission.
+The Project page shows the supplied seven-part allocation and a separate **Live Devnet Financing** card. It reads native SolVault/SolPosition accounts and shows SOL plus current EUR demo equivalents. An accurately sized striped demo overlay is drawn against total project capital without adding to the historical €100k or reducing the €250k real raise. Confirmed financing re-reads the native total, position and vault/wallet balances. Failed reads do not invent totals; pending receipts remain in memory and can be checked before another submission.
 
 **Facility** demonstrates planned visibility using explicitly simulated telemetry, smooth 24-hour SVG trends, a selectable growth-cycle illustration and planned/simulated system statuses. Bounded readings change locally every four seconds and can be paused. No external sensor data, hardware, backend or IoT integration exists. The actual facility remains pre-operational.
 
@@ -84,8 +83,8 @@ The same program was upgraded compatibly; original Project/Position layouts and 
 - `chain/programs/joint_venture/src/lib.rs`: project initialization, vault constraints, authority pause control, financing/position records and separate immutable document-integrity records.
 - `chain/Cargo.lock`, `chain/Anchor.toml`: locked dependencies and Anchor workspace. See [chain setup](chain/README.md) for local validation and deployment commands.
 - `scripts/`: guarded deployment, initialization, pause/enable, demo minting, local program tests, amount checks and idempotent Devnet smoke verification.
-- `src/chain/`: public deployment configuration, generated IDL/types, exact token parsing, validated reads and program transaction construction.
-- `src/components/financing.tsx`, `wallet-provider.tsx`, `wallet.tsx`: review, signing, confirmation recovery, independent token positions and wallet reads.
+- `src/chain/`: public deployment configuration, generated IDL/types, exact SOL/legacy-token parsing, validated reads and program transaction construction.
+- `src/components/financing.tsx`, `wallet-provider.tsx`, `wallet.tsx`: review, signing, confirmation recovery, native SOL positions and wallet reads.
 - `src/data/projects.ts`: the sole Bavaria business facts, allocation and document notices.
 - `tests/`: real adapter/SDK browser tests with fixture wallet and RPC responses.
 
@@ -97,6 +96,6 @@ Local program tests cover unauthorized and duplicate initialization, decimal res
 
 Frontend verification covers TypeScript, ESLint, production build, wallet/signing fixtures, amount and network validation, rejection, pending and unavailable confirmation, failed/expired transactions, stale positions, insufficient SOL, portfolio reads, and separate historical capital/current-raise metrics. Desktop, tablet, 390px and 320px route checks include overflow, accessibility and keyboard handling.
 
-Final results: TypeScript, ESLint, production build, Rust formatting, local program security tests, exact amount tests and **21 browser regressions pass**. All 16 route/viewport combinations passed automated WCAG 2 A/AA and overflow checks. Browser hydration/console checks passed after waiting for hydration before taking screenshots. A live browser read returned 1.25 JV Test USD, and a Devnet program dump matched the tested binary. These automated checks complement manual accessibility and installed-wallet acceptance testing.
+Final results: TypeScript, ESLint, production build, Rust formatting, local program security tests, exact amount tests and **all 62 browser regression cases passed in the final full run**. All 24 route/viewport combinations passed automated WCAG 2 A/AA and overflow checks. Browser hydration/console checks passed after waiting for hydration before taking screenshots. Native SOL smoke readback, legacy-account compatibility and deployed executable verification are recorded in PROJECT_STATUS.md. These automated checks complement manual accessibility and installed-wallet acceptance testing.
 
 `npm audit` reports 20 findings (10 moderate, 10 high), including development ESLint/glob dependencies and transitive Solana/Anchor dependencies (`bigint-buffer`, `toml`, legacy `uuid`, `stream-json`). No incompatible forced upgrades were applied. The `toml` functionality is Node tooling rather than the browser financing path; the dependency findings still require review before production use. Public Devnet RPC calls can time out or be rate-limited; failed reads show unavailable/error states rather than invented balances.

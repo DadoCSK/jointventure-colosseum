@@ -1,0 +1,30 @@
+{
+  "network": "devnet",
+  "verifiedAt": "2026-10-11T15:32:00.326Z",
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "project": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+  "solVault": "85dT3wXkBVom6e7w9c2zcwntBedAoC88nqLt417hufHX",
+  "solPosition": "9i9WhJ2UMux3k7nJojBnWa1WtQ6puiczejbkSXdZaaNS",
+  "investor": "6AGhRPUnRcRhjr3wcD563H4ziqBgMFwmyAUakULNVTdJ",
+  "signature": "2YcduQwSXT2qrCTpMtZUXKYEUTF1okeYctN8vq97xYjPbWeMkjFWCEZ35SjEcc1PB9LBwCXEXYNJkhDtbwAqqTMz",
+  "warmupSignature": "5DpdpryY8WxMrELvtATVJ9WNoposUfDFFr4uWs6nw3oXKi5ojZhR6w2u9eftGhKf3UGoffVYZt8JveuGfUtZsK5e",
+  "lamports": "100000",
+  "sol": "0.0001",
+  "feeLamports": 5000,
+  "before": {
+    "investor": 2993479,
+    "vault": 899161,
+    "position": "1",
+    "projectTotal": "1"
+  },
+  "after": {
+    "investor": 2888479,
+    "vault": 999161,
+    "position": "100001",
+    "projectTotal": "100001"
+  },
+  "frontendUpdatedWithoutRefresh": true,
+  "portfolioReadback": true,
+  "explorer": "https://explorer.solana.com/tx/2YcduQwSXT2qrCTpMtZUXKYEUTF1okeYctN8vq97xYjPbWeMkjFWCEZ35SjEcc1PB9LBwCXEXYNJkhDtbwAqqTMz?cluster=devnet",
+  "browserErrors": []
+}

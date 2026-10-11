@@ -221,3 +221,12 @@
 .wallet-options .btn { justify-content:space-between; white-space:normal; text-align:left; height:auto; min-height:48px; }
 .wallet-options small { font-size:10px; color:var(--muted); font-weight:400; }
 @media(max-width:540px) { .capital-heading { align-items:start; } .capital-legend { flex-direction:column; align-items:start; } }
+
+.capital-split-bar { display:flex; }
+.capital-split-bar > span { flex:none; transition:width .8s ease; }
+.capital-split-bar .capital-demo-segment { background:repeating-linear-gradient(135deg,#a5b9bc 0 2px,#465655 2px 4px); }
+.capital-split-bar .capital-remaining { background:var(--line); }
+.capital-callout { font-size:13px; color:var(--accent); animation:capital-callout 6s ease both; }
+.market-price { display:block; margin:10px 0; line-height:1.6; }
+@keyframes capital-callout { 0% {opacity:0;} 10%,80% {opacity:1;} 100% {opacity:0;} }
+@media(prefers-reduced-motion:reduce) { .capital-split-bar > span {transition:none;} .capital-callout {animation:none;} }

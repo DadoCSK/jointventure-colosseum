@@ -87,7 +87,7 @@ test('RPC failure leaves the project and financing usable and never invents a fi
   await expect(page.locator('progress')).toHaveCount(0);
   await expect(page.locator('.onchain-panel')).toContainText('Live Devnet data is unavailable');
   await page.getByRole('button', {name: 'Finance this project'}).click();
-  await expect(page.locator('dialog[open]')).toContainText('JV TEST USD');
+  await expect(page.locator('dialog[open]')).toContainText('NATIVE SOL');
 });
 test('a missing record remains pending and a record referencing another project is rejected', async ({page}) => {
   const options = {missing: true, tamperProject: false};

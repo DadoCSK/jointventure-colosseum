@@ -25,11 +25,4 @@ export function CapitalFlow() {
   </section>;
 }
 
-export function CapitalStructure() {
-  const invested=bavaria.alreadyInvested/bavaria.totalProjectCapital*100;
-  return <section className="business-capital" aria-label="Business project capital">
-    <div className="capital-heading"><span>Total project capital</span><strong>{eur(bavaria.totalProjectCapital)}</strong><span>Project funded <b>{Math.round(invested)}%</b></span></div>
-    <div className="capital-split-bar" role="img" aria-label="Business capital: €100,000 already invested, 29%; €250,000 current raise, 71%"><span style={{width:`${invested}%`}}/></div>
-    <div className="capital-legend"><span><strong>{eur(bavaria.alreadyInvested)}</strong> Already invested · 29%</span><span><strong>{eur(bavaria.target)}</strong> Current raise · 71%</span></div>
-  </section>;
-}
+export {CapitalStructure} from './capital-structure';

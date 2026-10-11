@@ -1,0 +1,707 @@
+{
+  "network": "devnet",
+  "capturedAt": "2026-10-11T14:55:00.318Z",
+  "deployment": {
+    "network": "devnet",
+    "rpc": "https://api.devnet.solana.com",
+    "genesisHash": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+    "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+    "projectPda": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+    "vaultPda": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+    "authority": "BTRmT5Vbh95xfyxc8swN45G2fgP8PCoKP4TfvwEbM6WE",
+    "mint": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+    "tokenName": "JV Test USD",
+    "tokenSymbol": "JVTEST",
+    "decimals": 6,
+    "stage": "financing-enabled",
+    "initializationSignature": "3WVDiSZe35foMsaV4LKo1oAixAEgVCiwVzTafwutAKAQAD4psLz6ZBFdxZZDRYJFRoG54T6cfN6Kyf2QxV3xbBr6",
+    "financingControlSignature": "4Hwsprzjs8eML35SoiFfh8PkxzdW4tDtdQdmhXAnyEUpnnM1dnRJ1YUpsZYPPk5uDLGaLdpSMkTJa5i3yc5zqvx"
+  },
+  "idl": {
+    "address": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+    "metadata": {
+      "name": "joint_venture",
+      "version": "0.1.0",
+      "spec": "0.1.0"
+    },
+    "instructions": [
+      {
+        "name": "finance",
+        "discriminator": [
+          133,
+          139,
+          130,
+          178,
+          62,
+          177,
+          62,
+          115
+        ],
+        "accounts": [
+          {
+            "name": "investor",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "project",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    114,
+                    111,
+                    106,
+                    101,
+                    99,
+                    116
+                  ]
+                },
+                {
+                  "kind": "const",
+                  "value": [
+                    98,
+                    97,
+                    118,
+                    97,
+                    114,
+                    105,
+                    97
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "mint"
+          },
+          {
+            "name": "vault",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    118,
+                    97,
+                    117,
+                    108,
+                    116
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "project"
+                }
+              ]
+            }
+          },
+          {
+            "name": "source",
+            "writable": true
+          },
+          {
+            "name": "position",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    111,
+                    115,
+                    105,
+                    116,
+                    105,
+                    111,
+                    110
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "project"
+                },
+                {
+                  "kind": "account",
+                  "path": "investor"
+                }
+              ]
+            }
+          },
+          {
+            "name": "token_program",
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "expected_nonce",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "initialize_bavaria",
+        "discriminator": [
+          90,
+          217,
+          71,
+          194,
+          57,
+          242,
+          209,
+          47
+        ],
+        "accounts": [
+          {
+            "name": "authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "program_account",
+            "address": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ"
+          },
+          {
+            "name": "program_data"
+          },
+          {
+            "name": "project",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    114,
+                    111,
+                    106,
+                    101,
+                    99,
+                    116
+                  ]
+                },
+                {
+                  "kind": "const",
+                  "value": [
+                    98,
+                    97,
+                    118,
+                    97,
+                    114,
+                    105,
+                    97
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "mint"
+          },
+          {
+            "name": "vault",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    118,
+                    97,
+                    117,
+                    108,
+                    116
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "project"
+                }
+              ]
+            }
+          },
+          {
+            "name": "token_program",
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "record_document",
+        "discriminator": [
+          151,
+          250,
+          131,
+          110,
+          62,
+          59,
+          73,
+          154
+        ],
+        "accounts": [
+          {
+            "name": "authority",
+            "writable": true,
+            "signer": true,
+            "relations": [
+              "project"
+            ]
+          },
+          {
+            "name": "project",
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    114,
+                    111,
+                    106,
+                    101,
+                    99,
+                    116
+                  ]
+                },
+                {
+                  "kind": "const",
+                  "value": [
+                    98,
+                    97,
+                    118,
+                    97,
+                    114,
+                    105,
+                    97
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "document_record",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    100,
+                    111,
+                    99,
+                    117,
+                    109,
+                    101,
+                    110,
+                    116
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "project"
+                },
+                {
+                  "kind": "arg",
+                  "path": "document_id"
+                }
+              ]
+            }
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "document_id",
+            "type": "string"
+          },
+          {
+            "name": "document_name",
+            "type": "string"
+          },
+          {
+            "name": "sha256_hash",
+            "type": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "set_financing_enabled",
+        "discriminator": [
+          40,
+          243,
+          253,
+          195,
+          98,
+          241,
+          168,
+          38
+        ],
+        "accounts": [
+          {
+            "name": "authority",
+            "signer": true,
+            "relations": [
+              "project"
+            ]
+          },
+          {
+            "name": "project",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    114,
+                    111,
+                    106,
+                    101,
+                    99,
+                    116
+                  ]
+                },
+                {
+                  "kind": "const",
+                  "value": [
+                    98,
+                    97,
+                    118,
+                    97,
+                    114,
+                    105,
+                    97
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "enabled",
+            "type": "bool"
+          }
+        ]
+      }
+    ],
+    "accounts": [
+      {
+        "name": "DocumentRecord",
+        "discriminator": [
+          13,
+          153,
+          55,
+          14,
+          109,
+          39,
+          136,
+          125
+        ]
+      },
+      {
+        "name": "Position",
+        "discriminator": [
+          170,
+          188,
+          143,
+          228,
+          122,
+          64,
+          247,
+          208
+        ]
+      },
+      {
+        "name": "Project",
+        "discriminator": [
+          205,
+          168,
+          189,
+          202,
+          181,
+          247,
+          142,
+          19
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "FinancingRecorded",
+        "discriminator": [
+          84,
+          157,
+          85,
+          31,
+          50,
+          53,
+          148,
+          3
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "code": 6000,
+        "name": "Unauthorized",
+        "msg": "Only the deployed program's upgrade authority can initialize the Bavaria project."
+      },
+      {
+        "code": 6001,
+        "name": "WrongDecimals",
+        "msg": "The project accepts a classic SPL test-token mint with exactly six decimals."
+      },
+      {
+        "code": 6002,
+        "name": "FinancingDisabled",
+        "msg": "Project financing is paused."
+      },
+      {
+        "code": 6003,
+        "name": "InvalidAmount",
+        "msg": "Enter a positive token amount."
+      },
+      {
+        "code": 6004,
+        "name": "StaleNonce",
+        "msg": "This financing attempt has already been recorded or the position has changed. Refresh before a new commitment."
+      },
+      {
+        "code": 6005,
+        "name": "WrongPosition",
+        "msg": "The position must belong to this project and investor."
+      },
+      {
+        "code": 6006,
+        "name": "Overflow",
+        "msg": "The amount exceeds the supported range."
+      }
+    ],
+    "types": [
+      {
+        "name": "DocumentRecord",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "project",
+              "type": "pubkey"
+            },
+            {
+              "name": "authority",
+              "type": "pubkey"
+            },
+            {
+              "name": "document_id",
+              "type": "string"
+            },
+            {
+              "name": "document_name",
+              "type": "string"
+            },
+            {
+              "name": "sha256_hash",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "created_at",
+              "type": "i64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "FinancingRecorded",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "project",
+              "type": "pubkey"
+            },
+            {
+              "name": "investor",
+              "type": "pubkey"
+            },
+            {
+              "name": "amount",
+              "type": "u64"
+            },
+            {
+              "name": "nonce",
+              "type": "u64"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Position",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "project",
+              "type": "pubkey"
+            },
+            {
+              "name": "investor",
+              "type": "pubkey"
+            },
+            {
+              "name": "contributed_units",
+              "type": "u64"
+            },
+            {
+              "name": "next_nonce",
+              "type": "u64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Project",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "u8"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "vault_bump",
+              "type": "u8"
+            },
+            {
+              "name": "authority",
+              "type": "pubkey"
+            },
+            {
+              "name": "accepted_mint",
+              "type": "pubkey"
+            },
+            {
+              "name": "slug",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "target_eur_cents",
+              "type": "u64"
+            },
+            {
+              "name": "infrastructure_eur_cents",
+              "type": "u64"
+            },
+            {
+              "name": "contracted_monthly_revenue_eur_cents",
+              "type": "u64"
+            },
+            {
+              "name": "total_financed_units",
+              "type": "u64"
+            },
+            {
+              "name": "financing_enabled",
+              "type": "bool"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "accounts": [
+    {
+      "address": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "lamports": 833120,
+      "executable": true,
+      "data": "AgAAAPXiarNOSPY8xFFz/SwKnR6wAsdH7muCm+A8sLGE/C2b"
+    },
+    {
+      "address": "2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN",
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "lamports": 1488440,
+      "executable": false,
+      "data": "m6YEwAxQHfqZOAmHlrO9MynLpf3NDE+AtDdlB9DxS62FkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy21DEYgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "address": "BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL",
+      "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "lamports": 1066800,
+      "executable": false,
+      "data": "AQAAAJtZ+UYf2WHkUuJFQ24qddGUQEP8Njurk8WfaiRwcSyz0PYeVAIAAAAGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "address": "3ToaWp5zopbmmVgHLhmBNXK3315G9eLNSAhphV5Jzf5x",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "lamports": 1752600,
+      "executable": false,
+      "data": "DZk3Dm0niH2FkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy25tZ+UYf2WHkUuJFQ24qddGUQEP8Njurk8WfaiRwcSyzEQAAAGludGVncml0eS10ZXN0LXYxHwAAAEhhcm1sZXNzIGludGVncml0eSB0ZXN0IGZpeHR1cmXUk9ZkVeA3r7mW156PLPW4xpxwkvd9Hf5ey9IjsTGXRkZMyWoAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "address": "9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "lamports": 1681480,
+      "executable": false,
+      "data": "zai9yrX3jhMB/PmbWflGH9lh5FLiRUNuKnXRlEBD/DY7q5PFn2okcHEss5umBMAMUB36mTgJh5azvTMpy6X9zQxPgLQ3ZQfQ8UutBwAAAGJhdmFyaWEcAAAAQmF2YXJpYSBDdWx0aXZhdGlvbiBGYWNpbGl0eUB4fQEAAAAAgLFPAQAAAACgWjIAAAAAAFDEYgEAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    },
+    {
+      "address": "Cf29kcyAnPzoR8xRevJFMk8AMzwjMmaC2RNLNSxeYFiq",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "lamports": 1102360,
+      "executable": false,
+      "data": "qryP5HpA99CFkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy26PfdJPPyV9qGfcRtvrvtkvMW5E/VZBxXlBU1uHQzLkKgLFPAQAAAAAEAAAAAAAAAP8="
+    },
+    {
+      "address": "ECQZS9bdMgVCPR4hQSEJcmiNCJtaBfXnnBiZD1chmcmk",
+      "owner": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+      "lamports": 1102360,
+      "executable": false,
+      "data": "qryP5HpA99CFkTNp3sunsz59HlC4iT46+VBiESk0HOdSSXvVapcy228Vmfq5eWlen0HzLy9x4weGcSP6jjnqww+mMAXcCYTz0BITAAAAAAABAAAAAAAAAP4="
+    }
+  ]
+}

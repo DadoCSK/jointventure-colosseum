@@ -12,5 +12,6 @@
   "decimals": 6,
   "stage": "financing-enabled",
   "initializationSignature": "3WVDiSZe35foMsaV4LKo1oAixAEgVCiwVzTafwutAKAQAD4psLz6ZBFdxZZDRYJFRoG54T6cfN6Kyf2QxV3xbBr6",
-  "financingControlSignature": "4Hwsprzjs8eML35SoiFfh8PkxzdW4tDtdQdmhXAnyEUpnnM1dnRJ1YUpsZYPPk5uDLGaLdpSMkTJa5i3yc5zqvx"
+  "financingControlSignature": "4Hwsprzjs8eML35SoiFfh8PkxzdW4tDtdQdmhXAnyEUpnnM1dnRJ1YUpsZYPPk5uDLGaLdpSMkTJa5i3yc5zqvx",
+  "solVaultPda": "85dT3wXkBVom6e7w9c2zcwntBedAoC88nqLt417hufHX"
 }

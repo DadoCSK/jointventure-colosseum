@@ -135,6 +135,130 @@
       ]
     },
     {
+      "name": "finance_sol",
+      "discriminator": [
+        57,
+        161,
+        241,
+        149,
+        225,
+        213,
+        112,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "project",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  118,
+                  97,
+                  114,
+                  105,
+                  97
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "sol_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  111,
+                  108,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              }
+            ]
+          }
+        },
+        {
+          "name": "sol_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  111,
+                  108,
+                  45,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        },
+        {
+          "name": "expected_nonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "initialize_bavaria",
       "discriminator": [
         90,
@@ -428,6 +552,32 @@
         142,
         19
       ]
+    },
+    {
+      "name": "SolPosition",
+      "discriminator": [
+        144,
+        250,
+        227,
+        81,
+        188,
+        185,
+        169,
+        198
+      ]
+    },
+    {
+      "name": "SolVault",
+      "discriminator": [
+        21,
+        132,
+        230,
+        103,
+        19,
+        209,
+        129,
+        248
+      ]
     }
   ],
   "events": [
@@ -442,6 +592,19 @@
         53,
         148,
         3
+      ]
+    },
+    {
+      "name": "SolFinancingRecorded",
+      "discriminator": [
+        3,
+        253,
+        57,
+        159,
+        20,
+        89,
+        126,
+        90
       ]
     }
   ],
@@ -480,6 +643,16 @@
       "code": 6006,
       "name": "Overflow",
       "msg": "The amount exceeds the supported range."
+    },
+    {
+      "code": 6007,
+      "name": "NativeInvalidAmount",
+      "msg": "Enter a positive SOL amount."
+    },
+    {
+      "code": 6008,
+      "name": "WrongSolVault",
+      "msg": "The SOL vault must belong to the Bavaria project."
     }
   ],
   "types": [
@@ -628,6 +801,78 @@
           {
             "name": "financing_enabled",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SolFinancingRecorded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SolPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "contributed_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "next_nonce",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SolVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

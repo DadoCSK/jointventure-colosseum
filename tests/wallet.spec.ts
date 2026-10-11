@@ -242,7 +242,7 @@ test("connected wallet layout fits narrow screens and financing requires connect
   await page.goto("/projects/bavaria");
   // Full reload clears the in-memory identity; a signature requires a separate reviewed action.
   await page.getByRole("button", { name: "Finance this project" }).click();
-  await expect(page.locator('dialog[open]')).toContainText('JV Test USD is not official USDC');
+  await expect(page.locator('dialog[open]')).toContainText('Devnet SOL has no monetary value');
   await expect(page.locator('dialog[open]').getByRole('button',{name:'Connect Wallet',exact:true})).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.locator("progress")).toHaveCount(0);

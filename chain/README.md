@@ -1,5 +1,15 @@
 # Joint Venture Devnet program
 
+## Active native SOL financing
+
+`finance_sol(lamports, expected_nonce)` transfers native Devnet SOL through a System Program CPI into the program-owned **SolVault** PDA `["sol-vault", project]`. It records checked u64 lamport totals and a separate **SolPosition** `["sol-position", project, investor]`. Canonical Bavaria validation, signer, project/vault/position relationships, existing pause control and nonce protection apply. Atomic failures roll back transfer and recording. First-time contributors pay rent for new accounts (49-byte vault / 89-byte position). Direct deposits do not increase recorded totals. There is no withdrawal, reset or close instruction.
+
+Native SOL vault: `85dT3wXkBVom6e7w9c2zcwntBedAoC88nqLt417hufHX`. The existing program address, Project/Position/DocumentRecord layouts, legacy token vault and mint remain unchanged. Legacy `finance` is retained for compatibility but is absent from the normal investor UI. Never reinterpret six-decimal token units as lamports. No price or EUR equivalent is stored onchain.
+
+Build and generate IDL using the tooling below. `node scripts/run-native-local-tests.mjs` runs initialization, legacy financing, document integrity, native financing and legacy financing again against a **fresh local validator**. Rust unit tests cover total/position/nonce u64 boundaries. `node scripts/native-sol-compatibility.mjs` compares all legacy interfaces and fresh Devnet account bytes against the immutable pre-upgrade snapshot. `node scripts/native-sol-preflight.mjs --verify-binary` verifies the deployed executable. The explicit browser smoke is `node scripts/smoke-native-sol.mjs`; it refuses duplicate submissions.
+
+## Legacy token architecture (preserved)
+
 The Bavaria project is a deterministic Anchor account, derived from `['project', 'bavaria']`. Its classic SPL token vault is derived from `['vault', project]` and owned by the project PDA. Initialization is restricted to the program's current upgrade authority. The accepted six-decimal mint is fixed at initialization.
 
 EUR case metrics are stored in integer cents. Live financing totals are separate integer test-token units and start at zero; the frontend's €75,000 demo commitment is not an onchain deposit. JV Test USD is a dedicated demo token, not official USDC, a stablecoin, or an asset redeemable for currency. The token label is application metadata; no token metadata program is used.
@@ -32,7 +42,9 @@ node scripts/deploy-program.mjs
 node scripts/initialize-bavaria.mjs
 # After locally testing an upgraded financing binary:
 node scripts/enable-financing.mjs
-node scripts/smoke-devnet.mjs
+node scripts/smoke-native-sol.mjs
+# Historical SPL-token smoke only, outside the active UI:
+# node scripts/smoke-devnet.mjs
 # Pause new deposits if needed:
 node scripts/enable-financing.mjs --pause
 ```

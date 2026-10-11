@@ -1,0 +1,18 @@
+{
+  "network": "devnet",
+  "verifiedAt": "2026-10-11T15:27:59.315Z",
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "programData": "HYq8YiAsAhTEVv9wZdexUfxAEduAUmu5Bunq2F76jLBC",
+  "upgradeAuthority": "BTRmT5Vbh95xfyxc8swN45G2fgP8PCoKP4TfvwEbM6WE",
+  "programDataBytes": 314621,
+  "compiledBytes": 314576,
+  "compiledSha256": "3c3bdb1b46412a9fa2bebbe93b1c4681174ce2a0d8fd1925f5cce4bcf2e5f76a",
+  "deployedBinarySha256": "3c3bdb1b46412a9fa2bebbe93b1c4681174ce2a0d8fd1925f5cce4bcf2e5f76a",
+  "legacyTargetEurCents": "25000000",
+  "legacyFinancingUnits": "23250000",
+  "bufferRentLamports": 1598884280,
+  "additionalProgramRentLamports": 0,
+  "estimatedUploadRequirementSol": 1.60388428,
+  "authorityBalanceSol": 1.70567184,
+  "binaryMatches": true
+}

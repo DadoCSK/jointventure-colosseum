@@ -96,6 +96,64 @@ pub mod joint_venture {
         Ok(())
     }
 
+    // Native SOL uses separate records: legacy token units are never reinterpreted.
+    pub fn finance_sol(ctx: Context<FinanceSol>, lamports: u64, expected_nonce: u64) -> Result<()> {
+        require!(
+            ctx.accounts.project.financing_enabled,
+            ProjectError::FinancingDisabled
+        );
+        require!(lamports > 0, ProjectError::NativeInvalidAmount);
+        let project_key = ctx.accounts.project.key();
+        let vault = &mut ctx.accounts.sol_vault;
+        if vault.project == Pubkey::default() {
+            vault.project = project_key;
+            vault.bump = ctx.bumps.sol_vault;
+        }
+        require_keys_eq!(vault.project, project_key, ProjectError::WrongSolVault);
+        let position = &mut ctx.accounts.sol_position;
+        if position.project == Pubkey::default() {
+            position.project = project_key;
+            position.investor = ctx.accounts.investor.key();
+            position.bump = ctx.bumps.sol_position;
+        }
+        require_keys_eq!(position.project, project_key, ProjectError::WrongPosition);
+        require_keys_eq!(
+            position.investor,
+            ctx.accounts.investor.key(),
+            ProjectError::WrongPosition
+        );
+        require!(
+            expected_nonce == position.next_nonce,
+            ProjectError::StaleNonce
+        );
+        let (total, contribution, nonce) = sol_totals(
+            vault.total_lamports,
+            position.contributed_lamports,
+            position.next_nonce,
+            lamports,
+        )?;
+        anchor_lang::system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                anchor_lang::system_program::Transfer {
+                    from: ctx.accounts.investor.to_account_info(),
+                    to: vault.to_account_info(),
+                },
+            ),
+            lamports,
+        )?;
+        vault.total_lamports = total;
+        position.contributed_lamports = contribution;
+        position.next_nonce = nonce;
+        emit!(SolFinancingRecorded {
+            project: project_key,
+            investor: ctx.accounts.investor.key(),
+            lamports,
+            nonce: expected_nonce
+        });
+        Ok(())
+    }
+
     pub fn record_document(
         ctx: Context<RecordDocument>,
         document_id: String,
@@ -262,4 +320,76 @@ pub enum ProjectError {
     WrongPosition,
     #[msg("The amount exceeds the supported range.")]
     Overflow,
+    #[msg("Enter a positive SOL amount.")]
+    NativeInvalidAmount,
+    #[msg("The SOL vault must belong to the Bavaria project.")]
+    WrongSolVault,
+}
+
+// Program-owned, project-derived custody account; no withdrawal/close/reset path.
+#[derive(Accounts)]
+pub struct FinanceSol<'info> {
+    #[account(mut)]
+    pub investor: Signer<'info>,
+    #[account(seeds = [b"project", b"bavaria"], bump = project.bump)]
+    pub project: Account<'info, Project>,
+    #[account(init_if_needed, payer = investor, space = 8 + SolVault::INIT_SPACE,
+        seeds = [b"sol-vault", project.key().as_ref()], bump)]
+    pub sol_vault: Account<'info, SolVault>,
+    #[account(init_if_needed, payer = investor, space = 8 + SolPosition::INIT_SPACE,
+        seeds = [b"sol-position", project.key().as_ref(), investor.key().as_ref()], bump)]
+    pub sol_position: Account<'info, SolPosition>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct SolVault {
+    pub project: Pubkey,
+    pub total_lamports: u64,
+    pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct SolPosition {
+    pub project: Pubkey,
+    pub investor: Pubkey,
+    pub contributed_lamports: u64,
+    pub next_nonce: u64,
+    pub bump: u8,
+}
+
+#[event]
+pub struct SolFinancingRecorded {
+    pub project: Pubkey,
+    pub investor: Pubkey,
+    pub lamports: u64,
+    pub nonce: u64,
+}
+
+fn sol_totals(total: u64, contributed: u64, nonce: u64, amount: u64) -> Result<(u64, u64, u64)> {
+    Ok((
+        total.checked_add(amount).ok_or(ProjectError::Overflow)?,
+        contributed
+            .checked_add(amount)
+            .ok_or(ProjectError::Overflow)?,
+        nonce.checked_add(1).ok_or(ProjectError::Overflow)?,
+    ))
+}
+
+#[cfg(test)]
+mod sol_arithmetic_tests {
+    use super::*;
+    #[test]
+    fn checked_lamports_and_nonce_boundaries() {
+        assert_eq!(sol_totals(0, 0, 0, 1).unwrap(), (1, 1, 1));
+        assert_eq!(
+            sol_totals(u64::MAX - 1, u64::MAX - 1, u64::MAX - 1, 1).unwrap(),
+            (u64::MAX, u64::MAX, u64::MAX)
+        );
+        assert!(sol_totals(u64::MAX, 0, 0, 1).is_err());
+        assert!(sol_totals(0, u64::MAX, 0, 1).is_err());
+        assert!(sol_totals(0, 0, u64::MAX, 1).is_err());
+    }
 }

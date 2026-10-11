@@ -22,7 +22,7 @@ test('Bavaria is the only project; navigation has no marketplace or fictional EU
   await expect(page.locator('main progress')).toHaveCount(0);
   await expect(page.locator('.capital-flow li')).toHaveText(['Capital','Infrastructure','Facility','Production','Revenue']);
   await page.getByRole('button', { name: 'Finance on Devnet', exact: true }).click();
-  await expect(page.locator('dialog[open]')).toContainText('JV TEST USD');
+  await expect(page.locator('dialog[open]')).toContainText('NATIVE SOL');
 });
 
 test('unavailable chain read keeps the project usable without fake EUR progress', async ({ page }) => {

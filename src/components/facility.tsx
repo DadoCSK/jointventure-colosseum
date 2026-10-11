@@ -7,9 +7,9 @@ import { SystemPreview } from "./facility-media";
 import { FacilityScene, zoneNames, type FacilityZone } from "./facility-scene";
 const GrowthModel = dynamic(() => import("./growth-model").then(mod => mod.GrowthModel), { ssr:false, loading:()=> <div className="growth-loading" role="status">Preparing simulated cultivation preview…</div> });
 const stages = ["Propagation", "Vegetative", "Flowering", "Drying", "Processing"];
-const stageDays = [1, 18, 45, 55, 60];
+const stageDays = [1, 18, 60, 83, 90];
 const targets = ["25°C · 70% RH", "24°C · 61% RH", "23°C · 50% RH", "19°C · 55% RH", "Controlled storage"];
-function stageFor(day:number) { return day<=7?0:day<=28?1:day<=52?2:day<=59?3:4; }
+function stageFor(day:number) { return day<=7?0:day<=28?1:day<=76?2:day<=89?3:4; }
 const trends = [
   { label:"Temperature", unit:"°C", base:24.3, amplitude:.9, min:22, max:27, phase:0 },
   { label:"Humidity", unit:"%", base:61, amplitude:4, min:50, max:70, phase:1 },
@@ -88,7 +88,7 @@ export function FacilityDashboard() {
   const inspectorTitle=showRoom?room:selected;
   const planned=showRoom?(room.includes("Storage")||room==="Support / Infrastructure"):selected==="Security";
   const inspectorDetails=showRoom?roomDetails[room]:details[selected];
-  const stage=stageFor(day), height=stage===4?"Harvested":`~${Math.round(10+Math.min(day,45)/45*110)} cm`;
+  const stage=stageFor(day), height=stage===4?"Harvested":`~${Math.round(10+Math.min(day,65)/65*110)} cm`;
   const ops=[
     {name:"HVAC",icon:Fan,status:"Simulated Online",value:`Cooling ${cooling}%`,load:Number(cooling)},
     {name:"Lighting",icon:Sun,status:"Simulated Online",value:`Output ${lighting}%`,load:Number(lighting)},
@@ -122,8 +122,8 @@ export function FacilityDashboard() {
     <section className="environment-trends" aria-labelledby="trends-title"><div className="section-caption"><span>02 / ENVIRONMENT HISTORY DEMO</span><h2 id="trends-title">Environment · Last 24 Hours</h2><span className="simulation-badge">Simulated 24h telemetry</span></div><div className="trend-tabs" role="tablist" aria-label="Environment metric">{trends.map((item,index)=><button key={item.label} id={`trend-tab-${index}`} role="tab" aria-selected={trend===index} aria-controls="environment-chart" tabIndex={trend===index?0:-1} data-trend={index} onClick={()=>setTrend(index)} onKeyDown={event=>{if(["ArrowRight","ArrowLeft","Home","End"].includes(event.key)){event.preventDefault();const next=event.key==="Home"?0:event.key==="End"?2:(index+(event.key==="ArrowRight"?1:2))%3;setTrend(next);event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(`[data-trend="${next}"]`)?.focus();}}}>{item.label}</button>)}</div><div id="environment-chart" role="tabpanel" aria-labelledby={`trend-tab-${trend}`} tabIndex={0}><Trend {...trends[trend]}/></div></section>
     <section className="cultivation-panel cultivation-twin" aria-labelledby="cycle-title"><div className="section-caption"><span>03 / PRODUCTION PREVIEW</span><h2 id="cycle-title">Cultivation cycle</h2><span className="simulation-badge">SIMULATED GROWTH CYCLE</span></div>
       <ol className="cycle-stepper">{stages.map((label,index)=><li key={label}><button type="button" aria-pressed={index===stage} onClick={()=>setDay(stageDays[index])}><span>{String(index+1).padStart(2,"0")}</span>{label}</button></li>)}</ol>
-      <div className="cultivation-stage"><div className="cycle-insight"><span className="eyebrow">ILLUSTRATIVE CANOPY</span><span className="cycle-day" aria-live="polite">{stages[stage]} · Day {day}</span><h3>{stages[stage]}</h3><strong className="growth-age">Day {day}<span>/ 60</span></strong><dl><div><dt>Demo plant height</dt><dd>{height}</dd></div><div><dt>Illustrative target</dt><dd>{targets[stage]}</dd></div><div><dt>Tracking</dt><dd>Simulated only</dd></div></dl></div><GrowthModel day={day} stage={stage} paused={paused}/></div>
-      <div className="cycle-scrubber"><label htmlFor="growth-day">Explore growth <span>Day {day}</span></label><input id="growth-day" type="range" min="1" max="60" value={day} onChange={event=>setDay(Number(event.target.value))}/><div className="growth-day-buttons">{[1,14,28,45,60].map(value=><button key={value} className="btn btn-ghost" aria-pressed={day===value} onClick={()=>setDay(value)}>Day {value}</button>)}</div><small>Illustrative stages and targets · no actual plant tracking</small></div>
+      <div className="cultivation-stage"><div className="cycle-insight"><span className="eyebrow">ILLUSTRATIVE CANOPY</span><span className="cycle-day" aria-live="polite">{stages[stage]} · Day {day}</span><h3>{stages[stage]}</h3><strong className="growth-age">Day {day}<span>/ 90</span></strong><dl><div><dt>Demo plant height</dt><dd>{height}</dd></div><div><dt>Illustrative target</dt><dd>{targets[stage]}</dd></div><div><dt>Tracking</dt><dd>Simulated only</dd></div></dl></div><GrowthModel day={day} stage={stage} paused={paused}/></div>
+      <div className="cycle-scrubber"><label htmlFor="growth-day">Explore growth <span>Day {day}</span></label><input id="growth-day" type="range" min="1" max="90" value={day} onChange={event=>setDay(Number(event.target.value))}/><div className="growth-day-buttons">{[1,14,28,60,90].map(value=><button key={value} className="btn btn-ghost" aria-pressed={day===value} onClick={()=>setDay(value)}>Day {value}</button>)}</div><small>Illustrative stages and targets · no actual plant tracking</small></div>
     </section>
     <section className="operations-section" aria-labelledby="systems-title"><div className="section-caption"><span>04 / OPERATIONS PREVIEW</span><h2 id="systems-title">Facility systems</h2><span className="simulation-badge">SIMULATED TELEMETRY</span></div><ul className="operations-strip">{ops.map(system=><li key={system.name}><system.icon size={18}/><h3>{system.name}</h3><span className="operation-state">{system.status}</span><strong data-system={system.name.toLowerCase()}>{system.value}</strong>{system.load!==null&&<div className="operation-gauge" aria-hidden="true"><span style={{width:`${system.load}%`}}/></div>}</li>)}</ul></section>
   </div>;

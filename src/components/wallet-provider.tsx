@@ -14,9 +14,12 @@ import type { WalletSession } from "./wallet-standard";
 import type {FinanceReview,FinanceReceipt,Confirmation,ProjectReadout} from '@/chain/client';
 import type {DocumentReview, DocumentReceipt} from '@/chain/documents';
 
+import {useMarketPrice,type MarketPrice} from './market-price';
+
 export const DEVNET_RPC = "https://api.devnet.solana.com";
 
 type WalletContextValue = {
+  price: MarketPrice|null;
   address: string | null;
   busy: boolean;
   error: string | null;
@@ -35,12 +38,13 @@ type WalletContextValue = {
   projectResult: {address: string | null; data: ProjectReadout} | null;
   projectLoading: boolean;
   projectError: string | null;
-  refreshProject: () => Promise<void>;
+  refreshProject: (force?:boolean) => Promise<void>;
   anchorDocument: (review: DocumentReview, submitted: (receipt: DocumentReceipt) => void) => Promise<DocumentReceipt>;
 };
 const WalletContext = createContext<WalletContextValue | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
+  const price=useMarketPrice();
   const [address, setAddress] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,20 +64,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [projectLoading, setProjectLoading] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
   const projectRequest = useRef(0);
-  const refreshProject = useCallback(async () => {
-    const request = ++projectRequest.current;
-    const account = addressRef.current;
-    setProjectLoading(true); setProjectError(null);
-    try {
-      const {readProject} = await import('@/chain/client');
-      const data = await readProject(account ?? undefined);
-      if (mountedRef.current && request === projectRequest.current && account === addressRef.current) setProjectResult({address: account, data});
-    } catch {
-      if (mountedRef.current && request === projectRequest.current && account === addressRef.current) setProjectError('Live Devnet data is unavailable. Try reading again. The real business information remains available.');
-    } finally {
-      if (mountedRef.current && request === projectRequest.current) setProjectLoading(false);
-    }
-  }, []);
+  const projectRead=useRef<{address:string|null;promise:Promise<void>}|null>(null);
+  const refreshProject = useCallback((force=false):Promise<void> => {
+    const account=addressRef.current;
+    if(!force&&projectRead.current?.address===account)return projectRead.current.promise;
+    const request=++projectRequest.current;
+    setProjectLoading(true);setProjectError(null);
+    const promise=(async()=>{
+      try{
+        const {readProject}=await import('@/chain/client');const data=await readProject(account??undefined);
+        if(mountedRef.current&&request===projectRequest.current&&account===addressRef.current)setProjectResult({address:account,data});
+      }catch{
+        if(mountedRef.current&&request===projectRequest.current&&account===addressRef.current)setProjectError('Live Devnet data is unavailable. Try reading again. The real business information remains available.');
+      }finally{
+        if(mountedRef.current&&request===projectRequest.current){setProjectLoading(false);projectRead.current=null;}
+      }
+    })();
+    projectRead.current={address:account,promise};return promise;
+  },[]);
 
   const loadBalance = useCallback(async (account: string) => {
     balanceRequest.current?.abort();
@@ -232,7 +240,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if(state!=='pending') pendingReceipt.current=null;
       if(state==='confirmed') {
         if(addressRef.current) void loadBalance(addressRef.current);
-        await refreshProject();
+        await refreshProject(true);
       }
     } catch {
       setFinanceError('Confirmation is unavailable. Keep this signature and check again before another commitment.');
@@ -278,7 +286,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletContext.Provider
       value={{
-        address, walletName,
+        address, walletName, price,
         busy,
         error,
         balance,

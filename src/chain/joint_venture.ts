@@ -141,6 +141,130 @@ export type JointVenture = {
       ]
     },
     {
+      "name": "financeSol",
+      "discriminator": [
+        57,
+        161,
+        241,
+        149,
+        225,
+        213,
+        112,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "project",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  118,
+                  97,
+                  114,
+                  105,
+                  97
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "solVault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  111,
+                  108,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              }
+            ]
+          }
+        },
+        {
+          "name": "solPosition",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  111,
+                  108,
+                  45,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        },
+        {
+          "name": "expectedNonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "initializeBavaria",
       "discriminator": [
         90,
@@ -434,6 +558,32 @@ export type JointVenture = {
         142,
         19
       ]
+    },
+    {
+      "name": "solPosition",
+      "discriminator": [
+        144,
+        250,
+        227,
+        81,
+        188,
+        185,
+        169,
+        198
+      ]
+    },
+    {
+      "name": "solVault",
+      "discriminator": [
+        21,
+        132,
+        230,
+        103,
+        19,
+        209,
+        129,
+        248
+      ]
     }
   ],
   "events": [
@@ -448,6 +598,19 @@ export type JointVenture = {
         53,
         148,
         3
+      ]
+    },
+    {
+      "name": "solFinancingRecorded",
+      "discriminator": [
+        3,
+        253,
+        57,
+        159,
+        20,
+        89,
+        126,
+        90
       ]
     }
   ],
@@ -486,6 +649,16 @@ export type JointVenture = {
       "code": 6006,
       "name": "overflow",
       "msg": "The amount exceeds the supported range."
+    },
+    {
+      "code": 6007,
+      "name": "nativeInvalidAmount",
+      "msg": "Enter a positive SOL amount."
+    },
+    {
+      "code": 6008,
+      "name": "wrongSolVault",
+      "msg": "The SOL vault must belong to the Bavaria project."
     }
   ],
   "types": [
@@ -634,6 +807,78 @@ export type JointVenture = {
           {
             "name": "financingEnabled",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "solFinancingRecorded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "solPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "contributedLamports",
+            "type": "u64"
+          },
+          {
+            "name": "nextNonce",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "solVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "totalLamports",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

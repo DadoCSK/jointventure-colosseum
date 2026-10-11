@@ -1,0 +1,11 @@
+{
+  "network": "devnet",
+  "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+  "binarySha256": "3c3bdb1b46412a9fa2bebbe93b1c4681174ce2a0d8fd1925f5cce4bcf2e5f76a",
+  "binaryBytes": 314576,
+  "deployedAt": "2026-10-11T15:26:53.536Z",
+  "result": {
+    "programId": "Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ",
+    "signature": "2kz1vWKBK5VtVv9LfJshF1je6aB7uEvqYVXeXXSUEp2nnEvNV5a2S6nmjYZvktPxnzZujQMotEQSaTkbZox1Wb94"
+  }
+}

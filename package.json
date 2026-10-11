@@ -13,7 +13,8 @@
     "chain:initialize": "node scripts/initialize-bavaria.mjs",
     "test:amount": "node scripts/test-amount.mjs",
     "chain:enable": "node scripts/enable-financing.mjs",
-    "chain:smoke": "node scripts/smoke-devnet.mjs"
+    "chain:smoke": "node scripts/smoke-native-sol.mjs",
+    "test:price": "node scripts/test-price.mjs"
   },
   "keywords": [],
   "author": "",

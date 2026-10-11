@@ -2,12 +2,12 @@ import {test,expect} from '@playwright/test';
 import {bavaria,useOfFunds} from '../src/data/projects';
 import fs from 'node:fs';
 
-test('historical capital is separate from current raise and Devnet; protocol sources unchanged',async({page})=>{
+test('historical capital is separate from current raise and Devnet; business target unchanged',async({page})=>{
   expect(bavaria.target).toBe(250000);expect(bavaria.totalProjectCapital).toBe(350000);expect(bavaria.alreadyInvested).toBe(100000);
   expect(useOfFunds.reduce((sum,item)=>sum+item.amount,0)).toBe(250000);
   expect(JSON.parse(fs.readFileSync('src/chain/deployment.json','utf8')).projectPda).toBe('9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U');
   for(const route of ['/','/projects/bavaria']){await page.goto(route);await expect(page.locator('.business-capital')).toContainText('€350,000');await expect(page.locator('.business-capital')).toContainText('€100,000');await expect(page.locator('.business-capital')).toContainText('€250,000');await expect(page.locator('.business-capital')).toContainText('29%');await expect(page.locator('main')).toContainText('licensing, legal, regulatory and facility/project preparation');}
-  await expect(page.locator('.onchain-panel')).toContainText('Technical demo only. JV Test USD has no monetary value.');
+  await expect(page.locator('.onchain-panel')).toContainText('Devnet SOL has no monetary value.');
   await expect(page.locator('.onchain-panel')).not.toContainText('€100,000');
 });
 

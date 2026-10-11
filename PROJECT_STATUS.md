@@ -2,9 +2,9 @@
 
 Updated 11 October 2026.
 
-**Current direction: Bavaria-only financing and infrastructure dashboard.** Industrial is now the sole appearance, with charcoal surfaces, white logo/primary actions and muted sage accents. Facility remains an interactive, clearly simulated Digital Twin with the supplied umbrella logo. The Bavaria-only strategy and existing Solana financing/document architecture remain intact. The final phase report appears at the end of this file.
+**Current direction: Bavaria-only financing and infrastructure dashboard, with native Devnet SOL financing.** Industrial remains the sole appearance. Real capital is €350,000 total / €100,000 historical preparation spend / €250,000 current raise. Native SOL contributions and their current market-price EUR equivalents are explicitly demos, never real capital received. Facility remains a simulated Digital Twin. The same Devnet program was safely upgraded; existing token and document accounts remain unchanged. The final phase report appears at the end of this file.
 
-Earlier milestone sections are retained as history. The single-project phase supersedes their marketplace and fictional-demo descriptions; the latest Digital Twin section supersedes earlier Facility layouts and simulation parameters.
+Earlier milestone sections are retained as history. The single-project phase supersedes their marketplace and fictional-demo descriptions; the latest Digital Twin section supersedes earlier Facility layouts and simulation parameters. The native SOL phase below supersedes user-facing JV Test USD financing, while retaining its historical onchain records and instructions.
 
 ## Existing financing implementation
 
@@ -340,3 +340,84 @@ Automated WCAG 2 A/AA, console/page-error and overflow checks passed for Overvie
 Compatibility limits: physical installed Phantom/Solflare extensions and mobile handoff have not been manually validated this phase. Other wallets are eligible only if detected with the required capabilities; sign-and-send-only or non-Devnet wallets are excluded. No silent reconnect, wallet persistence or new protocol behavior was introduced. The existing Solflare adapter/web fallback remains available without claiming an installed extension. Stop after this focused content/wallet update; no redesign, backend IoT or public deployment.
 
 Final production build passed (`npm run build -- --webpack`), including TypeScript and static prerendering of all routes. The final narrow-metric adjustment was rechecked across all 16 responsive/accessibility combinations with zero violations, overflow or browser errors. No chain or dependency files appear in the diff. Work complete; nothing deployed.
+
+## Native Devnet SOL financing — completed 11 October 2026
+
+### Business truth and frontend
+
+Real business figures remain **€350,000 total project capital / €100,000 already invested / €250,000 current real raise**. The €100k represents historical licensing, legal, regulatory and facility/project preparation spend, not installed cultivation equipment. The remaining raise still allocates €220k to infrastructure/equipment and €30k to initial working capital. The deployed Project target remains **25,000,000 EUR cents (€250,000)**; no historical EUR capital or market price is written onchain.
+
+The normal financing, review, success, project records and portfolio interfaces now use **native Devnet SOL**, with exact nine-decimal lamport parsing. They display native wallet balance, current EUR demo equivalent, Solana Devnet, Project SOL Vault and Explorer links. Review explicitly states that Devnet SOL has no monetary value and is not a real investment. The UI validates balance against the contribution, estimated network fee and any first-use account rent before requesting a signature; submission repeats the checks using fresh chain state. Transactions retain canonical account validation, signed-message validation, nonce protection and pending-signature recovery. Confirmation immediately forces a fresh aggregate, position, wallet-balance and vault-balance read; no reload is needed. Portfolio shows a demo position with no ownership, equity, yield or repayment claim.
+
+The shared price service uses **CoinGecko SOL/EUR simple price**, with **Kraken SOLEUR** as fallback. It validates positive finite quotes and CoinGecko timestamps, rejects stale quotes, caches successful prices for 60 seconds, coalesces concurrent requests and briefly caches provider failure. Browser polling occurs once per minute with visibility refresh. The market indicator includes source and age; Kraken reports fetch age rather than claiming an exchange quote timestamp. A failed price request displays EUR equivalent unavailable and never blocks native financing. No hardcoded market price or new dependency was added. Source documentation: [CoinGecko](https://docs.coingecko.com/reference/simple-price), [Kraken](https://docs.kraken.com/api-reference/market-data/get-ticker-information).
+
+Overview and Project share an accurately proportioned capital bar: solid historical real €100k, a distinctly striped **Devnet demo equivalent**, and the remaining display area. Demo width is recorded SOL × displayed market price / €350k, capped at the real raise; it has no artificial minimum width. It never increases real invested capital or reduces the stated €250k real raise. A six-second +SOL/current-EUR demo callout makes tiny confirmed contributions visible. Motion respects reduced-motion preferences. The Facility Digital Twin, sanitized Floor Plan, supplied media, project economics and document UI were not redesigned.
+
+### Onchain architecture and compatibility
+
+Added `finance_sol(lamports, expected_nonce)` to the existing Anchor program. A signed investor transfers native lamports via System Program CPI into a deterministic program-owned account, then the same transaction records checked integer totals and increments the investor nonce. Zero amounts, paused financing, replayed nonces, overflow, invalid projects, vaults or positions are rejected atomically. The existing canonical Bavaria Project remains read-only and supplies the financing pause state. There is no arbitrary recipient, personal-wallet destination, withdrawal, repayment, account reset or account closing instruction.
+
+New accounts, including their eight-byte Anchor discriminators:
+
+| Account | PDA seeds | Size | Recorded state |
+| --- | --- | --- | --- |
+| `SolVault` | `sol-vault`, Project | 49 bytes | Project, aggregate contributed lamports, bump |
+| `SolPosition` | `sol-position`, Project, investor | 89 bytes | Project, investor, contributed lamports, next nonce, bump |
+
+First use initializes missing native accounts with investor-paid rent; later contributions pay only contribution and transaction fee. The vault balance includes rent and any direct deposits, but authoritative demo contributions come exclusively from `SolVault.total_lamports`. Direct deposits do not create positions or inflate recorded financing. Native accounts are separate because the existing vault is an SPL-token account and cannot be repurposed as a native SOL accounting vault.
+
+Existing **Project, Position and DocumentRecord serialized layouts and discriminators are unchanged**. All old instruction, type, event and error definitions remain compatible; new error codes are appended after existing codes. The original Project, both legacy Positions, harmless DocumentRecord, legacy token vault, mint and program root were snapshotted before upgrade and compared after upgrade and after the smoke test. All **seven accounts retained identical raw data, ownership, lamports and executable flags**, and old/new decoders agreed. The historical token total at this phase's actual snapshot is **23.25 JV Test USD**, not the older 3.25 recorded in previous milestones. Legacy token instructions/accounts/mint remain intact; JV Test USD is retired only from the normal investor UI. No legacy state was destroyed, migrated or renamed to SOL. Existing document fingerprints remain readable and unchanged; actual Bavaria document records remain pending.
+
+### Devnet upgrade and public receipts
+
+The existing program address was preserved: `Ezssvc6b1pDYT387dBUn95Lac429GQsSz7FHNEHqBcwJ`.
+
+| Account | Address |
+| --- | --- |
+| Existing Bavaria Project | `9zPe8V8s9WFhoJxHTfViwu9dhvgK3gc8bN3XiCGjEo1U` |
+| New native SOL vault | `85dT3wXkBVom6e7w9c2zcwntBedAoC88nqLt417hufHX` |
+| Smoke investor's new SolPosition | `9i9WhJ2UMux3k7nJojBnWa1WtQ6puiczejbkSXdZaaNS` |
+| Preserved legacy token vault | `2JGPfGiDD6wCUJ4dJyrYKQm7RP7NgQ56hdSCVNgJADHN` |
+| Preserved legacy JV Test USD mint | `BUb2CzJvDu7GuFjZ9a41z7uTQNCbgi97yybPs6uepYgL` |
+
+Compatibility and local tests passed before upgrade. The Devnet faucet was rate-limited; the user supplied 0.25 Devnet SOL to the existing upgrade authority for temporary upload costs. No authority or personal account became a financing destination. Upgrade extended only ProgramData allocation from 290,237 to 314,621 bytes. The 314,576-byte deployed executable matches the tested build exactly, SHA-256 `3c3bdb1b46412a9fa2bebbe93b1c4681174ce2a0d8fd1925f5cce4bcf2e5f76a`.
+
+- [Upgrade transaction](https://explorer.solana.com/tx/2kz1vWKBK5VtVv9LfJshF1je6aB7uEvqYVXeXXSUEp2nnEvNV5a2S6nmjYZvktPxnzZujQMotEQSaTkbZox1Wb94?cluster=devnet).
+- Deployment receipt: `chain/receipts/deploy-1791732413535.json`.
+- Public pre-upgrade snapshot: `chain/receipts/native-sol-state-before.json` (SHA-256 `460e453e6725aa74a6d65807396fb391899221c96f286500d1a7fcfeeb6de499`).
+- Account/interface compatibility: `chain/receipts/native-sol-compatibility.json`.
+- Loader/binary verification: `chain/receipts/native-sol-deployment-verified.json` and `native-sol-preflight.json`.
+
+### Real native SOL smoke test
+
+Used an isolated test investor, funded only with 0.005 Devnet SOL for rent, fees and the small contribution. A **1-lamport warmup** created the new native accounts and verified the first-use path. The measured frontend contribution was **0.0001 SOL (100,000 lamports)** through a registered test Wallet Standard signer. Private key material stayed in ignored local files and Node signing, never browser code or public receipts. A signature/nonce guard and persisted attempt receipt prevent accidental repeated measured submissions.
+
+**Confirmed smoke signature:** `2YcduQwSXT2qrCTpMtZUXKYEUTF1okeYctN8vq97xYjPbWeMkjFWCEZ35SjEcc1PB9LBwCXEXYNJkhDtbwAqqTMz` ([Explorer](https://explorer.solana.com/tx/2YcduQwSXT2qrCTpMtZUXKYEUTF1okeYctN8vq97xYjPbWeMkjFWCEZ35SjEcc1PB9LBwCXEXYNJkhDtbwAqqTMz?cluster=devnet)).
+
+| Verified measurement | Before | After | Change |
+| --- | --- | --- | --- |
+| Investor lamports | 2,993,479 | 2,888,479 | −100,000 contribution −5,000 fee |
+| SOL vault lamports | 899,161 | 999,161 | +100,000 exactly |
+| Native position contributed lamports | 1 | 100,001 | +100,000 exactly |
+| Native aggregate contributed lamports | 1 | 100,001 | +100,000 exactly |
+
+The browser confirmed the transaction and automatically displayed **0.000100001 SOL** aggregate and position, the updated vault balance and transaction link. Portfolio readback matched; no page refresh or browser error occurred. Current EUR values remain changing presentation data, not an onchain price commitment. Warmup signature: `5DpdpryY8WxMrELvtATVJ9WNoposUfDFFr4uWs6nw3oXKi5ojZhR6w2u9eftGhKf3UGoffVYZt8JveuGfUtZsK5e`. Evidence: `chain/receipts/native-sol-smoke.json`, `native-sol-smoke-warmup.json`, `native-sol-smoke-attempt.json`; screenshot `/tmp/jv-native-sol-real-smoke.png`.
+
+### Verification and remaining limitations
+
+- Anchor/SBF build, generated IDL/types, Rust formatting and two Rust unit tests passed. Checked arithmetic tests cover aggregate, position and nonce u64 boundaries.
+- Fresh local validator ran initialization, legacy financing, document integrity, native SOL financing and legacy financing again. All five suites passed against the final deployed artifact. Native tests cover signer, canonical project/vault/position, pause, zero, insufficient balance, replay, overflow, atomic rollback, exact investor/fee/vault accounting, new positions, repeated contributions and direct-deposit exclusion. Legacy Project bytes remain unchanged by native financing.
+- Exact six-decimal legacy and nine-decimal SOL parsing tests passed. Market-provider tests cover valid/invalid/stale price, cache, request coalescing, Kraken fallback and complete unavailability.
+- **All 62 Playwright browser regressions passed in the final full run.** Coverage includes native amount/review/signing, balance/fee/first-vault rent checks, rejected/failed/pending transactions, nonce/identity guards, post-confirmation aggregate/position/vault refresh, portfolio, unavailable-price financing, unchanged real capital, document hashing/readback and all Facility interactions.
+- Responsive/automated WCAG 2 A/AA checks passed across **24 route/viewport combinations at 320 / 390 / 768 / 1440 px**, with no horizontal page overflow, accessibility violations, hydration, console or page errors. The actual smoke browser also recorded no console/page errors.
+- Detected Wallet Standard Phantom and the existing Solflare adapter passed cryptographic browser fixtures. The real Devnet native transaction used the isolated test Standard signer. This does **not** claim a manual approval test with physical Phantom/Solflare extensions. Only wallets detected with Devnet and compatible transaction-signing capabilities are listed; sign-and-send-only wallets remain excluded. Generic Connect Wallet UX is unchanged.
+
+Public Devnet RPC returned 429 during the first browser smoke attempt, before any signature or measured contribution. Account reads were batched and simultaneous same-wallet refreshes deduplicated; post-confirmation reads explicitly force fresh state. The retry succeeded, with SDK backoff recovering additional rate limits. RPC outages can still leave last successful data or an unavailable state; no invented balance is shown. Pending receipts and wallet sessions remain in memory. Price caching is per server process, not a distributed service. Development upgrade/mint authorities remain active, and the program is unaudited. Native SOL has no withdrawal path in this MVP. Installed-wallet/mobile handoff and physical-device playback/GPU limitations from earlier phases remain.
+
+Final **TypeScript, ESLint, diff whitespace checks and production build passed** (`npm run build -- --webpack`). All existing pages remain statically prerendered; only the market-price API route is dynamic. The temporary local validator was stopped after verification. No Mainnet, real investment, backend IoT, hardware, real sensors, repayment, yield, revenue-sharing or public website deployment was added. Legacy state was preserved. Stop after this native SOL phase.
+
+## Cultivation cycle — 90-day preview
+
+Updated the simulated cultivation cycle from 60 to **90 days**. The slider, day counter and shortcuts now cover the full duration; flowering and drying extend accordingly, with Processing at Day 90. The illustrative stage windows are Propagation 1–7, Vegetative 8–28, Flowering 29–76, Drying 77–89 and Processing 90. These individual windows remain demo assumptions, not a verified production schedule. The 3D canopy's height, foliage development and camera framing are paced to the longer cycle. Default Vegetative · Day 18 and simulated-only labels remain.
+
+All 11 Facility browser tests passed, including growth-stage changes, keyboard slider operation, reduced motion, WebGL fallback and 320/390/768/1440 px layouts. TypeScript, ESLint, diff whitespace checks and production build (`npm run build -- --webpack`) passed. No financing, document, telemetry source or onchain changes were made.

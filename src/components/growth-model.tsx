@@ -58,7 +58,7 @@ function specimenMesh(day:number,stage:number):Float32Array {
   const mesh:Mesh=[];
   // A commercial root plug, with no decorative houseplant pot.
   cylinder(mesh,[0,.27,0],[0,.39,0],.12,.12,[.16,.21,.16],0,12);
-  const height=.16+Math.min(day,45)/45*1.65;
+  const height=.16+Math.min(day,65)/65*1.65;
   const dry=stage===3, processed=stage===4;
   const green:Vec=dry?[.48,.46,.23]:[.22,.47,.18];
   const stem:Vec=dry?[.44,.38,.20]:[.31,.46,.19];
@@ -70,10 +70,10 @@ function specimenMesh(day:number,stage:number):Float32Array {
   }
   const bend=(y:number):Vec=>[Math.sin(y*1.9)*.025,.40+y,Math.sin(y*1.3)*.02];
   for(let i=0;i<16;i++) cylinder(mesh,bend(i/16*height),bend((i+1)/16*height),.014*(1-i/22),.014*(1-(i+1)/22),stem,.20,9);
-  const nodes=day<8?1:Math.min(8,2+Math.floor(day/6));
+  const nodes=day<8?1:Math.min(8,2+Math.floor(day/8));
   for(let i=0;i<nodes;i++) {
     const y=height*(.16+i/(nodes+1)*.77), origin=bend(y);
-    const size=(.12+Math.min(day,35)/35*.29)*(1-i/(nodes+2)*.65);
+    const size=(.12+Math.min(day,50)/50*.29)*(1-i/(nodes+2)*.65);
     for(let branch=0;branch<2;branch++) {
       const angle=i*2.4+branch*Math.PI;
       const tip=add(origin,[Math.sin(angle)*size*.35,size*.12,Math.cos(angle)*size*.35]);
@@ -90,7 +90,7 @@ function specimenMesh(day:number,stage:number):Float32Array {
     }
   }
   // New apical leaves keep even the seedling three-dimensional.
-  for(let i=0;i<3;i++) leaf(mesh,bend(height),i*Math.PI*2/3,.09+Math.min(day,35)*.0018,.027,scale(green,1.2),.03);
+  for(let i=0;i<3;i++) leaf(mesh,bend(height),i*Math.PI*2/3,.09+Math.min(day,50)*.0018,.027,scale(green,1.2),.03);
   if(stage===2) sphere(mesh,add(bend(height),[0,.015,0]),[.047,.10,.047],[.45,.58,.26],.7);
   return new Float32Array(mesh);
 }
@@ -114,7 +114,7 @@ function multiply(a: Float32Array, b: Float32Array) {
   return out;
 }
 function camera(aspect: number, yaw: number, day: number) {
-  const maturity=Math.max(0,Math.min(day,45)-18)/27, distance=(3.2+maturity*1.3)*Math.max(1,.8/aspect);
+  const maturity=Math.max(0,Math.min(day,65)-18)/47, distance=(3.2+maturity*1.3)*Math.max(1,.8/aspect);
   const eye:Vec=[Math.sin(yaw)*distance,2.1+maturity*.4,Math.cos(yaw)*distance], target:Vec=[0,.95+maturity*.2,0];
   const f=unit(sub(target,eye)), s=unit(cross(f,[0,1,0])), u=cross(s,f);
   const view=new Float32Array([s[0],u[0],-f[0],0,s[1],u[1],-f[1],0,s[2],u[2],-f[2],0,-dot(s,eye),-dot(u,eye),dot(f,eye),1]);
